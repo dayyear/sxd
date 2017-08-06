@@ -1,0 +1,63 @@
+﻿https://ssl.xd.com/users/loginService?callback=jQuery17106867409127298743_1412165031453&data%5BUser%5D%5Busername%5D=dayyear&data%5BUser%5D%5Bpassword%5D=orange&data%5BUser%5D%5Bremember_me%5D=false&data%5BUser%5D%5Bsite%5D=xd&app=sxd&captcha=null&captcha_identifier=&need_detail=true&history_amount=0&rqst_sgntr=0.8621847827453166&_=1412165181795
+https://ssl.xd.com/loginService?callback=jQuery17106867409127298743_1412176229185&data%5BUser%5D%5Busername%5D=dayyear_wg1&data%5BUser%5D%5Bpassword%5D=orange&data%5BUser%5D%5Bremember_me%5D=false&data%5BUser%5D%5Bsite%5D=xd&app=sxd&captcha=null&captcha_identifier=&need_detail=true&history_amount=0&rqst_sgntr=0.8621847827453166&_=1412176229520
+
+callback:jQuery17105917234958615154_1412163389814
+data[User][username]:dayyear
+data[User][password]:orange
+data[User][remember_me]:false
+data[User][site]:xd
+app:sxd
+captcha:null
+captcha_identifier:
+need_detail:true
+history_amount:0
+rqst_sgntr:0.8760353059042245
+_:1412163420546
+Response Headersview source
+
+callback:jQuery17105917234958615154_1412163389816
+data[User][username]:dayyear
+data[User][password]:orange
+data[User][remember_me]:false
+data[User][site]:xd
+app:sxd
+captcha:null
+captcha_identifier:
+need_detail:true
+history_amount:0
+rqst_sgntr:0.49768928601406515
+_:1412164249770
+
+callback:jQuery17102218345203436911_1412164987692
+data[User][username]:dayyear
+data[User][password]:orange
+data[User][remember_me]:false
+data[User][site]:xd
+app:sxd
+captcha:null
+captcha_identifier:
+need_detail:true
+history_amount:0
+rqst_sgntr:0.18415659223683178
+_:1412165001612
+
+callback的生成：
+	var cd = f.now(),
+    ce = /(\=)\?(&|$)|\?\?/i;
+    f.ajaxSetup({
+        jsonp: "callback",
+        jsonpCallback: function() {
+            return f.expando + "_" + cd++
+        }
+    }),
+	expando: "jQuery" + (f.fn.jquery + Math.random()).replace(/\D/g, ""),
+		其中，"/\D/g"表示"Match a single character that is not a digit 0..9"
+
+rqst_sgntr的生成：
+	a.data.rqst_sgntr = Math.random();
+
+_的生成：
+	var x = f.now(),
+    y = d.url.replace(bQ, "$1_=" + x);
+    d.url = y + (y === d.url ? (bM.test(d.url) ? "&": "?") + "_=" + x: "")
+

@@ -1,2 +1,4 @@
 ﻿*.log
 user.ini
+bin/
+obj/
