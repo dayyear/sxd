@@ -50,8 +50,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SxdTest.cs" />
     <Compile Include="SxdWeb.cs" />
+    <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="evaluator.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pattern.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="user.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="笔记.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,40 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.IO;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
+using System.Xml.Linq;
 
 namespace 神仙道
 {
-    class SxdTest
+    static class SxdTest
     {
         public static void Run()
         {
-            string responseString;
+            const string path = "../../../user.ini";
 
-            SxdWeb web = new SxdWeb("115.182.66.19", "80");
-            
-            // 初始化
-            var username = "dayyear2";
-            var password = "orange";
-            web.LoginService(username, password);
-            //web.Init(username, password);
-
-            // 登录
-            /*responseString = web.LoginService("dayyear_wg1", "orange");
-            var loginResponse = JsonConvert.DeserializeObject<dynamic>(Regex.Match(responseString, SxdWeb.LOGIN_Pattern).Groups[1].Value);
-            //Console.WriteLine(loginResponse);
-
-            if (loginResponse.error != null)
+            var users = XElement.Load("user.xml");
+            var pattern = File.ReadAllText("pattern.txt");
+            var evaluator = File.ReadAllText("evaluator.txt");
+            foreach (var userX in users.Elements("user"))
             {
-                Console.WriteLine(loginResponse.error);
-                return;
-            }
-            Console.WriteLine("登录成功");*/
+                var web = new SxdWeb();
 
-            
-        }
-    }
-}
+                var username = userX.Element("username").Value;
+                var password = userX.Element("password").Value;
+                var user = web.LoginService(username, password);
+
+                var id = userX.Element("id").Value;
+                var url = userX.Element("url").Value;
+                var name = userX.Element("name").Value;
+
+                var userIni = File.ReadAllText(path);
+                File.WriteAllText(path, Regex.Replace(userIni, string.Format(pattern, id), string.Format(evaluator, id, url, user.Code, user.Time, user.Hash, user.Time1, user.Hash1, name)));
+            }//foreach
+        }//Run
+    }//class
+}//namespace
