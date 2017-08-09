@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
@@ -15,18 +16,27 @@ namespace 神仙道
             var evaluator = File.ReadAllText("evaluator.txt");
             foreach (var userX in users.Elements("user"))
             {
-                var web = new SxdWeb();
+                Console.WriteLine(userX.Element("username").Value);
+                try
+                {
+                    var web = new SxdWeb();
 
-                var username = userX.Element("username").Value;
-                var password = userX.Element("password").Value;
-                var user = web.LoginService(username, password);
+                    var username = userX.Element("username").Value;
+                    var password = userX.Element("password").Value;
+                    var user = web.LoginService(username, password);
 
-                var id = userX.Element("id").Value;
-                var url = userX.Element("url").Value;
-                var name = userX.Element("name").Value;
+                    var id = userX.Element("id").Value;
+                    var url = userX.Element("url").Value;
+                    var name = userX.Element("name").Value;
 
-                var userIni = File.ReadAllText(path);
-                File.WriteAllText(path, Regex.Replace(userIni, string.Format(pattern, id), string.Format(evaluator, id, url, user.Code, user.Time, user.Hash, user.Time1, user.Hash1, name)));
+                    var userIni = File.ReadAllText(path);
+                    File.WriteAllText(path, Regex.Replace(userIni, string.Format(pattern, id), string.Format(evaluator, id, url, user.Code, user.Time, user.Hash, user.Time1, user.Hash1, name)));
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }//foreach
         }//Run
     }//class
