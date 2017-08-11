@@ -48,7 +48,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SxdTest.cs" />
+    <Compile Include="Sxd.cs" />
     <Compile Include="SxdWeb.cs" />
     <Compile Include="User.cs" />
   </ItemGroup>

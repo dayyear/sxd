@@ -9,7 +9,8 @@ namespace 神仙道
     {
         static void Main(string[] args)
         {
-            SxdTest.Run();
+            //Sxd.GenerateUserIni();
+            Sxd.Test();
         }
     }
 }

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace 神仙道
 {
-    static class SxdTest
+    static class Sxd
     {
-        public static void Run()
+        public static void GenerateUserIni()
         {
             const string path = "../../../user.ini";
 
@@ -29,8 +30,8 @@ namespace 神仙道
                     var url = userX.Element("url").Value;
                     var name = userX.Element("name").Value;
 
-                    var userIni = File.ReadAllText(path);
-                    File.WriteAllText(path, Regex.Replace(userIni, string.Format(pattern, id), string.Format(evaluator, id, url, user.Code, user.Time, user.Hash, user.Time1, user.Hash1, name)));
+                    var userIni = File.ReadAllText(path, Encoding.GetEncoding("GBK"));
+                    File.WriteAllText(path, Regex.Replace(userIni, string.Format(pattern, id), string.Format(evaluator, id, url, user.Code, user.Time, user.Hash, user.Time1, user.Hash1, name)), Encoding.GetEncoding("GBK"));
 
                 }
                 catch (Exception ex)
@@ -38,6 +39,18 @@ namespace 神仙道
                     Console.WriteLine(ex.Message);
                 }
             }//foreach
-        }//Run
+        }//GenerateUserIni
+
+        public static void Test()
+        {
+            const string path = "../../../user.ini";
+
+            var web = new SxdWeb();
+            var user = new User() { Code = "VNxB3Qz0inT5lCv", Time = "1502458609", Hash = "f1a21194d53c887051729410339a8224", Time1 = "1502458608", Hash1 = "60957170b946352f88ce94381152b08c" };
+            var response = web.Login(user);
+            Console.WriteLine(response);
+
+
+        }//Test
     }//class
 }//namespace

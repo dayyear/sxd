@@ -13,6 +13,7 @@ namespace 神仙道
         private readonly CookieContainer cookieContainer = new CookieContainer();
 
         private readonly Random rnd = new Random();
+        private readonly Uri uriCookie = new Uri("http://s1.sxd.xd.com/"); 
 
         public User LoginService(string username, string password)
         {
@@ -25,7 +26,7 @@ namespace 神仙道
             Get(uri);
             //File.WriteAllText("play.htm", Get(uri));
 
-            var cookieCollection = cookieContainer.GetCookies(new Uri("http://s1.sxd.xd.com/"));
+            var cookieCollection = cookieContainer.GetCookies(uriCookie);
             return new User()
             {
                 Code = cookieCollection["user"].Value,
@@ -37,6 +38,22 @@ namespace 神仙道
 
         }//LoginService
 
+        public void SetCookie(User user)
+        {
+            var path = "/";
+            var domain = "s1.sxd.xd.com";
+            cookieContainer.Add(new Cookie("user", user.Code, path, domain));
+            cookieContainer.Add(new Cookie("_time", user.Time, path, domain));
+            cookieContainer.Add(new Cookie("_hash", user.Hash, path, domain));
+            cookieContainer.Add(new Cookie("login_time_sxd_xxxxxxxx", user.Time1, path, domain));
+            cookieContainer.Add(new Cookie("login_hash_sxd_xxxxxxxx", user.Hash1, path, domain));
+        }
+
+        public string Login(User user)
+        {
+            SetCookie(user);
+            return Get("http://s1.sxd.xd.com");
+        }
         /// <summary>
         /// 初始化
         /// </summary>
