@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Xml.Linq;
 
 namespace 神仙道
@@ -45,12 +47,25 @@ namespace 神仙道
         {
             const string path = "../../../user.ini";
 
-            var web = new SxdWeb();
+            /*var web = new SxdWeb();
             var user = new User() { Code = "VNxB3Qz0inT5lCv", Time = "1502458609", Hash = "f1a21194d53c887051729410339a8224", Time1 = "1502458608", Hash1 = "60957170b946352f88ce94381152b08c" };
             var response = web.Login(user);
             Console.WriteLine(response);
+            */
 
+            var client = new SxdClient();
+            client.Login("http://s1.sxd.xd.com/", "M0ZthlvBbiF3Ajp", "1503840228", "61a3dc63fd14935f536ccceaa0404f4e", "1503840228", "badda7160f96e7b9134acffba0d83b16");
+
+            client.GetPlayerCampSalary();
+
+            client.GetDayStone();
+
+            client.ChatWithPlayers("万事如意");
+
+            Console.ReadKey();
 
         }//Test
+
+        
     }//class
 }//namespace
