@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿
+
+using System.IO;
 
 namespace 神仙道
 {
@@ -12,5 +11,7 @@ namespace 神仙道
             //Sxd.GenerateUserIni();
             Sxd.Test();
         }
+
+        
     }
 }

@@ -19,11 +19,9 @@ namespace 神仙道
             var uri = string.Format(@"https://ssl.xd.com/users/loginService?callback=jQuery1102{0}_{1}&data%5BUser%5D%5Busername%5D={4}&data%5BUser%5D%5Bpassword%5D={5}&data%5BUser%5D%5Bremember_me%5D=true&data%5BUser%5D%5Bsite%5D=xd&app=sxd&captcha=&captcha_identifier=&need_detail=true&history_amount=0&rqst_sgntr={2}&_={3}",
                 rnd.NextDouble().ToString(CultureInfo.CurrentCulture).Replace(".", ""), Stamp(), rnd.NextDouble(), Stamp(), username, password);
             Get(uri);
-            //File.WriteAllText("loginService.htm", Get(uri));
 
             uri = @"http://www.xd.com/games/play?app=sxd&server=s1";
             Get(uri);
-            //File.WriteAllText("play.htm", Get(uri));
 
             var cookieCollection = cookieContainer.GetCookies(uriCookie);
             return new User()
@@ -37,7 +35,7 @@ namespace 神仙道
 
         }//LoginService
 
-        public void SetCookie(User user)
+        private void SetCookie(User user)
         {
             var path = "/";
             var domain = "s1.sxd.xd.com";
