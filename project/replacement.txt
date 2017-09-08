@@ -1,5 +1,5 @@
 ﻿[{0}]
-url={1}
+url=http://{1}\.sxd\.xd\.com/
 code={2}
 time={3}
 hash={4}
