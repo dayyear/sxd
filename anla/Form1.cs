@@ -120,7 +120,7 @@ namespace anla
                 Logger.Log(string.Empty, textBox1);
                 Logger.Log("---- [登录] ----", textBox1);
                 Logger.Log(string.Format("---- [Login(url={0}, code={1}, time{2}, hash={3}, time1={4}, hash1={5})] ----", url, code, time, hash, time1, hash1));
-                if (!client.Login(url, code, time, hash, time1, hash1))
+                if (client.Login(url, code, time, hash, time1, hash1))
                     return;
 
                 Logger.Log("---- [获取玩家信息] ----", textBox1);

@@ -56,11 +56,14 @@ namespace anla
         private void Receive(Socket _socket)
         {
             var state = new StateObject { workSocket = _socket };
+            UpdateUIDelegate(UpdateType.LogBoth, "BeginReceive");
             _socket.BeginReceive(state.buffer, 0, StateObject.BufferSize, SocketFlags.None, ReceiveCallback, state);
         }//Receive
 
         private void ReceiveCallback(IAsyncResult ar)
         {
+            UpdateUIDelegate(UpdateType.LogBoth, "ReceiveCallback");
+
             var state = (StateObject)ar.AsyncState;
             var _socket = state.workSocket;
 
@@ -69,29 +72,42 @@ namespace anla
             /* EndReceive 方法将一直阻止到有数据可用为止。 
              * 如果您使用的是无连接协议，则 EndReceive 将读取传入网络缓冲区中第一个排队的可用数据报。 
              * 如果您使用的是面向连接的协议，则 EndReceive 方法将读取所有可用的数据，直到达到 BeginReceive 方法的 size 参数所指定的字节数为止。*/
-            var bytesRead = _socket.EndReceive(ar);
-
-            if (bytesRead <= 0)
+            try
             {
-                UpdateUIDelegate(UpdateType.LogBoth, "已断开游戏服务器");
-                return;
-            }
+                var bytesRead = _socket.EndReceive(ar);
 
-            state.byteList.AddRange(state.buffer.ToList().GetRange(0, bytesRead));
-            while (state.byteList.Count > 4)
-            {
-                var length = ToInt32(state.byteList);
-                if (state.byteList.Count < length + 4)
+                if (bytesRead <= 0)
                 {
-                    UpdateUIDelegate(UpdateType.LogBoth, "不完整的数据包");
+                    UpdateUIDelegate(UpdateType.LogBoth, "已断开游戏服务器");
                     return;
                 }
 
-                ProcessPackage(state.byteList.GetRange(4, length).ToArray());
-                state.byteList.RemoveRange(0, length + 4);
-            }
+                state.byteList.AddRange(state.buffer.ToList().GetRange(0, bytesRead));
+                while (state.byteList.Count > 4)
+                {
+                    var length = ToInt32(state.byteList);
+                    if (state.byteList.Count < length + 4)
+                    {
+                        UpdateUIDelegate(UpdateType.LogBoth, "不完整的数据包");
+                        return;
+                    }
 
-            _socket.BeginReceive(state.buffer, 0, StateObject.BufferSize, SocketFlags.None, ReceiveCallback, state);
+                    ProcessPackage(state.byteList.GetRange(4, length).ToArray());
+                    state.byteList.RemoveRange(0, length + 4);
+                }
+
+                UpdateUIDelegate(UpdateType.LogBoth, "BeginReceive");
+                _socket.BeginReceive(state.buffer, 0, StateObject.BufferSize, SocketFlags.None, ReceiveCallback, state);
+
+            }
+            catch (SocketException se)
+            {
+                Logger.Log(string.Format("Find SocketException in method Receive, ErrorCode: {0}, Message: {1}", se.ErrorCode, se.Message));
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(string.Format("Find Exception in method Receive, Message: {0}", ex.Message));
+            }
         }//ReceiveCallback
 
         private void ReceiveST(Socket _socket)
@@ -395,6 +411,7 @@ namespace anla
             previousAction = action;
 
             loginDone.WaitOne();
+            UpdateUIDelegate(UpdateType.LogBoth, "after loginDone");
             return loginSuccess;
         }//Login
 

@@ -1,350 +1,1056 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Web;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace 神仙道
 {
     public class SxdClient
     {
+        // Socket
+        private Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        private Socket socketST = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-        // 发送协议：totalLength(4), module(2), action(2), data(totalLength-8), previousModule(2), previousAction(2)
-        // 接收协议：totalLength(4), module(2), action(2), data(totalLength-4)
-        private Int16 module;
-        private Int16 action;
-        private Int16 previousModule;
-        private Int16 previousAction;
+        // Socket状态
+        private short previousModule;
+        private short previousAction;
+        private short previousModuleST;
+        private short previousActionST;
 
-        //private TcpClient tcpClient;
-        //private NetworkStream networkStream;
+        // 用于Receive Callback
+        readonly byte[] bufferRcvd = new byte[256];
+        readonly List<byte> bytesRcvd = new List<byte>();
 
-        private static readonly Encoding UTF8 = Encoding.UTF8;
 
-        private readonly Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        // 玩家信息
+        private int playerId;           // Get from Mod_Player_Base.login(0, 0), used in Mod_Player_Base.player_info_contrast(0,48)
+        private string nickName;        // Get from Mod_Player_Base.get_player_info(0,2)
+        private string serverName;      // Get from Mod_StcLogin_Base.get_login_info(96,0)
+        private string passCode;        // Get from Mod_StcLogin_Base.get_login_info(96,0)
 
-        /// <summary>
-        /// 登录准备
-        /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <param name="server"></param>
-        /// <returns></returns>
-        public static Tuple<string, string, string, string, string> LoginPrepare(string username, string password, string server)
-        {
-            var rnd = new Random();
-            var cookieContainer = new CookieContainer();
+        // 服务器地址与端口
+        private string serverHostST;
+        private int portST;
 
-            // 1. Get https://ssl.xd.com/users/loginService
-            var uri = string.Format(@"https://ssl.xd.com/users/loginService?callback=jQuery1102{0}_{1}&data%5BUser%5D%5Busername%5D={4}&data%5BUser%5D%5Bpassword%5D={5}&data%5BUser%5D%5Bremember_me%5D=true&data%5BUser%5D%5Bsite%5D=xd&app=sxd&captcha=&captcha_identifier=&need_detail=true&history_amount=0&rqst_sgntr={2}&_={3}",
-                rnd.NextDouble().ToString(CultureInfo.CurrentCulture).Replace(".", ""), Stamp(), rnd.NextDouble(), Stamp(), username, password);
-            var request = (HttpWebRequest)WebRequest.Create(uri);
-            request.CookieContainer = cookieContainer;
-            using (var response = (HttpWebResponse)request.GetResponse())
-            using (var stream = response.GetResponseStream())
-            using (var sr = new StreamReader(stream, Encoding.UTF8))
-                sr.ReadToEnd();
+        // 用于登录仙界
+        private int serverTime;
+        private int townMapId;
 
-            // 2. Get http://www.xd.com/games/play
-            uri = string.Format(@"http://www.xd.com/games/play?app=sxd&server={0}", server);
-            request = (HttpWebRequest)WebRequest.Create(uri);
-            request.CookieContainer = cookieContainer;
-            using (var response = (HttpWebResponse)request.GetResponse())
-            using (var stream = response.GetResponseStream())
-            using (var sr = new StreamReader(stream, Encoding.UTF8))
-                sr.ReadToEnd();
+        private readonly ManualResetEvent done = new ManualResetEvent(false);
 
-            // 3. Get cookies
-            /*
-            Set-Cookie: sxd_user=7-oEEpAwXxUwjFk; expires=Thu, 31-Aug-2017 12:54:04 GMT; path=/
-            Set-Cookie: user=IBlEBp9Uz3kEoRm; expires=Thu, 31-Aug-2017 12:54:04 GMT; path=/
-            Set-Cookie: source=deleted; expires=Thu, 01-Jan-1970 00:00:01 GMT; path=/
-            Set-Cookie: regdate=1463362496; path=/
-            Set-Cookie: non_kid=1; path=/
-            Set-Cookie: idcard=110101198001010037; path=/
-            Set-Cookie: client_type=web; path=/
-            Set-Cookie: login_time_sxd_xxxxxxxx=1504097644; path=/
-            Set-Cookie: login_hash_sxd_xxxxxxxx=027fa44e0cc234fdee1ac22c5f9d43e3; path=/
-            Set-Cookie: _time=1504097644; expires=Thu, 31-Aug-2017 12:54:04 GMT; path=/
-            Set-Cookie: _hash=60f1b28cb1deca5d33b099feb5956597; expires=Thu, 31-Aug-2017 12:54:04 GMT; path=/
-            */
-            var cookieCollection = cookieContainer.GetCookies(new Uri(string.Format("http://{0}.sxd.xd.com/", server)));
-            var code = cookieCollection["user"].Value;
-            var time = cookieCollection["_time"].Value;
-            var hash = cookieCollection["_hash"].Value;
-            var time1 = cookieCollection["login_time_sxd_xxxxxxxx"].Value;
-            var hash1 = cookieCollection["login_hash_sxd_xxxxxxxx"].Value;
+        private readonly ManualResetEvent receiveDone = new ManualResetEvent(false);
+        /*private readonly ManualResetEvent loginDone = new ManualResetEvent(false);
+        private readonly ManualResetEvent getLoginInfoDone = new ManualResetEvent(false);
+        private readonly ManualResetEvent getPlayerInfoDone = new ManualResetEvent(false);
+        private readonly ManualResetEvent stLoginDone = new ManualResetEvent(false);*/
 
-            return new Tuple<string, string, string, string, string>(code, time, hash, time1, hash1);
+        private bool getLoginInfoSuccess;
+        private bool getPlayerInfoSuccess;
+        private bool stLoginSuccess;
 
-        }//LoginService
+        //private Thread receiveThread;
 
         /// <summary>
-        /// 登录
-        /// [1. playerName, 2. hashCode, 3. time, 4. URI.sourceUrl, 5. URI.regdate, 
-        ///  6. strIdCard, 7. URI.openTime, 8. URI.isNewSt, 9. URI.stageName, 10. URI.client]
-        /// [1. logined, 2. playerId, 3. , 4. enableTime, 5. enableType
-        ///  6. PlayerInfo.bAllActivity(==0), 7. isOpenMusic(==1), 8. WarType.WarEffectShowType, 9. uiSetValue]
-        /// public static const login:Object = {
-        /// module:0, action:0, 
-        /// request:[1. Utils.StringUtil, 2. Utils.StringUtil, 3. Utils.StringUtil, 4. Utils.StringUtil, 5. Utils.IntUtil, 
-        ///          6. Utils.StringUtil, 7. Utils.IntUtil, 8. Utils.ByteUtil, 9. Utils.StringUtil, 10. Utils.StringUtil], 
-        /// response:[1. Utils.UByteUtil, 2. Utils.IntUtil, 3. Utils.UByteUtil, 4. Utils.IntUtil, 5. Utils.ByteUtil, 
-        ///           6. Utils.IntUtil, 7. Utils.ByteUtil, 8. Utils.UByteUtil, 9. Utils.IntUtil]};
+        /// Mod_Player_Base.login(0,0)
+        /// module:0, action:0
+        /// request:[Utils.StringUtil, Utils.StringUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.ByteUtil, Utils.StringUtil, Utils.StringUtil]
+        /// Line 41 in LoginView.as:
+        ///   _data.call(Mod_Player_Base.login, this.loginCallback, [playerName, hashCode, time, URI.sourceUrl, URI.regdate, strIdCard, URI.openTime, URI.isNewSt, URI.stageName, URI.client]);
         /// </summary>
-        /// <param name="server">e.g. s1</param>
-        /// <param name="code">e.g. jqIvApbvTv9qKdY</param>
-        /// <param name="time">e.g. 1504099144</param>
-        /// <param name="hash">e.g. d9092c1fb0f5313022ada7fcf15a3d2c</param>
-        /// <param name="time1">e.g. 1504099144</param>
-        /// <param name="hash1">e.g. 44ee5d7670384dc58eeeb7cf7d913e7c</param>
-        public void Login(string server, string code, string time, string hash, string time1, string hash1)
+        public void Login(string url, string code, string time, string hash, string time1, string hash1, bool reconnect = false)
         {
-            string responseString;
+            // -----------------------------------------------------------------------------
+            // -. 同步信号重置
+            // -----------------------------------------------------------------------------
+            done.Reset();
 
-            var request = (HttpWebRequest)WebRequest.Create(string.Format("http://{0}.sxd.xd.com/", server));
-            request.Headers.Add("Cookie", string.Format("user={0};_time={1};_hash={2};login_time_sxd_xxxxxxxx={3};login_hash_sxd_xxxxxxxx={4}", code, time, hash, time1, hash1));
-            request.UserAgent = "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.43 Safari/537.31";
+            // -----------------------------------------------------------------------------
+            // 1. 通过HTTP获取参数
+            // -----------------------------------------------------------------------------
+            var cookie = string.Format("user={0};_time={1};_hash={2};login_time_sxd_xxxxxxxx={3};login_hash_sxd_xxxxxxxx={4}", code, time, hash, time1, hash1);
+            var responseString = Get(url, cookie);
+            var match1 = Regex.Match(responseString, @"""&player_name=(.*)""[\s\S]*""&hash_code=(.*)""[\s\S]*""&time=(.*)""[\s\S]*""&ip=(.*)""[\s\S]*""&port=(.*)""[\s\S]*""&server_id=(.*)""[\s\S]*""&source=(.*)""[\s\S]*""&regdate=(.*)""[\s\S]*""&id_card=(.*)""[\s\S]*""&open_time=(.*)""[\s\S]*""&is_newst=(.*)""[\s\S]*""&stage=(.*)""[\s\S]*""&client=(.*)""");
+            if (!match1.Success)
+                throw new Exception("登录失败，请使用登录器重新登录");
+            var player_name = match1.Groups[1].Value;   // 用于login(0,0) 
+            var hash_code = match1.Groups[2].Value;     // 用于login(0,0)
+            var time2 = match1.Groups[3].Value;         // 用于login(0,0)
+            var serverHost = match1.Groups[4].Value;    // 用于socket.Connect()
+            var port = match1.Groups[5].Value;          // 用于socket.Connect()
+            var source = match1.Groups[7].Value;        // 用于login(0,0)
+            var regdate = match1.Groups[8].Value;       // 用于login(0,0)
+            var id_card = match1.Groups[9].Value;       // 用于login(0,0)
+            var open_time = match1.Groups[10].Value;    // 用于login(0,0)
+            var is_newst = match1.Groups[11].Value;     // 用于login(0,0)
+            var stage = match1.Groups[12].Value;        // 用于login(0,0)
+            var client = match1.Groups[13].Value;       // 用于login(0,0)
 
-            using (var response = (HttpWebResponse)request.GetResponse())
-            using (var stream = response.GetResponseStream())
-            using (var sr = new StreamReader(stream, Encoding.UTF8))
-                responseString = sr.ReadToEnd();
-            //Console.WriteLine(responseString);
+            // -----------------------------------------------------------------------------
+            // 2. 构造命令字节
+            // -----------------------------------------------------------------------------
+            var bytes = new List<byte>();
 
-            var m = Regex.Match(responseString, @"""&player_name=(.*)""[\s\S]*""&hash_code=(.*)""[\s\S]*""&time=(.*)""[\s\S]*""&ip=(.*)""[\s\S]*""&port=(.*)""[\s\S]*""&source=(.*)""[\s\S]*""&regdate=(.*)""[\s\S]*""&id_card=(.*)""[\s\S]*""&open_time=(.*)""[\s\S]*""&is_newst=(.*)""[\s\S]*""&stage=(.*)""[\s\S]*""&client=(.*)""");
-            if (!m.Success)
-                throw new Exception("登录失败");
-            var player_name = m.Groups[1].Value;
-            var hash_code = m.Groups[2].Value;
-            var time2 = m.Groups[3].Value;
-            var ip = m.Groups[4].Value;
-            var port = m.Groups[5].Value;
-            var source = m.Groups[6].Value;
-            var regdate = m.Groups[7].Value;
-            var id_card = m.Groups[8].Value;
-            var open_time = m.Groups[9].Value;
-            var is_newst = m.Groups[10].Value;
-            var stage = m.Groups[11].Value;
-            var client = m.Groups[12].Value;
+            // 2.1 添加module和action
+            const short module = 0;
+            const short action = 0;
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
 
-            var sentBytes = new List<byte>();
+            // 2.2 添加实体
+            bytes.AddRange(Protocols.Encode(
+                new JArray { player_name, hash_code, time2, source, int.Parse(regdate), id_card, int.Parse(open_time), byte.Parse(is_newst), HttpUtility.UrlDecode(stage), HttpUtility.UrlDecode(client) },
+                Protocols.GetPattern(module, action).Item2));
 
-            // 0. add module and action
-            AppendInt16(sentBytes, module);
-            AppendInt16(sentBytes, action);
+            // 2.3 在首部插入命令字节数
+            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
 
-            // 1. add player_name
-            AppendString(sentBytes, player_name);
-            // 2. add hash_code
-            AppendString(sentBytes, hash_code);
-            // 3. add time
-            AppendString(sentBytes, time2);
-            // 4. add source
-            AppendString(sentBytes, source);
-            // 5. add regdate
-            AppendInt32(sentBytes, int.Parse(regdate));
-            // 6. add strIdCard
-            AppendString(sentBytes, id_card);
-            // 7. add open_time
-            AppendInt32(sentBytes, int.Parse(open_time));
-            // 8. add URI.isNewSt
-            AppendByte(sentBytes, byte.Parse(is_newst));
-            // 9. add stage（心动）
-            AppendString(sentBytes, HttpUtility.UrlDecode(stage));
-            // 10. add client
-            AppendString(sentBytes, HttpUtility.UrlDecode(client));
-            // E. intert hader
-            IntertHead(sentBytes);
+            // -----------------------------------------------------------------------------
+            // 3. 建立链接
+            // -----------------------------------------------------------------------------
+            if (reconnect)
+            {
+                // Shutdown掉socket
+                socket.Shutdown(SocketShutdown.Send);
+                // 等待Receive线程结束
+                //receiveThread.Join();
+                receiveDone.WaitOne();
+                // 关闭socket并重新开
+                socket.Close();
+                socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            }
+            socket.Connect(new IPEndPoint(Dns.GetHostEntry(serverHost).AddressList[0], int.Parse(port)));
 
-            //tcpClient = new TcpClient(ip, int.Parse(port));
-            //networkStream = tcpClient.GetStream();
-            socket.Connect(new IPEndPoint(Dns.GetHostEntry(ip).AddressList[0], int.Parse(port)));
-            Receive(socket);
+            // -----------------------------------------------------------------------------
+            // 4. 接收数据
+            // -----------------------------------------------------------------------------
+            // 4.1 接收数据线程，参考Receive方法
+            //receiveThread = new Thread(Receive);
+            //receiveThread.Start();
 
-            //networkStream.Write(sentBytes.ToArray(), 0, sentBytes.Count);
-            socket.Send(sentBytes.ToArray());
+            // 4.2 异步I/O接收数据，参考ReceiveCallback方法
+            receiveDone.Reset();
+            socket.BeginReceive(bufferRcvd, 0, bufferRcvd.Length, SocketFlags.None, ReceiveCallback, null);
 
+            // 5. 发送数据
+            socket.Send(bytes.ToArray());
+
+            // -----------------------------------------------------------------------------
+            // E. 留存module和action
+            // -----------------------------------------------------------------------------
             previousModule = module;
             previousAction = action;
 
-            /*while (true)
-            {
-                //Thread.Sleep(1000);
-                var receBytes = new byte[1024];
-                var C = stream.Read(receBytes, 0, receBytes.Length);
-                Console.WriteLine("receive {0} bytes", C);
-                Console.WriteLine(Encoding.UTF8.GetString(receBytes));
-            }*/
+            // -----------------------------------------------------------------------------
+            // -. 等待同步信号
+            // -----------------------------------------------------------------------------
+            done.WaitOne();
         }//Login
 
-        private static void Receive(Socket _socket)
+        /// <summary>
+        /// Mod_Player_Base.login(0,0)
+        /// module:0, action:0
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.UByteUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.ByteUtil, Utils.UByteUtil, Utils.IntUtil]
+        /// Line 202-216 in PlayerData.as:
+        /// public function login(param1:Array) : void
+        /// {
+        ///     this.logined = param1[0];
+        ///     this.playerId = param1[1];
+        ///     this.playerInfo.id = this.playerId;
+        ///     this.enableTime = param1[3] || 0;
+        ///     this.enableTime = DateTime.formatServerTimeNull(this.enableTime);
+        ///     this.enableType = param1[4] || 0;
+        ///     PlayerInfo.bAllActivity = param1[5] == 0;
+        ///     this.isOpenMusic = param1[6] == 1;
+        ///     WarType.WarEffectShowType = param1[7];
+        ///     this.uiSetValue = param1[8];
+        ///     return;
+        /// }// end function
+        /// </summary>
+        private void LoginCallback(JArray data)
         {
-            var state = new StateObject { workSocket = _socket };
-            _socket.BeginReceive(state.buffer, 0, StateObject.BufferSize, SocketFlags.None, ReceiveCallback, state);
-        }//Receive
+            var logined = (byte)data[0];
+            if (logined != 0)
+                throw new Exception("登录失败");
+            playerId = (int)data[1];
+            Logger.Log(string.Format("登录成功, 玩家ID: {0}", playerId), ConsoleColor.Green);
+            done.Set();
+        }//LoginCallback
 
-        private static void ReceiveCallback(IAsyncResult ar)
-        {
-            var state = (StateObject)ar.AsyncState;
-            var _socket = state.workSocket;
-
-            /* EndReceive 方法将一直阻止到有数据可用为止。 
-             * 如果您使用的是无连接协议，则 EndReceive 将读取传入网络缓冲区中第一个排队的可用数据报。 
-             * 如果您使用的是面向连接的协议，则 EndReceive 方法将读取所有可用的数据，直到达到 BeginReceive 方法的 size 参数所指定的字节数为止。*/
-            var bytesRead = _socket.EndReceive(ar);
-
-            if (bytesRead <= 0)
-            {
-                Logger.Log("远程主机使用 Shutdown 方法关闭了 Socket 连接");
-                return;
-            }
-
-            state.byteList.AddRange(state.buffer.ToList().GetRange(0, bytesRead));
-            while (state.byteList.Count > 4)
-            {
-                var length = ToInt32(state.byteList);
-                if (state.byteList.Count < length + 4)
-                {
-                    Logger.Log("不完整的数据包");
-                    return;
-                }
-
-                ProcessPackage(state.byteList.GetRange(4, length).ToArray());
-                state.byteList.RemoveRange(0, length + 4);
-            }
-
-            _socket.BeginReceive(state.buffer, 0, StateObject.BufferSize, SocketFlags.None, ReceiveCallback, state);
-        }//ReceiveCallback
-
-        private static void ProcessPackage(byte[] package)
-        {
-            var module = ToInt16(package);
-            var action = ToInt16(package, 2);
-
-            if (module == 0x789C)
-            {
-                Logger.Log("uncompress...", console: false);
-                ProcessPackage(Ionic.Zlib.ZlibStream.UncompressBuffer(package));
-            }
-            else
-            {
-                switch ((module << 4) + action)
-                {
-                    //login
-                    case (0 << 4) + 0:
-                        Logger.Log(package[4] == 0 ? "登录成功" : "登录失败");
-                        LogPackage(package, module, action);
-                        break;
-                    //get_player_info
-                    case (0 << 4) + 2:
-                        {
-                            var index = 4;
-                            var count = ToInt16(package, index);
-                            Logger.Log(string.Format("昵称: {0}", UTF8.GetString(package, index + 2, count)));
-                            index += 2 + count;
-                            Logger.Log(string.Format("等级: {0}", ToInt32(package, index)));
-                            index += 4;
-                            Logger.Log(string.Format("元宝: {0}", ToInt32(package, index)));
-                            index += 4;
-                            Logger.Log(string.Format("铜钱: {0}", ToInt64(package, index)));
-                            index += 8;
-                            Logger.Log(string.Format("生命: {0}", ToInt32(package, index)));
-                            index += 8;
-                            Logger.Log(string.Format("体力: {0}", ToInt32(package, index)));
-                            LogPackage(package, module, action);
-                            break;
-                        }
-                    //get_player_camp_salary
-                    case (0 << 4) + 20:
-                        Logger.Log(package[4] == 0x57 ? string.Format("成功领取俸禄: {0}", ToInt32(package, 5)) : "领取俸禄失败");
-                        LogPackage(package, module, action);
-                        break;
-                    //player_get_xian_ling_gift
-                    case (13 << 4) + 20:
-                        Logger.Log(package[4] == 0x8 ? string.Format("成功领取仙令: {0}", package[5]) : "领取仙令失败");
-                        LogPackage(package, module, action);
-                        break;
-                    //get_day_stone
-                    case (34 << 4) + 18:
-                        Logger.Log(package[4] == 0x1 ? string.Format("成功领取灵石: {0}", ToInt32(package, 5)) : "领取灵石失败");
-                        LogPackage(package, module, action);
-                        break;
-                    //bro_to_players
-                    case (6 << 4) + 1:
-                        {
-                            var index1 = 10;
-                            var count1 = ToInt16(package, index1);
-                            var index2 = index1 + 2 + count1 + 3;
-                            var count2 = ToInt16(package, index2);
-                            Logger.Log(string.Format("{0}说: {1}", UTF8.GetString(package, index1 + 2, count1), UTF8.GetString(package, index2 + 2, count2)));
-                            LogPackage(package, module, action);
-                            break;
-                        }
-                    case (0 << 4) + 3://Logger.Log("update_player_data", console: false);
-                        break;
-                    case (0 << 4) + 40://Logger.Log("practice_notify", console: false);
-                        break;
-                    case (5 << 4) + 7://Logger.Log("exp_change_notify", console: false);
-                        break;
-                    case (20 << 4) + 74://Logger.Log("player_st_take_bible", console: false);
-                        break;
-                    case (20 << 4) + 13://Logger.Log("notify_get_good_fate", console: false);
-                        break;
-                    case (20 << 4) + 96://Logger.Log("firework_notify", console: false);
-                        break;
-                    case (28 << 4) + 11://Logger.Log("notify_global", console: false);
-                        break;
-                    case (52 << 4) + 2://Logger.Log("complete_number", console: false);
-                        break;
-                    case (150 << 4) + 8://Logger.Log("notify_all_server_star_count", console: false);
-                        break;
-                    case (218 << 4) + 1://Logger.Log("notify", console: false);
-                        break;
-                }
-
-            }
-        }//ProcessPackage
-
-        private static void LogPackage(byte[] package, short module, short action)
-        {
-            var sb = new StringBuilder();
-            foreach (var b in package)
-                sb.AppendFormat("{0} ", b.ToString("X2"));
-            Logger.Log(string.Format("module: {0}, action: {1}", module, action), console: false);
-            Logger.Log(string.Format("[{0}]", sb), console: false);
-        }//LogPackage
-
+        /// <summary>
+        /// Mod_Player_Base.get_player_info(0,2)
+        /// module:0, action:2
+        /// request:[]
+        /// </summary>
         public void GetPlayerInfo()
         {
+            // -----------------------------------------------------------------------------
+            // -. 同步信号重置
+            // -----------------------------------------------------------------------------
+            done.Reset();
+
+            // -----------------------------------------------------------------------------
+            // 1. 构造命令字节
+            // -----------------------------------------------------------------------------
+            var bytes = new List<byte>();
+
+            // 1.1 添加module和action
+            const short module = 0;
+            const short action = 2;
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
+
+            // 1.2 添加实体
+            // null
+
+            // 1.3 在尾部添加上次的module和action
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
+
+            // 1.4 在首部插入命令字节数
+            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
+
+            // 2. 发送数据
+            socket.Send(bytes.ToArray());
+
+            // -----------------------------------------------------------------------------
+            // E. 留存module和action
+            // -----------------------------------------------------------------------------
+            previousModule = module;
+            previousAction = action;
+
+            // -----------------------------------------------------------------------------
+            // -. 等待同步信号
+            // -----------------------------------------------------------------------------
+            done.WaitOne();
+        }//GetPlayerInfo
+
+        /// <summary>
+        /// Mod_Player_Base.get_player_info(0,2)
+        /// module:0, action:2
+        /// response:[0.Utils.StringUtil, 1.Utils.IntUtil, 2.Utils.IntUtil, 3.Utils.LongUtil, 4.Utils.IntUtil, 5.Utils.IntUtil, 6.Utils.IntUtil, 7.Utils.LongUtil, 8.Utils.LongUtil, 9.Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil]
+        /// Line 786 in PlayerData.as:
+        ///   oObject.list(param1, this, [0."nickname", 1."level", 2."ingot", 3."coins", 4."health", 5."maxHealth", 6."power", 7."experience", 8."maxExperience", 9."townMapId", "bossMapId", "jihuisuoId", "mounts", "mountsCD", "vipLevel", "avatar", "avatarCD", "mainPlayerRoleId", "mainRoleId", "campId", "townKey", "fame", "fameLevel", "extraPower", "maxExtraPower", "netBarPower", "maxNetBarPower", "tester", "lastPlayVersion", "missionKey", "startAccount", "stLevel", "daoYuan", "exploit", "isHaveTangYuan"]);
+        /// </summary>
+        private void GetPlayerInfoCallback(JArray data)
+        {
+            nickName = (string)data[0];
+            var level = (int)data[1];
+            var ingot = (int)data[2];
+            var coins = (long)data[3];
+            var health = (int)data[4];
+            var power = (int)data[6];
+            var experience = (long)data[7];
+            townMapId = (int)data[9];
+            Logger.Log(string.Format("昵称：{0}，等级：{1}，元宝：{2}，铜钱：{3}，生命：{4}，体力：{5}，经验值：{6}，城镇ID：{7}", nickName, level, ingot, coins, health, power, experience, townMapId), ConsoleColor.Green);
+            done.Set();
+        }//GetPlayerInfoCallback
+
+        /// <summary>
+        /// Mod_Player_Base.player_info_contrast(0,48)
+        /// module:0, action:48
+        /// request:[Utils.IntUtil]
+        /// Line 686 in ToolbarView.as:
+        ///   _data.call(Mod_Player_Base.player_info_contrast, this.PlayerInfoContrastCallBack, [this._ctrl.player.playerId], false);
+        /// </summary>
+        public void PlayerInfoContrast()
+        {
+            // -----------------------------------------------------------------------------
+            // -. 同步信号重置
+            // -----------------------------------------------------------------------------
+            done.Reset();
+
+            // -----------------------------------------------------------------------------
+            // 1. 构造命令字节
+            // -----------------------------------------------------------------------------
+            var bytes = new List<byte>();
+
+            // 1.1 添加module和action
+            const short module = 0;
+            const short action = 48;
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
+
+            // 1.2 添加实体
+            bytes.AddRange(Protocols.Encode(new JArray { playerId }, Protocols.GetPattern(module, action).Item2));
+
+            // 1.3 在尾部添加上次的module和action
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
+
+            // 1.4 在首部插入命令字节数
+            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
+
+            // 2. 发送数据
+            socket.Send(bytes.ToArray());
+
+            // -----------------------------------------------------------------------------
+            // E. 留存module和action
+            // -----------------------------------------------------------------------------
+            previousModule = module;
+            previousAction = action;
+
+            // -----------------------------------------------------------------------------
+            // -. 等待同步信号
+            // -----------------------------------------------------------------------------
+            done.WaitOne();
+        }//PlayerInfoContrast
+
+        /// <summary>
+        /// Mod_Player_Base.player_info_contrast(0,48)
+        /// module:0, action:48
+        /// response:[[0.Utils.IntUtil,1. Utils.IntUtil, 2.Utils.StringUtil, 3.Utils.IntUtil, 4.Utils.IntUtil, 5.Utils.IntUtil, 6.Utils.IntUtil, 7.Utils.IntUtil, 8.Utils.IntUtil, 9.Utils.IntUtil, 10.Utils.IntUtil]]
+        /// Line 401-422 in PlayerData.as:
+        ///   public function player_info_contrast(param1:Array) : void
+        ///   {
+        ///       var _loc_2:* = param1[0][0];
+        ///       var _loc_3:* = {};
+        ///       _loc_3.playerId = _loc_2[0];               // playerId
+        ///       _loc_3.rankIng = _loc_2[1];                // 竞技
+        ///       _loc_3.factionName  = _loc_2[2];           // 帮派
+        ///       _loc_3.combat = _loc_2[3];                 // 战力
+        ///       _loc_3.fame = _loc_2[4];                   // 声望
+        ///       _loc_3.skill = _loc_2[5];                  // 阅历
+        ///       _loc_3.achievmentPoints = _loc_2[6];       // 成就
+        ///       _loc_3.firstAttack = _loc_2[7];            // 先攻
+        ///       _loc_3.statePoint = _loc_2[8];             // 境界
+        ///       _loc_3.flowerCount = _loc_2[9];            // 鲜花
+        ///       _loc_3.xianLing = _loc_2[10];              // 仙令
+        ///       if (_loc_3.playerId == this.playerInfo.id)
+        ///       {
+        ///           this.playerInfo.practiceWar = _loc_3.combat;
+        ///       }
+        ///       this.playerInfoContrastData = _loc_3;
+        ///       return;
+        /// </summary>
+        private void PlayerInfoContrastCallback(JArray data)
+        {
+            var rankIng = (int)data[0][0][1];
+            var factionName = (string)data[0][0][2];
+            var combat = (int)data[0][0][3];
+            var fame = (int)data[0][0][4];
+            var skill = (int)data[0][0][5];
+            var achievmentPoints = (int)data[0][0][6];
+            var firstAttack = (int)data[0][0][7];
+            var statePoint = (int)data[0][0][8];
+            var flowerCount = (int)data[0][0][9];
+            var xianLing = (int)data[0][0][10];
+            Logger.Log(string.Format("竞技：{0}，帮派：{1}，战力：{2}，声望：{3}，阅历：{4}，成就：{5}，先攻：{6}，境界：{7}，鲜花：{8}，仙令：{9}", rankIng, factionName, combat, fame, skill, achievmentPoints, firstAttack, statePoint, flowerCount, xianLing), ConsoleColor.Green);
+            done.Set();
+        }//PlayerInfoContrastCallback
+
+        /// <summary>
+        /// Mod_Town_Base.enter_town(1,0)
+        /// module:1, action:0
+        /// request:[Utils.IntUtil]
+        /// Line 971 in MapViewBase.as:
+        ///   _data.call(Mod_Town_Base.enter_town, this.enter_town_back, [this._id], true, this._socketType);
+        /// </summary>
+        public void EnterTown()
+        {
+            // -----------------------------------------------------------------------------
+            // -. 同步信号重置
+            // -----------------------------------------------------------------------------
+            done.Reset();
+
+            // -----------------------------------------------------------------------------
+            // 1. 构造命令字节
+            // -----------------------------------------------------------------------------
+            var bytes = new List<byte>();
+
+            // 1.1 添加module和action
+            const short module = 1;
+            const short action = 0;
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
+
+            // 1.2 添加实体
+            bytes.AddRange(Protocols.Encode(new JArray { townMapId }, Protocols.GetPattern(module, action).Item2));
+
+            // 1.3 在尾部添加上次的module和action
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
+
+            // 1.4 在首部插入命令字节数
+            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
+
+            // 2. 发送数据
+            socket.Send(bytes.ToArray());
+
+            // -----------------------------------------------------------------------------
+            // E. 留存module和action
+            // -----------------------------------------------------------------------------
+            previousModule = module;
+            previousAction = action;
+
+            // -----------------------------------------------------------------------------
+            // -. 等待同步信号
+            // -----------------------------------------------------------------------------
+            done.WaitOne();
+        }//EnterTown
+
+        /// <summary>
+        /// Mod_Town_Base.enter_town(1,0)
+        /// module:1, action:0
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, [Utils.UByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.StringUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.StringUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, [Utils.IntUtil], Utils.UByteUtil, [Utils.IntUtil], Utils.UByteUtil, Utils.ShortUtil, Utils.UByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.StringUtil, Utils.IntUtil, Utils.ShortUtil, Utils.StringUtil, Utils.IntUtil]
+        /// Line 60 in TownData.as:
+        ///   oObject.list(param1, _loc_3, ["player_id", "role_id", "follow_role_id", "follow_pet_list", "nickname", "position_x", "position_y", "transport", "avatar", "camp_id", "equip_item_id", "warState", "practice_status", "is_on_mission_practice", "faction_id", "faction_name", "is_star", "is_world_war_top", "player_pet_animal_lv", "player_pet_animal_stage", "world_faction_war_award", "playable_video_list", "hidden_town_npc_flag", "show_town_npc_list", "is_become_immortal", "suit_equip_id", "is_become_saint", "mount_rune_type_id", "mount_rune_is_show", "card_spirit_id", "card_spirit_nickname", "orange_equipment_follow_id", "children_role_id", "children_nickname", "children_suit_id"]);
+        /// </summary>
+        private void EnterTownCallback(JArray data)
+        {
+            Logger.Log(string.Format("进入{0}", Protocols.GetTownName(townMapId)), ConsoleColor.Green);
+            done.Set();
+        }//EnterTownCallback
+
+        /// <summary>
+        /// Mod_StcLogin_Base.get_status(96,1)
+        /// module:96, action:1
+        /// request:[]
+        /// </summary>
+        public void GetStatus()
+        {
+            // -----------------------------------------------------------------------------
+            // -. 同步信号重置
+            // -----------------------------------------------------------------------------
+            done.Reset();
+
+            // -----------------------------------------------------------------------------
+            // 1. 构造命令字节
+            // -----------------------------------------------------------------------------
+            var bytes = new List<byte>();
+
+            // 1.1 添加module和action
+            const short module = 96;
+            const short action = 1;
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
+
+            // 1.2 添加实体
+            // null
+
+            // 1.3 在尾部添加上次的module和action
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
+
+            // 1.4 在首部插入命令字节数
+            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
+
+            // 2. 发送数据
+            socket.Send(bytes.ToArray());
+
+            // -----------------------------------------------------------------------------
+            // E. 留存module和action
+            // -----------------------------------------------------------------------------
+            previousModule = module;
+            previousAction = action;
+
+            // -----------------------------------------------------------------------------
+            // -. 等待同步信号
+            // -----------------------------------------------------------------------------
+            done.WaitOne();
+        }//GetStatus
+
+        /// <summary>
+        /// Mod_StcLogin_Base.get_status(96,1)
+        /// module:96, action:1
+        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil]]
+        /// Line 38 in StcLoginData.as:
+        ///   oObject.list(param1, this.stcStatusObj, ["status", "close_time_list"]);
+        /// </summary>
+        /// [0,[[1505527200,1505534400,4]]]
+        private void GetStatusCallback(JArray data)
+        {
+            var status = (int)data[0];
+            //var close_time_list = (JArray)data[1];
+
+            Logger.Log(string.Format("仙界入口状态：{0}", status == 0 ? "开启" : status.ToString()), ConsoleColor.Green);
+            /*foreach (var item in close_time_list)
+            {
+                Logger.Log(string.Format("关闭时间1：{0}", TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds((int)item[0]).ToString("yyyy-MM-dd HH:mm:ss")));
+                Logger.Log(string.Format("关闭时间2：{0}", TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds((int)item[1]).ToString("yyyy-MM-dd HH:mm:ss")));
+                Logger.Log(string.Format("关闭时间3：{0}", item[2]));
+            }*/
+            done.Set();
+        }//GetStatusCallback
+
+        /// <summary>
+        /// Mod_StcLogin_Base.get_login_info(96,0)
+        /// module:96, action:0
+        /// request:[]
+        /// </summary>
+        public void GetLoginInfo()
+        {
+            // -----------------------------------------------------------------------------
+            // -. 同步信号重置
+            // -----------------------------------------------------------------------------
+            done.Reset();
+
+            // -----------------------------------------------------------------------------
+            // 1. 构造命令字节
+            // -----------------------------------------------------------------------------
+            var bytes = new List<byte>();
+
+            // 1.1 添加module和action
+            const short module = 96;
+            const short action = 0;
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
+
+            // 1.2 添加实体
+            // null
+
+            // 1.3 在尾部添加上次的module和action
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
+
+            // 1.4 在首部插入命令字节数
+            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
+
+            // 2. 发送数据
+            socket.Send(bytes.ToArray());
+
+            // -----------------------------------------------------------------------------
+            // E. 留存module和action
+            // -----------------------------------------------------------------------------
+            previousModule = module;
+            previousAction = action;
+
+            // -----------------------------------------------------------------------------
+            // -. 等待同步信号
+            // -----------------------------------------------------------------------------
+            done.WaitOne();
+        }//GetLoginInfo
+
+        /// <summary>
+        /// Mod_StcLogin_Base.get_login_info(96,0)
+        /// module:96, action:0
+        /// response:[0.Utils.StringUtil, 1.Utils.ShortUtil, 2.Utils.StringUtil, 3.Utils.IntUtil, 4.Utils.StringUtil, 5.Utils.StringUtil]
+        /// Line 22-34 in StcLoginData.as:
+        ///   public function get_login_info(param1:Array) : void
+        ///   {
+        ///       this.stcLoginObj = new Object();
+        ///       var _loc_2:* = 0;
+        ///       this.stcLoginObj.serverHost = param1[_loc_2++];
+        ///       this.stcLoginObj.port = param1[_loc_2++];
+        ///       this.stcLoginObj.serverName = param1[_loc_2++];
+        ///       this.stcLoginObj.time = param1[_loc_2++];
+        ///       this.stcLoginObj.passCode = param1[_loc_2++];
+        ///       this.stcLoginObj.serverTownName = param1[_loc_2++];
+        ///       this.stcLoginObj.playerId = 32;
+        ///       return;
+        ///   }// end function
+        /// </summary>
+        private void GetLoginInfoCallback(JArray data)
+        {
+            serverHostST = (string)data[0];
+            portST = (short)data[1];
+            serverName = (string)data[2];
+            serverTime = (int)data[3];
+            passCode = (string)data[4];
+            Logger.Log(string.Format("仙界服务器地址：{0}:{1}，服务器名称：{2}，服务器时间：{3}", serverHostST, portST, serverName, TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds(serverTime).ToString("yyyy-MM-dd HH:mm:ss")), ConsoleColor.Green);
+            done.Set();
+        }//GetLoginInfoCallback
+
+        /// <summary>
+        /// Mod_Player_Base.get_player_function(0,6)
+        /// module:0, action:6
+        /// request:[]
+        /// </summary>
+        public void GetPlayerFunction()
+        {
+            // -----------------------------------------------------------------------------
+            // -. 同步信号重置
+            // -----------------------------------------------------------------------------
+            done.Reset();
+
+            // -----------------------------------------------------------------------------
+            // 1. 构造命令字节
+            // -----------------------------------------------------------------------------
+            var bytes = new List<byte>();
+
+            // 1.1 添加module和action
+            const short module = 0;
+            const short action = 6;
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
+
+            // 1.2 添加实体
+            // null
+
+            // 1.3 在尾部添加上次的module和action
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
+
+            // 1.4 在首部插入命令字节数
+            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
+
+            // 2. 发送数据
+            socket.Send(bytes.ToArray());
+
+            // -----------------------------------------------------------------------------
+            // E. 留存module和action
+            // -----------------------------------------------------------------------------
+            previousModule = module;
+            previousAction = action;
+
+            // -----------------------------------------------------------------------------
+            // -. 等待同步信号
+            // -----------------------------------------------------------------------------
+            done.WaitOne();
+        }//GetPlayerFunction
+
+        /// <summary>
+        /// Mod_Player_Base.get_player_function(0,6)
+        /// module:0, action:6
+        /// response:[[Utils.IntUtil, Utils.ByteUtil]]
+        /// Line 1155-1169 in :
+        ///   private function format_get_player_function(param1:Array) : Array
+        ///   {
+        ///       var _loc_3:* = null;
+        ///       var _loc_4:* = null;
+        ///       param1 = param1[0];
+        ///       var _loc_2:* = [];
+        ///       for (_loc_3 in param1)
+        ///       {
+        ///           
+        ///           _loc_4 = {};
+        ///           oObject.list(param1[_loc_3], _loc_4, ["id", "isPlayed"]);
+        ///           _loc_2.push(_loc_4);
+        ///       }
+        ///       return _loc_2;
+        ///   }// end function
+        /// id can be found in Mod.as
+        /// </summary>
+        private void GetPlayerFunctionCallback(JArray data)
+        {
+            var sb = new StringBuilder();
+            foreach (var item in data[0])
+            {
+                var id = (int)item[0];
+                var isPlayed = (byte)item[1];
+                sb.AppendFormat("{{id: {0}, isPlayed: {1}}}", id, isPlayed);
+            }
+            Logger.Log(sb.ToString(), ConsoleColor.Green);
+            done.Set();
+        }//GetPlayerFunctionCallback
+
+        /// <summary>
+        /// Mod_Chat_Base.chat_with_players(6,0)
+        /// module:6, action:0
+        /// request:[Utils.UByteUtil, Utils.StringUtil, Utils.StringUtil, Utils.StringUtil]
+        /// Line 118 in ChatView.as
+        ///   _data.call(Mod_Chat_Base.chat_with_players, callBack, [data.messageType, data.message, data.eipNum, data.eipIndex]);
+        /// </summary>
+        public void ChatWithPlayers(string message)
+        {
+            // -----------------------------------------------------------------------------
+            // -. 同步信号重置
+            // -----------------------------------------------------------------------------
+            //done.Reset();
+
+            // -----------------------------------------------------------------------------
+            // 1. 构造命令字节
+            // -----------------------------------------------------------------------------
+            var bytes = new List<byte>();
+
+            // 1.1 添加module和action
+            const short module = 6;
+            const short action = 0;
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
+
+            // 1.2 添加实体
+            var messageType = 1;
+            var eipNum = string.Empty;
+            var eipIndex = string.Empty;
+            bytes.AddRange(Protocols.Encode(new JArray { messageType, message, eipNum, eipIndex }, Protocols.GetPattern(module, action).Item2));
+
+            // 1.3 在尾部添加上次的module和action
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
+
+            // 1.4 在首部插入命令字节数
+            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
+
+            // 2. 发送数据
+            socket.Send(bytes.ToArray());
+
+            // -----------------------------------------------------------------------------
+            // E. 留存module和action
+            // -----------------------------------------------------------------------------
+            previousModule = module;
+            previousAction = action;
+
+            // -----------------------------------------------------------------------------
+            // -. 等待同步信号
+            // -----------------------------------------------------------------------------
+            //done.WaitOne();
+        }//ChatWithPlayers
+
+        /// <summary>
+        /// Mod_Chat_Base.bro_to_players(6,1)
+        /// module:6, action:1
+        /// response:[[Utils.IntUtil, Utils.StringUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.UByteUtil, Utils.StringUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.ByteUtil]]
+        /// Line 36 in ChatController.as
+        ///   oObject.list(_loc_1[_loc_5], _loc_2[_loc_5], ["playId", "playName", "isTester", "isStar", "msgType", "msgTxt", "eipNum", "eipIndex", "roleId", "townKey", "serverName", "stageName", "isNetBar"]);
+        /// </summary>
+        private void BroToPlayersCallback(JArray data)
+        {
+            foreach (var item in data[0])
+            {
+                var playName = (string)item[1];
+                var msgTxt = (string)item[5];
+                Logger.Log(string.Format("{0}说: {1}", playName, msgTxt), ConsoleColor.Green);
+            }
+        }//BroToPlayersCallback
+
+        private void ProcessPackage(byte[] package)
+        {
+            using (var ms = new MemoryStream(package, false))
+            using (var br = new BinaryReader(ms))
+            {
+                var module = IPAddress.NetworkToHostOrder(br.ReadInt16());
+                if (module == 0x789C)
+                {
+                    Logger.Log("  uncompress...", console: false);
+                    ProcessPackage(Ionic.Zlib.ZlibStream.UncompressBuffer(package.ToArray()));
+                    return;
+                }
+                var action = IPAddress.NetworkToHostOrder(br.ReadInt16());
+                var tuple = Protocols.GetPattern(module, action);
+                var data = Protocols.Decode(br.BaseStream, tuple.Item3);
+                var method = tuple.Item1;
+
+                switch (method)
+                {
+                    case "login":
+                        LoginCallback(data);
+                        break;
+                    case "get_player_info":
+                        GetPlayerInfoCallback(data);
+                        break;
+                    case "player_info_contrast":
+                        PlayerInfoContrastCallback(data);
+                        break;
+                    case "enter_town":
+                        EnterTownCallback(data);
+                        break;
+                    case "get_status":
+                        GetStatusCallback(data);
+                        break;
+                    case "get_login_info":
+                        GetLoginInfoCallback(data);
+                        break;
+                    case "get_player_function":
+                        GetPlayerFunctionCallback(data);
+                        break;
+                    case "bro_to_players":
+                        BroToPlayersCallback(data);
+                        break;
+                    default:
+                        return;
+                }
+
+                Logger.Log(string.Format("　package: {0}", BytesToString(package)), console: false);
+                Logger.Log(string.Format("　method: {0}({1},{2})", method, module, action), console: false);
+                Logger.Log(string.Format("　data: {0}", data.ToString(Formatting.None)), console: false);
+            }//br, ms
+        }//ProcessPackage
+
+        /// <summary>
+        /// 接收数据（异步I/O）
+        /// </summary>
+        private void ReceiveCallback(IAsyncResult ar)
+        {
+            try
+            {
+                var bytesRead = socket.EndReceive(ar);
+                if (bytesRead == 0)
+                    throw new Exception("已断开游戏服务器");
+                bytesRcvd.AddRange(bufferRcvd.ToList().GetRange(0, bytesRead));
+                while (bytesRcvd.Count > 4)
+                {
+                    var length = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(bytesRcvd.ToArray(), 0));
+                    // 当接收数据不完整时，等待下次接收数据
+                    if (bytesRcvd.Count < 4 + length)
+                        break;
+                    var package = bytesRcvd.GetRange(4, length);
+                    bytesRcvd.RemoveRange(0, 4 + length);
+                    ProcessPackage(package.ToArray());
+                }//while (bytes.Count > 4)
+                socket.BeginReceive(bufferRcvd, 0, bufferRcvd.Length, SocketFlags.None, ReceiveCallback, null);
+            }//try
+            catch (SocketException se)
+            {
+                Logger.Log(string.Format("发现错误：{0}，错误代码：{1}", se.ToString(), se.ErrorCode), ConsoleColor.Red);
+                receiveDone.Set();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(string.Format("发现错误：{0}", ex.ToString()), ConsoleColor.Red);
+                receiveDone.Set();
+            }
+        }//ReceiveCallback
+
+        /// <summary>
+        /// 接收数据（线程）
+        /// </summary>
+        private void Receive()
+        {
+            var buffer = new byte[256];
+            var bytes = new List<byte>();
+
+            try
+            {
+                while (true)
+                {
+                    if (!socket.Poll(5000000, SelectMode.SelectRead))
+                        continue;
+                    if (socket.Available == 0)
+                        throw new Exception("已断开游戏服务器");
+
+                    var bytesRead = socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
+                    bytes.AddRange(buffer.ToList().GetRange(0, bytesRead));
+                    while (bytes.Count > 4)
+                    {
+                        var length = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(bytes.ToArray(), 0));
+                        // 当接收数据不完整时，等待下次接收数据
+                        if (bytes.Count < 4 + length)
+                            break;
+                        var package = bytes.GetRange(4, length);
+                        bytes.RemoveRange(0, 4 + length);
+                        ProcessPackage(package.ToArray());
+                    }//while (bytes.Count > 4)
+                }//while (true)
+            }//try
+            catch (SocketException se)
+            {
+                Logger.Log(string.Format("发现错误：{0}，错误代码：{1}", se.Message, se.ErrorCode), ConsoleColor.Red);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(string.Format("发现错误：{0}", ex.Message), ConsoleColor.Red);
+            }
+        }//Receive
+
+
+        /*private void ProcessPackage(byte[] package)
+{
+    while (true)
+    {
+        var module = ToInt16(package);
+        var action = ToInt16(package, 2);
+
+        if (module == 0x789C)
+        {
+            //UpdateUIDelegate(UpdateType.LogOnlyToFile, "uncompress...");
+            package = Ionic.Zlib.ZlibStream.UncompressBuffer(package);
+            continue;
+        }
+        switch ((module << 4) + action)
+        {
+            #region 登录 Mod_Player_Base.login
+            case (0 << 4) + 0:
+                {
+                    //UpdateUIDelegate(UpdateType.LogBoth, package[4] == 0 ? "登录成功" : "登录失败");
+                    playerId = ToInt32(package, 5);
+                    //UpdateUIDelegate(UpdateType.LogOnlyToFile, string.Format("playerId: {0}", playerId));
+
+                    loginSuccess = package[4] == 0;
+                    loginDone.Set();
+                }
+                break;
+            #endregion
+
+            #region 获取玩家信息 Mod_Player_Base.get_player_info
+            case (0 << 4) + 2:
+                {
+                    var index = 4;
+                    var count = ToInt16(package, index);
+                    nickName = Encoding.UTF8.GetString(package, index + 2, count);
+                    //UpdateUIDelegate(UpdateType.LogOnlyToFile, string.Format("nickName: {0}", nickName));
+                    //UpdateUIDelegate(UpdateType.Nickname, nickName);
+                    index += 2 + count;
+                    var level = ToInt32(package, index).ToString();
+                    //UpdateUIDelegate(UpdateType.Level, level);
+                    index += 4;
+                    var ingot = ToInt32(package, index).ToString();
+                    //UpdateUIDelegate(UpdateType.Ingot, ingot);
+                    index += 4;
+                    var coins = ToInt64(package, index).ToString();
+                    //UpdateUIDelegate(UpdateType.Coins, coins);
+                    index += 8;
+                    var health = ToInt32(package, index).ToString();
+                    //UpdateUIDelegate(UpdateType.Health, health);
+                    index += 8;
+                    var power = ToInt32(package, index).ToString();
+                    //UpdateUIDelegate(UpdateType.Power, power);
+                    index += 4;
+                    var experience = ToInt64(package, index).ToString();
+                    //UpdateUIDelegate(UpdateType.Experience, experience);
+                    //index += 8;
+                    //var maxExperience = ToInt64(package, index).ToString();
+                    //UpdateUIDelegate(UpdateType.LogBoth, string.Format("昵称：{0}，等级{1}：元宝：{2}，铜钱：{3}，生命：{4}，体力：{5}，经验值：{6}", nickName, level, ingot, coins, health, power, experience));
+
+                    getPlayerInfoSuccess = true;
+                    getPlayerInfoDone.Set();
+                }
+                break;
+            #endregion
+
+            #region 更新玩家信息 update_player_data
+            case (0 << 4) + 3:
+                // PLAYER_EXPERIENCE:int = 20; 更新经验值
+                //if (ToInt16(package, 4) == 1 && package[6] == 20)
+                //UpdateUIDelegate(UpdateType.Experience, ToInt64(package, 7).ToString());
+                return;
+            #endregion
+
+            #region 领取俸禄 get_player_camp_salary
+            case (0 << 4) + 20:
+                //UpdateUIDelegate(UpdateType.LogBoth, package[4] == 0x57 ? string.Format("成功领取俸禄: {0}", ToInt32(package, 5)) : "领取俸禄失败");
+                break;
+            #endregion
+
+            #region 领取仙令 player_get_xian_ling_gift
+            case (13 << 4) + 20:
+                //UpdateUIDelegate(UpdateType.LogBoth, package[4] == 0x8 ? string.Format("成功领取仙令: {0}", package[5]) : "领取仙令失败");
+                break;
+            #endregion
+
+            #region 领取灵石 get_day_stone
+            case (34 << 4) + 18:
+                //UpdateUIDelegate(UpdateType.LogBoth, package[4] == 0x1 ? string.Format("成功领取灵石: {0}", ToInt32(package, 5)) : "领取灵石失败");
+                break;
+            #endregion
+
+            #region 世界聊天 bro_to_players
+            case (6 << 4) + 1:
+                {
+                    var index1 = 10;
+                    var count1 = ToInt16(package, index1);
+                    var index2 = index1 + 2 + count1 + 3;
+                    var count2 = ToInt16(package, index2);
+                    //UpdateUIDelegate(UpdateType.LogBoth, string.Format("{0}说: {1}", Encoding.UTF8.GetString(package, index1 + 2, count1), Encoding.UTF8.GetString(package, index2 + 2, count2)));
+                    break;
+                }
+            #endregion
+
+            #region 登录仙界 Mod_StLogin_Base.login
+            case (94 << 4) + 0:
+                {
+                    //UpdateUIDelegate(UpdateType.LogBoth, package[4] == 0x0 ? "仙界登录成功" : "仙界登录失败");
+
+                    stLoginSuccess = package[4] == 0x0;
+                    stLoginDone.Set();
+                }
+                break;
+            #endregion
+
+            #region 获取仙界登录信息 Mod_StcLogin_Base.get_login_info
+            case (96 << 4) + 0:
+                {
+                    var index = 4;
+                    var count = ToInt16(package, index);
+                    serverHostST = Encoding.UTF8.GetString(package, index + 2, count);
+                    //UpdateUIDelegate(UpdateType.LogOnlyToFile, string.Format("serverHostST: {0}", serverHostST));
+                    index += 2 + count;
+                    portST = ToInt16(package, index);
+                    //UpdateUIDelegate(UpdateType.LogOnlyToFile, string.Format("portST: {0}", portST));
+                    index += 2;
+                    count = ToInt16(package, index);
+                    index += 2 + count;
+                    serverTime = ToInt32(package, index);
+                    //UpdateUIDelegate(UpdateType.LogOnlyToFile, string.Format("serverTime: {0}", serverTime));
+                    index += 4;
+                    count = ToInt16(package, index);
+                    passCode = Encoding.UTF8.GetString(package, index + 2, count);
+                    //UpdateUIDelegate(UpdateType.LogOnlyToFile, string.Format("passCode: {0}", passCode));
+
+                    getLoginInfoSuccess = true;
+                    getLoginInfoDone.Set();
+                    break;
+                }
+            #endregion
+
+            default:
+                // 未知协议则直接返回，接收数据包不做记录
+                return;
+        } //switch
+
+        var sb = new StringBuilder();
+        foreach (var b in package)
+            sb.AppendFormat("{0} ", b.ToString("X2"));
+        sb.Remove(sb.Length - 1, 1);
+        //UpdateUIDelegate(UpdateType.LogOnlyToFile, string.Format("module: {0}, action: {1}, data: [{2}]", module, action, sb));
+
+        break;
+    }//while
+} //ProcessPackage*/
+
+
+
+
+        /// <summary>
+        /// Mod_StLogin_Base.login(94, 0)
+        /// 必备参数
+        /// serverName: from Http
+        /// playerId: from Mod_Player_Base.login
+        /// nickName: from Mod_Player_Base.get_player_info
+        /// passCode: from Mod_StcLogin_Base.get_login_info
+        /// </summary>
+        /*public bool StLogin()
+        {
+            stLoginSuccess = false;
+            stLoginDone.Reset();
+
             var sentBytes = new List<byte>();
 
             // 0. add module and action
-            module = 0;
-            action = 2;
+            const short module = 94;
+            const short action = 0;
             AppendInt16(sentBytes, module);
             AppendInt16(sentBytes, action);
 
-            // L. last module and action
-            AppendInt16(sentBytes, previousModule);
-            AppendInt16(sentBytes, previousAction);
-
+            // 1. add serverName
+            AppendString(sentBytes, serverName);
+            // 2. add playerId
+            AppendInt32(sentBytes, playerId);
+            // 3. add nickName
+            AppendString(sentBytes, nickName);
+            // 4. add time
+            AppendInt32(sentBytes, serverTime);
+            // 5. add passCode
+            AppendString(sentBytes, passCode);
             // E. intert hader
             IntertHead(sentBytes);
 
-            //networkStream.Write(sentBytes.ToArray(), 0, sentBytes.Count);
-            socket.Send(sentBytes.ToArray());
-            previousModule = module;
-            previousAction = action;
-        }//getDayStone
+            if (socketST.Connected)
+            {
+                socketST.Shutdown(SocketShutdown.Both);
+                socketST.Close();
+            }
+            socketST = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            socketST.Connect(new IPEndPoint(Dns.GetHostEntry(serverHostST).AddressList[0], portST));
+            socketST.Send(sentBytes.ToArray());
+            //ReceiveST(socketST);
+
+            previousModuleST = module;
+            previousActionST = action;
+
+            stLoginDone.WaitOne();
+            return stLoginSuccess;
+        }//StLogin*/
 
         /// <summary>
-        /// 聊天
+        /// 世界聊天(6, 0)
         /// [1. data.messageType, 2. data.message, 3. data.eipNum, 4. data.eipIndex]
         /// public static const chat_with_players:Object = {
         /// module:6, action:0, 
@@ -352,13 +1058,13 @@ namespace 神仙道
         /// response:[1. Utils.IntUtil, 2. Utils.UByteUtil]};
         /// </summary>
         /// <param name="message"></param>
-        public void ChatWithPlayers(string message)
+        /*public void ChatWithPlayers(string message)
         {
             var sentBytes = new List<byte>();
 
             // 0. add module and action
-            module = 6;
-            action = 0;
+            const short module = 6;
+            const short action = 0;
             AppendInt16(sentBytes, module);
             AppendInt16(sentBytes, action);
 
@@ -384,15 +1090,14 @@ namespace 神仙道
             // E. intert hader
             IntertHead(sentBytes);
 
-            //networkStream.Write(sentBytes.ToArray(), 0, sentBytes.Count);
             socket.Send(sentBytes.ToArray());
             previousModule = module;
             previousAction = action;
 
-        }//ChatWithPlayers
+        }//ChatWithPlayers*/
 
         /// <summary>
-        /// 领取俸禄
+        /// 领取俸禄(0, 20)
         /// public static const get_player_camp_salary:Object = {
         /// module:0, action:20, 
         /// request:[], 
@@ -403,8 +1108,8 @@ namespace 神仙道
             var sentBytes = new List<byte>();
 
             // 0. add module and action
-            module = 0;
-            action = 20;
+            const short module = 0;
+            const short action = 20;
             AppendInt16(sentBytes, module);
             AppendInt16(sentBytes, action);
 
@@ -415,14 +1120,13 @@ namespace 神仙道
             // E. intert hader
             IntertHead(sentBytes);
 
-            //networkStream.Write(sentBytes.ToArray(), 0, sentBytes.Count);
             socket.Send(sentBytes.ToArray());
             previousModule = module;
             previousAction = action;
         }//getDayStone
 
         /// <summary>
-        /// 领取仙令
+        /// 领取仙令(13, 20)
         /// public static const get_player_camp_salary:Object = {
         /// module:13, action:20, 
         /// request:[], 
@@ -433,8 +1137,8 @@ namespace 神仙道
             var sentBytes = new List<byte>();
 
             // 0. add module and action
-            module = 13;
-            action = 20;
+            const short module = 13;
+            const short action = 20;
             AppendInt16(sentBytes, module);
             AppendInt16(sentBytes, action);
 
@@ -445,14 +1149,13 @@ namespace 神仙道
             // E. intert hader
             IntertHead(sentBytes);
 
-            //networkStream.Write(sentBytes.ToArray(), 0, sentBytes.Count);
             socket.Send(sentBytes.ToArray());
             previousModule = module;
             previousAction = action;
         }//getDayStone
 
         /// <summary>
-        /// 领取灵石
+        /// 领取灵石(34, 18)
         /// public static const get_day_stone:Object = {
         /// module:34, action:18, 
         /// request:[Utils.ByteUtil], 
@@ -463,8 +1166,8 @@ namespace 神仙道
             var sentBytes = new List<byte>();
 
             // 0. add module and action
-            module = 34;
-            action = 18;
+            const short module = 34;
+            const short action = 18;
             AppendInt16(sentBytes, module);
             AppendInt16(sentBytes, action);
 
@@ -479,17 +1182,60 @@ namespace 神仙道
             // E. intert hader
             IntertHead(sentBytes);
 
-            //networkStream.Write(sentBytes.ToArray(), 0, sentBytes.Count);
             socket.Send(sentBytes.ToArray());
             previousModule = module;
             previousAction = action;
         }//getDayStone
+
+        #region 工具类小函数
+
+        /// <summary>
+        /// Http Get with cookie
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="cookie"></param>
+        /// <returns></returns>
+        private static string Get(string url, string cookie)
+        {
+            string responseString;
+            var request = (HttpWebRequest)WebRequest.Create(url);
+            request.Headers.Add("Cookie", cookie);
+            request.UserAgent = "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.43 Safari/537.31";
+
+            using (var response = (HttpWebResponse)request.GetResponse())
+            using (var stream = response.GetResponseStream())
+            using (var sr = new StreamReader(stream, Encoding.UTF8))
+                responseString = sr.ReadToEnd();
+            return responseString;
+        }//Get
+
+        /// <summary>
+        /// 字节列表转化为可输出的十六进制字符串
+        /// </summary>
+        private static string BytesToString(IEnumerable<byte> package)
+        {
+            var sb = new StringBuilder();
+            foreach (var b in package)
+                sb.AppendFormat("{0} ", b.ToString("X2"));
+            sb.Remove(sb.Length - 1, 1);
+            return "[" + sb + "]";
+        }//BytesToString
 
         private static void IntertHead(List<byte> byteList)
         {
             var length = byteList.Count;
             byteList.InsertRange(0, new List<byte> { (byte)(length >> 24), (byte)((length & 0xFF0000) >> 16), (byte)((length & 0xFF00) >> 8), (byte)(length & 0xFF) });
         }//IntertHead
+
+        /*private static long Stamp64()
+        {
+            return Convert.ToInt64((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalMilliseconds);
+        }//Stamp
+
+        private static int Stamp32()
+        {
+            return Convert.ToInt32((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds);
+        }//Stamp*/
 
         private static void AppendString(List<byte> byteList, string s)
         {
@@ -503,12 +1249,12 @@ namespace 神仙道
             byteList.AddRange(bytes);
         }//AppendString
 
-        private static void AppendInt16(List<byte> byteList, Int16 i)
+        private static void AppendInt16(List<byte> byteList, short i)
         {
             byteList.AddRange(new List<byte> { (byte)((i & 0xFF00) >> 8), (byte)(i & 0xFF) });
         }//AppendInt16
 
-        private static void AppendInt32(List<byte> byteList, Int32 i)
+        private static void AppendInt32(List<byte> byteList, int i)
         {
             byteList.AddRange(new List<byte> { (byte)(i >> 24), (byte)((i & 0xFF0000) >> 16), (byte)((i & 0xFF00) >> 8), (byte)(i & 0xFF) });
         }//AppendInt32
@@ -518,47 +1264,12 @@ namespace 神仙道
             byteList.Add(b);
         }//AppendByte
 
-        private static long Stamp()
-        {
-            return Convert.ToInt64((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalMilliseconds);
-        }//Stamp
+        #endregion
 
-        private static Int16 ToInt16(IEnumerable<byte> bytes, int i = 0)
-        {
-            var bs = bytes.ToList().GetRange(i, 2);
-            if (BitConverter.IsLittleEndian)
-                bs.Reverse();
-            return BitConverter.ToInt16(bs.ToArray(), 0);
-        }//ToInt16
 
-        private static Int32 ToInt32(IEnumerable<byte> bytes, int i = 0)
-        {
-            var bs = bytes.ToList().GetRange(i, 4);
-            if (BitConverter.IsLittleEndian)
-                bs.Reverse();
-            return BitConverter.ToInt32(bs.ToArray(), 0);
-        }//ToInt32
 
-        private static Int64 ToInt64(IEnumerable<byte> bytes, int i = 0)
-        {
-            var bs = bytes.ToList().GetRange(i, 8);
-            if (BitConverter.IsLittleEndian)
-                bs.Reverse();
-            return BitConverter.ToInt64(bs.ToArray(), 0);
-        }//ToInt32
-    }//class
 
-    // State object for receiving data from remote device.  
-    public class StateObject
-    {
-        // Client socket.  
-        public Socket workSocket;
-        // Size of receive buffer.  
-        public const int BufferSize = 4096;
-        // Receive buffer.  
-        public readonly byte[] buffer = new byte[BufferSize];
-        // Received data string.  
-        //public StringBuilder sb = new StringBuilder();
-        public readonly List<byte> byteList = new List<byte>();
-    }
+    }//class SxdClient
+
+
 }//namespace

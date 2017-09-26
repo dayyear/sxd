@@ -1,0 +1,137 @@
+﻿package com.protocols
+{
+    import com.haloer.utils.*;
+
+    public class Mod_Mission_Base extends Object
+    {
+        public static const FANG_ZI_QING_FU_HUO_ZHU_JUE:int = 0;
+        public static const FANG_ZI_QING_MIAN_YI_JUE_JI:int = 1;
+        public static const XIONG_MAO_JIU_XIAN_FEN_SHEN:int = 2;
+        public static const GRID_IS_FULL:int = 3;
+        public static const KU_MU_FENG_CHUN_ZHUAN_YI:int = 4;
+        public static const JING_HUA_SHUI_YUE_YIN_SHEN:int = 5;
+        public static const XING_HUO_LIAO_YUAN_HUO_LING:int = 6;
+        public static const XING_HUO_LIAO_YUAN_BAO_ZHA:int = 7;
+        public static const CUN_TU_BU_RANG_MIAN_SHANG:int = 8;
+        public static const HUI_GEN_ADD_MOMENTUM:int = 9;
+        public static const MO_YAN_JIU_ZHUAN_FU_HUO:int = 10;
+        public static const MO_YAN_JIU_ZHUAN:int = 11;
+        public static const LINK_FATE_AVOID_DECREASE_MOMENTUM:int = 12;
+        public static const LINK_FATE_ROLE_DEAD:int = 13;
+        public static const SI_XIANG_LUN_HUI_CLEAR_EVENT:int = 14;
+        public static const GONG_GONG_ADD_ATTACK:int = 15;
+        public static const JIE_YUAN_FU_HUO:int = 16;
+        public static const JIE_YUAN_MIAN_SHANG:int = 17;
+        public static const REBIRTH_SKILL_SAVE:int = 18;
+        public static const JIU_LONG_HU_TI_NO_DIE:int = 19;
+        public static const BU_SI_NIAO_FU_HUO:int = 20;
+        public static const YU_HUO_FU_HUO:int = 21;
+        public static const XUE_JI_FU_HUO:int = 22;
+        public static const BAO_NU_DEAD:int = 23;
+        public static const CAI_YUAN_GUN_GUN_FEN_SHEN:int = 24;
+        public static const JIN_GU_ZHOU_MIAN_YI_JUE_JI:int = 25;
+        public static const TAI_JI_FU_YIN:int = 26;
+        public static const ZHENG_FEN_DUO_MIAO:int = 27;
+        public static const ZHENG_FEN_DUO_MIAO_DECREASE:int = 28;
+        public static const PEARL_EXTRA_HURT:int = 29;
+        public static const PEARL_EXTRA_HURT_MAX_HEALTH:int = 30;
+        public static const CANG_LONG_WO_HU_ROLE:int = 31;
+        public static const SA_DOU_CHENG_BING:int = 32;
+        public static const SHEN_LONG_BAI_WEI_FENG_YIN_SHIXIAO:int = 33;
+        public static const YI_JU_JI_PO:int = 34;
+        public static const FAN_ZHEN_INCREASE_ARMOR:int = 35;
+        public static const NING_MOU:int = 36;
+        public static const JIN_GANG:int = 37;
+        public static const TU_JIN:int = 38;
+        public static const KUANG_ZHAN:int = 39;
+        public static const TIAN_SHEN:int = 40;
+        public static const XIAN_ZHI:int = 41;
+        public static const QI_BAO_MIAO_SHU_ADD_HEALTH:int = 42;
+        public static const SHI_ER_PIN_LIAN_TAI_ADD_ATTRIBUTE:int = 43;
+        public static const JIU_XIAO_LONG_YIN_ADD_HEALTH:int = 44;
+        public static const JOB_STRENGTHEN_ADD_BLOCK:int = 45;
+        public static const JOB_STRENGTHEN_ADD_DODGE:int = 46;
+        public static const JOB_STRENGTHEN_ADD_CRITICAL:int = 47;
+        public static const JOB_STRENGTHEN_ADD_ATTACK:int = 48;
+        public static const JOB_STRENGTHEN_ADD_MAGICATTACK:int = 49;
+        public static const LUN_HUI_SHENG_SHOU_ADD_HEALTH:int = 50;
+        public static const SELF_STUNT:int = 51;
+        public static const ADDON_STUNT:int = 52;
+        public static const BE_STUNT:int = 53;
+        public static const BE_ADDON_STUNT:int = 54;
+        public static const NORMAL_ATTACK:int = 55;
+        public static const PRE_ATTACK:int = 56;
+        public static const BACK_ATTACK:int = 57;
+        public static const MAGIC_ATTACK:int = 58;
+        public static const STUNT_ATTACK:int = 59;
+        public static const SEC_CHANGE:int = 60;
+        public static const SUCCESS:int = 61;
+        public static const REFIGHT:int = 62;
+        public static const MS_SCISSOR:int = 63;
+        public static const MS_STONE:int = 64;
+        public static const MS_PAPER:int = 65;
+        public static const SCORE_A:int = 66;
+        public static const SCORE_B:int = 67;
+        public static const SCORE_C:int = 68;
+        public static const LESS_POWER:int = 69;
+        public static const TRUNK_ALREADY_FIGHT:int = 70;
+        public static const AWARD_BOX_NO_OPEN:int = 71;
+        public static const PRE_TRUNK_MISSION_NO_COMPLETE:int = 72;
+        public static const PICKUP_SUCCESS:int = 73;
+        public static const PICKUP_FAILED:int = 74;
+        public static const REPICKUP:int = 75;
+        public static const COIN:int = 76;
+        public static const INGOT:int = 77;
+        public static const SKILL:int = 78;
+        public static const FAILED:int = 79;
+        public static const HASCHALLENGED:int = 80;
+        public static const MS_ERROR_MISSION:int = 81;
+        public static const MS_ALREADY_CLICK:int = 82;
+        public static const MS_SUCCESS:int = 83;
+        public static const MS_FAILURE:int = 84;
+        public static const MS_ALREADY_DO:int = 85;
+        public static const MS_PLAYER:int = 86;
+        public static const MS_MONSTER:int = 87;
+        public static const MS_NOBODY:int = 88;
+        public static const NO_BOX_TO_OPEN:int = 89;
+        public static const NO_TRUNK_MISSION:int = 90;
+        public static const NO_ENOUGH_STAR:int = 91;
+        public static const ALREADY_GOT:int = 92;
+        public static const NO_TRUNK_MISSION_COMPLETE:int = 93;
+        public static const PACK_FULL:int = 94;
+        public static const ZHIXIAN_BUFF:int = 95;
+        public static const ZHUXIAN_BUFF:int = 96;
+        public static const get_sections:Object = {module:4, action:0, request:[Utils.IntUtil], response:[[Utils.IntUtil, Utils.ByteUtil, Utils.UByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil]]};
+        public static const enter_mission:Object = {module:4, action:1, request:[Utils.IntUtil], response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, [Utils.IntUtil], [Utils.IntUtil]]};
+        public static const fight_monster:Object = {module:4, action:2, request:[Utils.IntUtil, Utils.ByteUtil], response:[Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, [Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.StringUtil, [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil], Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil, [Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil], Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil], Utils.LongUtil, Utils.LongUtil, [Utils.IntUtil], Utils.ByteUtil, [Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, [Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil]]], [[Utils.ByteUtil, Utils.StringUtil, [Utils.UByteUtil, Utils.StringUtil], [Utils.StringUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil]], [Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.StringUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil]], [Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, [Utils.UByteUtil, Utils.ShortUtil, Utils.ByteUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.IntUtil], [Utils.StringUtil], Utils.IntUtil, Utils.ShortUtil, Utils.LongUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.StringUtil, Utils.IntUtil, Utils.UByteUtil, [Utils.IntUtil, Utils.ShortUtil, [Utils.UByteUtil, Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], [Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], Utils.StringUtil, [Utils.IntUtil], Utils.IntUtil, Utils.IntUtil, Utils.LongUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.ByteUtil], [Utils.IntUtil, Utils.StringUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil], [Utils.UByteUtil, Utils.StringUtil]], [Utils.IntUtil, Utils.IntUtil], [Utils.UByteUtil, Utils.StringUtil, [Utils.UByteUtil, Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil]], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil]], Utils.ShortUtil], [Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil], [Utils.IntUtil, Utils.ByteUtil], [Utils.IntUtil, Utils.ByteUtil], [[Utils.StringUtil, [Utils.IntUtil, Utils.StringUtil, Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]], [Utils.StringUtil, [Utils.IntUtil, Utils.StringUtil, Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]]], Utils.IntUtil, Utils.UByteUtil, Utils.ShortUtil, Utils.ShortUtil]};
+        public static const rank_mission:Object = {module:4, action:3, request:[], response:[Utils.ShortUtil, Utils.ShortUtil, Utils.UByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, [Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil], Utils.ShortUtil]};
+        public static const open_box:Object = {module:4, action:4, request:[], response:[Utils.IntUtil, Utils.IntUtil, [Utils.IntUtil, Utils.IntUtil], Utils.ShortUtil]};
+        public static const pickup_award:Object = {module:4, action:5, request:[], response:[Utils.UByteUtil]};
+        public static const sign_play_mission_video:Object = {module:4, action:6, request:[Utils.IntUtil], response:[]};
+        public static const get_monster_strategy_list:Object = {module:4, action:7, request:[Utils.IntUtil], response:[Utils.IntUtil, [Utils.StringUtil, Utils.ShortUtil, Utils.IntUtil, Utils.StringUtil]]};
+        public static const get_player_war_report:Object = {module:4, action:8, request:[Utils.IntUtil], response:[Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, [Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.StringUtil, [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil], Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil, [Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil], Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil], Utils.LongUtil, Utils.LongUtil, [Utils.IntUtil], Utils.ByteUtil, [Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, [Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil]]], [[Utils.ByteUtil, Utils.StringUtil, [Utils.UByteUtil, Utils.StringUtil], [Utils.StringUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil]], [Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.StringUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil]], [Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, [Utils.UByteUtil, Utils.ShortUtil, Utils.ByteUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.IntUtil], [Utils.StringUtil], Utils.IntUtil, Utils.ShortUtil, Utils.LongUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.StringUtil, Utils.IntUtil, Utils.UByteUtil, [Utils.IntUtil, Utils.ShortUtil, [Utils.UByteUtil, Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], [Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], Utils.StringUtil, [Utils.IntUtil], Utils.IntUtil, Utils.IntUtil, Utils.LongUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.ByteUtil], [Utils.IntUtil, Utils.StringUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil], [Utils.UByteUtil, Utils.StringUtil]], [Utils.IntUtil, Utils.IntUtil], [Utils.UByteUtil, Utils.StringUtil, [Utils.UByteUtil, Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil]], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil]], Utils.ShortUtil], [Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil], [Utils.IntUtil, Utils.ByteUtil], [Utils.IntUtil, Utils.ByteUtil], [[Utils.StringUtil, [Utils.IntUtil, Utils.StringUtil, Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]], [Utils.StringUtil, [Utils.IntUtil, Utils.StringUtil, Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]]], Utils.IntUtil, Utils.UByteUtil, Utils.ShortUtil, Utils.ShortUtil]};
+        public static const random_item:Object = {module:4, action:9, request:[], response:[Utils.UByteUtil, Utils.IntUtil]};
+        public static const fetch_random_item:Object = {module:4, action:10, request:[Utils.ByteUtil], response:[Utils.UByteUtil, Utils.ByteUtil]};
+        public static const get_special_result:Object = {module:4, action:11, request:[Utils.IntUtil], response:[Utils.UByteUtil, [Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.StringUtil, [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil], Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil, [Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil], Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil], Utils.LongUtil, Utils.LongUtil, [Utils.IntUtil], Utils.ByteUtil, [Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, [Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil]]], [[Utils.ByteUtil, Utils.StringUtil, [Utils.UByteUtil, Utils.StringUtil], [Utils.StringUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil]], [Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.StringUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil]], [Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, [Utils.UByteUtil, Utils.ShortUtil, Utils.ByteUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.IntUtil], [Utils.StringUtil], Utils.IntUtil, Utils.ShortUtil, Utils.LongUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.StringUtil, Utils.IntUtil, Utils.UByteUtil, [Utils.IntUtil, Utils.ShortUtil, [Utils.UByteUtil, Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], [Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], Utils.StringUtil, [Utils.IntUtil], Utils.IntUtil, Utils.IntUtil, Utils.LongUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.ByteUtil], [Utils.IntUtil, Utils.StringUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil], [Utils.UByteUtil, Utils.StringUtil]], [Utils.IntUtil, Utils.IntUtil], [Utils.UByteUtil, Utils.StringUtil, [Utils.UByteUtil, Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil]], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil]], Utils.ShortUtil], Utils.IntUtil, Utils.IntUtil]};
+        public static const is_special_scene:Object = {module:4, action:12, request:[Utils.IntUtil], response:[Utils.ByteUtil]};
+        public static const click_mission_item_element:Object = {module:4, action:13, request:[Utils.IntUtil, Utils.IntUtil], response:[Utils.UByteUtil]};
+        public static const first_tie_second_win:Object = {module:4, action:14, request:[Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil], response:[Utils.UByteUtil, Utils.UByteUtil, Utils.UByteUtil]};
+        public static const open_box_directly:Object = {module:4, action:15, request:[Utils.IntUtil], response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, [Utils.IntUtil, Utils.IntUtil], Utils.ShortUtil]};
+        public static const pickup_trunk_mission_award_directly:Object = {module:4, action:16, request:[], response:[Utils.UByteUtil]};
+        public static const get_star_award:Object = {module:4, action:17, request:[Utils.ShortUtil, Utils.ByteUtil], response:[Utils.UByteUtil]};
+        public static const get_star_award_info:Object = {module:4, action:18, request:[Utils.IntUtil], response:[[Utils.ByteUtil]]};
+        public static const get_star_count:Object = {module:4, action:19, request:[], response:[[Utils.IntUtil, Utils.ByteUtil]]};
+        public static const get_complete_max_info:Object = {module:4, action:20, request:[Utils.IntUtil], response:[Utils.IntUtil, Utils.StringUtil, Utils.IntUtil]};
+        public static const get_mission_complete_info:Object = {module:4, action:21, request:[Utils.IntUtil], response:[Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil]};
+        public static const show_buff:Object = {module:4, action:22, request:[], response:[[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]]};
+        public static const update_buff:Object = {module:4, action:23, request:[], response:[[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]]};
+        public static const get_hire_partner_info:Object = {module:4, action:24, request:[Utils.IntUtil], response:[Utils.IntUtil, Utils.ShortUtil]};
+        public static const Actions:Array = ["get_sections", "enter_mission", "fight_monster", "rank_mission", "open_box", "pickup_award", "sign_play_mission_video", "get_monster_strategy_list", "get_player_war_report", "random_item", "fetch_random_item", "get_special_result", "is_special_scene", "click_mission_item_element", "first_tie_second_win", "open_box_directly", "pickup_trunk_mission_award_directly", "get_star_award", "get_star_award_info", "get_star_count", "get_complete_max_info", "get_mission_complete_info", "show_buff", "update_buff", "get_hire_partner_info"];
+
+        public function Mod_Mission_Base()
+        {
+            return;
+        }// end function
+
+    }
+}
