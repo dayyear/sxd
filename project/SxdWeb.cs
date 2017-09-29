@@ -49,7 +49,7 @@ namespace 神仙道
                 System.Diagnostics.Process.Start(file);
                 Logger.Log("输入验证码: ", showTime: false, writeLine: false);
                 captcha = Console.ReadLine();
-                Logger.Log(captcha, showTime: false);
+                Logger.Log(captcha, console: false, showTime: false);
             }//while(true)
 
 
