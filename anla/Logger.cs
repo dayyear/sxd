@@ -9,7 +9,7 @@ namespace anla
     public static class Logger
     {
 
-        public static void Log(string message, TextBox textBox = null)
+        public static void Log(string message, RichTextBox textBox = null)
         {
             using (var mtx = new Mutex(false, "Log"))
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -24,6 +25,8 @@ namespace 神仙道
         private short previousAction;
         private short previousModuleST;
         private short previousActionST;
+
+        private bool reconnect;
 
         // 用于Receive Callback
         readonly byte[] bufferRcvd = new byte[256];
@@ -58,6 +61,7 @@ namespace 神仙道
 
         //private Thread receiveThread;
 
+
         /// <summary>
         /// Mod_Player_Base.login(0,0)
         /// module:0, action:0
@@ -65,13 +69,8 @@ namespace 神仙道
         /// Line 41 in LoginView.as:
         ///   _data.call(Mod_Player_Base.login, this.loginCallback, [playerName, hashCode, time, URI.sourceUrl, URI.regdate, strIdCard, URI.openTime, URI.isNewSt, URI.stageName, URI.client]);
         /// </summary>
-        public void Login(string url, string code, string time, string hash, string time1, string hash1, bool reconnect = false)
+        public void Login(string url, string code, string time, string hash, string time1, string hash1)
         {
-            // -----------------------------------------------------------------------------
-            // -. 同步信号重置
-            // -----------------------------------------------------------------------------
-            done.Reset();
-
             // -----------------------------------------------------------------------------
             // 1. 通过HTTP获取参数
             // -----------------------------------------------------------------------------
@@ -94,26 +93,7 @@ namespace 神仙道
             var client = match1.Groups[13].Value;       // 用于login(0,0)
 
             // -----------------------------------------------------------------------------
-            // 2. 构造命令字节
-            // -----------------------------------------------------------------------------
-            var bytes = new List<byte>();
-
-            // 2.1 添加module和action
-            const short module = 0;
-            const short action = 0;
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
-
-            // 2.2 添加实体
-            bytes.AddRange(Protocols.Encode(
-                new JArray { player_name, hash_code, time2, source, int.Parse(regdate), id_card, int.Parse(open_time), byte.Parse(is_newst), HttpUtility.UrlDecode(stage), HttpUtility.UrlDecode(client) },
-                Protocols.GetPattern(module, action).Item2));
-
-            // 2.3 在首部插入命令字节数
-            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
-
-            // -----------------------------------------------------------------------------
-            // 3. 建立链接
+            // 2. 建立链接
             // -----------------------------------------------------------------------------
             if (reconnect)
             {
@@ -127,30 +107,24 @@ namespace 神仙道
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             }
             socket.Connect(new IPEndPoint(Dns.GetHostEntry(serverHost).AddressList[0], int.Parse(port)));
+            reconnect = true;
 
             // -----------------------------------------------------------------------------
-            // 4. 接收数据
+            // 3. 接收数据
             // -----------------------------------------------------------------------------
-            // 4.1 接收数据线程，参考Receive方法
+            // 3.1 接收数据线程，参考Receive方法
             //receiveThread = new Thread(Receive);
             //receiveThread.Start();
 
-            // 4.2 异步I/O接收数据，参考ReceiveCallback方法
+            // 3.2 异步I/O接收数据，参考ReceiveCallback方法
             receiveDone.Reset();
             socket.BeginReceive(bufferRcvd, 0, bufferRcvd.Length, SocketFlags.None, ReceiveCallback, null);
 
-            // 5. 发送数据
-            socket.Send(bytes.ToArray());
-
             // -----------------------------------------------------------------------------
-            // E. 留存module和action
+            // 4. 发送数据
             // -----------------------------------------------------------------------------
-            previousModule = module;
-            previousAction = action;
-
-            // -----------------------------------------------------------------------------
-            // -. 等待同步信号
-            // -----------------------------------------------------------------------------
+            done.Reset();
+            Send(new JArray { player_name, hash_code, time2, source, int.Parse(regdate), id_card, int.Parse(open_time), byte.Parse(is_newst), HttpUtility.UrlDecode(stage), HttpUtility.UrlDecode(client) }, 0, 0);
             done.WaitOne();
         }//Login
 
@@ -191,44 +165,8 @@ namespace 神仙道
         /// </summary>
         public void GetPlayerInfo()
         {
-            // -----------------------------------------------------------------------------
-            // -. 同步信号重置
-            // -----------------------------------------------------------------------------
             done.Reset();
-
-            // -----------------------------------------------------------------------------
-            // 1. 构造命令字节
-            // -----------------------------------------------------------------------------
-            var bytes = new List<byte>();
-
-            // 1.1 添加module和action
-            const short module = 0;
-            const short action = 2;
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
-
-            // 1.2 添加实体
-            // null
-
-            // 1.3 在尾部添加上次的module和action
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
-
-            // 1.4 在首部插入命令字节数
-            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
-
-            // 2. 发送数据
-            socket.Send(bytes.ToArray());
-
-            // -----------------------------------------------------------------------------
-            // E. 留存module和action
-            // -----------------------------------------------------------------------------
-            previousModule = module;
-            previousAction = action;
-
-            // -----------------------------------------------------------------------------
-            // -. 等待同步信号
-            // -----------------------------------------------------------------------------
+            Send(null, 0, 2);
             done.WaitOne();
         }//GetPlayerInfo
 
@@ -262,44 +200,8 @@ namespace 神仙道
         /// </summary>
         public void PlayerInfoContrast()
         {
-            // -----------------------------------------------------------------------------
-            // -. 同步信号重置
-            // -----------------------------------------------------------------------------
             done.Reset();
-
-            // -----------------------------------------------------------------------------
-            // 1. 构造命令字节
-            // -----------------------------------------------------------------------------
-            var bytes = new List<byte>();
-
-            // 1.1 添加module和action
-            const short module = 0;
-            const short action = 48;
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
-
-            // 1.2 添加实体
-            bytes.AddRange(Protocols.Encode(new JArray { playerId }, Protocols.GetPattern(module, action).Item2));
-
-            // 1.3 在尾部添加上次的module和action
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
-
-            // 1.4 在首部插入命令字节数
-            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
-
-            // 2. 发送数据
-            socket.Send(bytes.ToArray());
-
-            // -----------------------------------------------------------------------------
-            // E. 留存module和action
-            // -----------------------------------------------------------------------------
-            previousModule = module;
-            previousAction = action;
-
-            // -----------------------------------------------------------------------------
-            // -. 等待同步信号
-            // -----------------------------------------------------------------------------
+            Send(new JArray { playerId }, 0, 48);
             done.WaitOne();
         }//PlayerInfoContrast
 
@@ -355,57 +257,21 @@ namespace 神仙道
         /// </summary>
         public void EnterTown()
         {
-            // -----------------------------------------------------------------------------
-            // -. 同步信号重置
-            // -----------------------------------------------------------------------------
             done.Reset();
-
-            // -----------------------------------------------------------------------------
-            // 1. 构造命令字节
-            // -----------------------------------------------------------------------------
-            var bytes = new List<byte>();
-
-            // 1.1 添加module和action
-            const short module = 1;
-            const short action = 0;
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
-
-            // 1.2 添加实体
-            bytes.AddRange(Protocols.Encode(new JArray { townMapId }, Protocols.GetPattern(module, action).Item2));
-
-            // 1.3 在尾部添加上次的module和action
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
-
-            // 1.4 在首部插入命令字节数
-            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
-
-            // 2. 发送数据
-            socket.Send(bytes.ToArray());
-
-            // -----------------------------------------------------------------------------
-            // E. 留存module和action
-            // -----------------------------------------------------------------------------
-            previousModule = module;
-            previousAction = action;
-
-            // -----------------------------------------------------------------------------
-            // -. 等待同步信号
-            // -----------------------------------------------------------------------------
+            Send(new JArray { townMapId }, 1, 0);
             done.WaitOne();
         }//EnterTown
 
         /// <summary>
         /// Mod_Town_Base.enter_town(1,0)
         /// module:1, action:0
-        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, [Utils.UByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.StringUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.StringUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, [Utils.IntUtil], Utils.UByteUtil, [Utils.IntUtil], Utils.UByteUtil, Utils.ShortUtil, Utils.UByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.StringUtil, Utils.IntUtil, Utils.ShortUtil, Utils.StringUtil, Utils.IntUtil]
+        /// response:[Utils.UByteUtil, 1.Utils.IntUtil, 2.Utils.IntUtil, 3.Utils.IntUtil, 4.[Utils.UByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], 5.Utils.StringUtil, 6.Utils.ShortUtil, 7.Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.StringUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, [Utils.IntUtil], Utils.UByteUtil, [Utils.IntUtil], Utils.UByteUtil, Utils.ShortUtil, Utils.UByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.StringUtil, Utils.IntUtil, Utils.ShortUtil, Utils.StringUtil, Utils.IntUtil]
         /// Line 60 in TownData.as:
-        ///   oObject.list(param1, _loc_3, ["player_id", "role_id", "follow_role_id", "follow_pet_list", "nickname", "position_x", "position_y", "transport", "avatar", "camp_id", "equip_item_id", "warState", "practice_status", "is_on_mission_practice", "faction_id", "faction_name", "is_star", "is_world_war_top", "player_pet_animal_lv", "player_pet_animal_stage", "world_faction_war_award", "playable_video_list", "hidden_town_npc_flag", "show_town_npc_list", "is_become_immortal", "suit_equip_id", "is_become_saint", "mount_rune_type_id", "mount_rune_is_show", "card_spirit_id", "card_spirit_nickname", "orange_equipment_follow_id", "children_role_id", "children_nickname", "children_suit_id"]);
+        ///   oObject.list(param1, _loc_3, [1."player_id", 2."role_id", 3."follow_role_id", 4."follow_pet_list", 5."nickname", 6."position_x", 7."position_y", "transport", "avatar", "camp_id", "equip_item_id", "warState", "practice_status", "is_on_mission_practice", "faction_id", "faction_name", "is_star", "is_world_war_top", "player_pet_animal_lv", "player_pet_animal_stage", "world_faction_war_award", "playable_video_list", "hidden_town_npc_flag", "show_town_npc_list", "is_become_immortal", "suit_equip_id", "is_become_saint", "mount_rune_type_id", "mount_rune_is_show", "card_spirit_id", "card_spirit_nickname", "orange_equipment_follow_id", "children_role_id", "children_nickname", "children_suit_id"]);
         /// </summary>
         private void EnterTownCallback(JArray data)
         {
-            Logger.Log(string.Format("进入{0}", Protocols.GetTownName(townMapId)), ConsoleColor.Green);
+            Logger.Log(string.Format("进入{0}，坐标X：{1}，坐标Y：{2}", Protocols.GetTownName(townMapId), (short)data[6], (short)data[7]), ConsoleColor.Green);
             done.Set();
         }//EnterTownCallback
 
@@ -416,44 +282,8 @@ namespace 神仙道
         /// </summary>
         public void GetStatus()
         {
-            // -----------------------------------------------------------------------------
-            // -. 同步信号重置
-            // -----------------------------------------------------------------------------
             done.Reset();
-
-            // -----------------------------------------------------------------------------
-            // 1. 构造命令字节
-            // -----------------------------------------------------------------------------
-            var bytes = new List<byte>();
-
-            // 1.1 添加module和action
-            const short module = 96;
-            const short action = 1;
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
-
-            // 1.2 添加实体
-            // null
-
-            // 1.3 在尾部添加上次的module和action
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
-
-            // 1.4 在首部插入命令字节数
-            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
-
-            // 2. 发送数据
-            socket.Send(bytes.ToArray());
-
-            // -----------------------------------------------------------------------------
-            // E. 留存module和action
-            // -----------------------------------------------------------------------------
-            previousModule = module;
-            previousAction = action;
-
-            // -----------------------------------------------------------------------------
-            // -. 等待同步信号
-            // -----------------------------------------------------------------------------
+            Send(null, 96, 1);
             done.WaitOne();
         }//GetStatus
 
@@ -487,44 +317,8 @@ namespace 神仙道
         /// </summary>
         public void GetLoginInfo()
         {
-            // -----------------------------------------------------------------------------
-            // -. 同步信号重置
-            // -----------------------------------------------------------------------------
             done.Reset();
-
-            // -----------------------------------------------------------------------------
-            // 1. 构造命令字节
-            // -----------------------------------------------------------------------------
-            var bytes = new List<byte>();
-
-            // 1.1 添加module和action
-            const short module = 96;
-            const short action = 0;
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
-
-            // 1.2 添加实体
-            // null
-
-            // 1.3 在尾部添加上次的module和action
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
-
-            // 1.4 在首部插入命令字节数
-            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
-
-            // 2. 发送数据
-            socket.Send(bytes.ToArray());
-
-            // -----------------------------------------------------------------------------
-            // E. 留存module和action
-            // -----------------------------------------------------------------------------
-            previousModule = module;
-            previousAction = action;
-
-            // -----------------------------------------------------------------------------
-            // -. 等待同步信号
-            // -----------------------------------------------------------------------------
+            Send(null, 96, 0);
             done.WaitOne();
         }//GetLoginInfo
 
@@ -565,44 +359,8 @@ namespace 神仙道
         /// </summary>
         public void GetPlayerFunction()
         {
-            // -----------------------------------------------------------------------------
-            // -. 同步信号重置
-            // -----------------------------------------------------------------------------
             done.Reset();
-
-            // -----------------------------------------------------------------------------
-            // 1. 构造命令字节
-            // -----------------------------------------------------------------------------
-            var bytes = new List<byte>();
-
-            // 1.1 添加module和action
-            const short module = 0;
-            const short action = 6;
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
-
-            // 1.2 添加实体
-            // null
-
-            // 1.3 在尾部添加上次的module和action
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
-
-            // 1.4 在首部插入命令字节数
-            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
-
-            // 2. 发送数据
-            socket.Send(bytes.ToArray());
-
-            // -----------------------------------------------------------------------------
-            // E. 留存module和action
-            // -----------------------------------------------------------------------------
-            previousModule = module;
-            previousAction = action;
-
-            // -----------------------------------------------------------------------------
-            // -. 等待同步信号
-            // -----------------------------------------------------------------------------
+            Send(null, 0, 6);
             done.WaitOne();
         }//GetPlayerFunction
 
@@ -610,7 +368,7 @@ namespace 神仙道
         /// Mod_Player_Base.get_player_function(0,6)
         /// module:0, action:6
         /// response:[[Utils.IntUtil, Utils.ByteUtil]]
-        /// Line 1155-1169 in :
+        /// Line 1155-1169 in PlayerData.as:
         ///   private function format_get_player_function(param1:Array) : Array
         ///   {
         ///       var _loc_3:* = null;
@@ -642,39 +400,94 @@ namespace 神仙道
         }//GetPlayerFunctionCallback
 
         /// <summary>
-        /// Mod_Chat_Base.chat_with_players(6,0)
-        /// module:6, action:0
-        /// request:[Utils.UByteUtil, Utils.StringUtil, Utils.StringUtil, Utils.StringUtil]
-        /// Line 118 in ChatView.as
-        ///   _data.call(Mod_Chat_Base.chat_with_players, callBack, [data.messageType, data.message, data.eipNum, data.eipIndex]);
+        /// Mod_GetPeach_Base.peach_info(40,3)
+        /// module:40, action:3
+        /// request:[]
         /// </summary>
-        public void ChatWithPlayers(string message)
+        public void PeachInfo()
         {
-            // -----------------------------------------------------------------------------
-            // -. 同步信号重置
-            // -----------------------------------------------------------------------------
-            //done.Reset();
+            done.Reset();
+            Send(null, 40, 3);
+            if (!done.WaitOne(10000))
+                Logger.Log("获取仙桃信息超时", ConsoleColor.Red);
+        }//PeachInfo
 
+        /// <summary>
+        /// Mod_GetPeach_Base.peach_info(40,3)
+        /// module:40, action:3
+        /// response:[Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil]
+        /// [19,5,1,0]
+        /// Line 34,36,45-47 in GetPeachController.as:
+        ///   _loc_2.peachLv = _loc_1[0];
+        ///   _loc_2.fruitLv = 70 + _loc_2.peachLv * 5;
+        ///   _loc_2.peachNum = _loc_1[1];
+        ///   _loc_2.bAllGet = _loc_1[2] == 1;
+        ///   _loc_2.bCallPeach = _loc_1[3] == 1;
+        /// </summary>
+        private void PeachInfoCallback(JArray data)
+        {
+            var fruitLv = 70 + (byte)data[0] * 5;
+            var peachNum = (byte)data[1];
+            //var bAllGet = (byte)data[2] == 1;
+            //var bCallPeach = (byte)data[3] == 1;
+            Logger.Log(string.Format("桃子等级：{0}，桃子数量：{1}", fruitLv, peachNum), ConsoleColor.Green);
+            done.Set();
+        }//PeachInfoCallback
+
+        /// <summary>
+        /// Mod_GetPeach_Base.batch_get_peach(40,5)
+        /// module:40, action:5
+        /// request:[]
+        /// </summary>
+        public void BatchGetPeach()
+        {
+            done.Reset();
+            Send(null, 40, 5);
+            if (!done.WaitOne(10000))
+                Logger.Log("一键摘桃超时", ConsoleColor.Red);
+        }//BatchGetPeach
+
+        /// <summary>
+        /// Mod_GetPeach_Base.batch_get_peach(40,5)
+        /// module:40, action:5
+        /// response:[Utils.UByteUtil, Utils.LongUtil]
+        /// 
+        /// Line 69-74 in GetPeachData.as:
+        ///   public function batch_get_peach(param1:Array) : void
+        ///   {
+        ///       this.batchGetPeachResult = param1[0];
+        ///       this.warExp = param1[1];
+        ///       return;
+        ///   }// end function
+        /// </summary>
+        private void BatchGetPeachCallback(JArray data)
+        {
+            var batchGetPeachResult = (byte)data[0];
+            var warExp = (long)data[1];
+            Logger.Log(string.Format("batchGetPeachResult：{0}，warExp：{1}", batchGetPeachResult, warExp), ConsoleColor.Green);
+            done.Set();
+        }//BatchGetPeachCallback
+
+        private void Send(JArray data, short module, short action)
+        {
             // -----------------------------------------------------------------------------
             // 1. 构造命令字节
             // -----------------------------------------------------------------------------
             var bytes = new List<byte>();
 
             // 1.1 添加module和action
-            const short module = 6;
-            const short action = 0;
             bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
             bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
 
             // 1.2 添加实体
-            var messageType = 1;
-            var eipNum = string.Empty;
-            var eipIndex = string.Empty;
-            bytes.AddRange(Protocols.Encode(new JArray { messageType, message, eipNum, eipIndex }, Protocols.GetPattern(module, action).Item2));
+            bytes.AddRange(Protocols.Encode(data, Protocols.GetPattern(module, action).Item2));
 
             // 1.3 在尾部添加上次的module和action
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
+            if (module + action != 0)
+            {
+                bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
+                bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
+            }
 
             // 1.4 在首部插入命令字节数
             bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
@@ -687,11 +500,23 @@ namespace 神仙道
             // -----------------------------------------------------------------------------
             previousModule = module;
             previousAction = action;
+        }//Send
 
-            // -----------------------------------------------------------------------------
-            // -. 等待同步信号
-            // -----------------------------------------------------------------------------
-            //done.WaitOne();
+        /// <summary>
+        /// Mod_Chat_Base.chat_with_players(6,0)
+        /// module:6, action:0
+        /// request:[Utils.UByteUtil, Utils.StringUtil, Utils.StringUtil, Utils.StringUtil]
+        /// Line 118 in ChatView.as
+        ///   _data.call(Mod_Chat_Base.chat_with_players, callBack, [data.messageType, data.message, data.eipNum, data.eipIndex]);
+        /// </summary>
+        public void ChatWithPlayers(string message)
+        {
+            var messageType = 1;
+            var eipNum = string.Empty;
+            var eipIndex = string.Empty;
+            done.Reset();
+            Send(new JArray { messageType, message, eipNum, eipIndex }, 6, 0);
+            done.WaitOne();
         }//ChatWithPlayers
 
         /// <summary>
@@ -709,6 +534,7 @@ namespace 神仙道
                 var msgTxt = (string)item[5];
                 Logger.Log(string.Format("{0}说: {1}", playName, msgTxt), ConsoleColor.Green);
             }
+            done.Set();
         }//BroToPlayersCallback
 
         private void ProcessPackage(byte[] package)
@@ -751,6 +577,12 @@ namespace 神仙道
                     case "get_player_function":
                         GetPlayerFunctionCallback(data);
                         break;
+                    case "peach_info":
+                        PeachInfoCallback(data);
+                        break;
+                    case "batch_get_peach":
+                        BatchGetPeachCallback(data);
+                        break;
                     case "bro_to_players":
                         BroToPlayersCallback(data);
                         break;
@@ -773,7 +605,11 @@ namespace 神仙道
             {
                 var bytesRead = socket.EndReceive(ar);
                 if (bytesRead == 0)
-                    throw new Exception("已断开游戏服务器");
+                {
+                    Logger.Log("已断开游戏服务器", ConsoleColor.Red);
+                    receiveDone.Set();
+                    return;
+                }
                 bytesRcvd.AddRange(bufferRcvd.ToList().GetRange(0, bytesRead));
                 while (bytesRcvd.Count > 4)
                 {

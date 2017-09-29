@@ -31,6 +31,8 @@ namespace 神仙道
             Console.WriteLine(jArray.ToString(Formatting.None));
             return;*/
 
+            Logger.Log("程序开始", ConsoleColor.Green);
+
             //Sxd.GenerateUserIni();
             //Sxd.Test();
             Sxd.TestWhileInThread();

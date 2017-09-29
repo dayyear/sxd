@@ -20,10 +20,6 @@ namespace anla
         public Form1()
         {
             InitializeComponent();
-            /*var package = new byte[] { 0x78, 0x9C, 0x63, 0x48, 0x60, 0x60, 0x60, 0xE0, 0xB1, 0xA8, 0x30, 0x30, 0x37, 0xD2, 0xAB, 0x48, 0xD1, 0x4B, 0xCE, 0xCF, 0x55, 0xD9, 0xC1, 0xC0, 0x5C, 0x6C, 0x60, 0x12, 0xB9, 0x91, 0x43, 0x8E, 0x41, 0xC1, 0x24, 0xCD, 0x32, 0xC5, 0xCC, 0x28, 0xD9, 0x22, 0xD1, 0x30, 0xD5, 0x20, 0xC9, 0xCC, 0xC8, 0xDC, 0xD0, 0xC0, 0x2C, 0x35, 0xC5, 0xC0, 0xD0, 0xC4, 0xDC, 0x30, 0xC9, 0xDC, 0x30, 0xD5, 0xC4, 0x88, 0x81, 0xB7, 0xB8, 0xB4, 0x20, 0xB5, 0x28, 0xBE, 0x24, 0xBF, 0x3C, 0x2F, 0xBE, 0xD8, 0x00, 0x00, 0xF0, 0x7E, 0x14, 0xEC };
-            var uncompress = Ionic.Zlib.ZlibStream.UncompressBuffer(package);
-            File.WriteAllBytes("package.bin", package);
-            File.WriteAllBytes("uncompress.bin", uncompress);*/
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -38,6 +34,8 @@ namespace anla
             comboBox1.DataSource = new BindingSource(dictionary, null);
             comboBox1.DisplayMember = "Value";
             comboBox1.ValueMember = "Key";
+
+            richTextBox1.SelectionHangingIndent = 90;
         }
 
         private void buttonLogin_Click(object sender, EventArgs e)
@@ -55,28 +53,7 @@ namespace anla
                     Logger.Log((string)data);
                     break;
                 case UpdateType.LogBoth:
-                    Logger.Log((string)data, textBox1);
-                    break;
-                case UpdateType.Nickname:
-                    labelNickname.Text = (string)data;
-                    break;
-                case UpdateType.Level:
-                    labelLevel.Text = (string)data;
-                    break;
-                case UpdateType.Ingot:
-                    labelIngot.Text = (string)data;
-                    break;
-                case UpdateType.Coins:
-                    labelCoins.Text = (string)data;
-                    break;
-                case UpdateType.Health:
-                    labelHealth.Text = (string)data;
-                    break;
-                case UpdateType.Power:
-                    labelPower.Text = (string)data;
-                    break;
-                case UpdateType.Experience:
-                    labelExperience.Text = (string)data;
+                    Logger.Log((string)data, richTextBox1);
                     break;
             }//switch (type)
         }//UpdataUIStatus
@@ -117,43 +94,43 @@ namespace anla
                 var hash1 = match.Groups[6].Value;
 
 
-                Logger.Log(string.Empty, textBox1);
-                Logger.Log("---- [登录] ----", textBox1);
+                Logger.Log(string.Empty, richTextBox1);
+                Logger.Log("---- [登录] ----", richTextBox1);
                 Logger.Log(string.Format("---- [Login(url={0}, code={1}, time{2}, hash={3}, time1={4}, hash1={5})] ----", url, code, time, hash, time1, hash1));
                 if (client.Login(url, code, time, hash, time1, hash1))
                     return;
 
-                Logger.Log("---- [获取玩家信息] ----", textBox1);
+                Logger.Log("---- [获取玩家信息] ----", richTextBox1);
                 Logger.Log("---- [GetPlayerInfo] ----");
                 if (!client.GetPlayerInfo())
                     return;
 
-                Logger.Log("---- [登录仙界] ----", textBox1);
+                Logger.Log("---- [登录仙界] ----", richTextBox1);
                 Logger.Log("---- [GetLoginInfo] ----");
                 if (!client.GetLoginInfo())
                     return;
                 Logger.Log("---- [StLogin] ----");
                 client.StLogin();
 
-                Logger.Log("---- [领取俸禄] ----", textBox1);
+                Logger.Log("---- [领取俸禄] ----", richTextBox1);
                 Logger.Log("---- [GetPlayerCampSalary] ----");
                 client.GetPlayerCampSalary();
 
-                Logger.Log("---- [领取仙令] ----", textBox1);
+                Logger.Log("---- [领取仙令] ----", richTextBox1);
                 Logger.Log("---- [PlayerGetXianLingGift] ----");
                 client.PlayerGetXianLingGift();
 
-                Logger.Log("---- [领取灵石] ----", textBox1);
+                Logger.Log("---- [领取灵石] ----", richTextBox1);
                 Logger.Log("---- [GetDayStone] ----");
                 client.GetDayStone();
 
-                Logger.Log("---- [万事如意] ----", textBox1);
+                Logger.Log("---- [万事如意] ----", richTextBox1);
                 Logger.Log("---- [ChatWithPlayers] ----");
                 client.ChatWithPlayers("万事如意");
             }
             catch (Exception ex)
             {
-                Logger.Log(ex.Message, textBox1);
+                Logger.Log(ex.Message, richTextBox1);
             }
         }//bgWorker1_DoWork
 

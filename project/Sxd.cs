@@ -12,35 +12,36 @@ namespace 神仙道
     {
         public static void GenerateUserIni()
         {
-            var userPath = ConfigurationManager.AppSettings["userPath"];
 
-            var users = XElement.Load("user.xml");
-            var pattern = File.ReadAllText("pattern.txt");
-            var replacement = File.ReadAllText("replacement.txt");
-            foreach (var userX in users.Elements("user"))
+            var web = new SxdWeb();
+            var i = 0;
+            var user1 = File.ReadAllText(ConfigurationManager.AppSettings["userPath"], Encoding.GetEncoding("GBK"));
+            var pattern1 = string.Format(File.ReadAllText("pattern.txt"), "(.*)", "username=(.*)\r\npassword=(.*)\r\n");
+            var matches = Regex.Matches(user1, pattern1);
+            foreach (Match match in matches)
             {
-                Console.WriteLine(userX.Element("username").Value);
-                try
-                {
-                    var web = new SxdWeb();
+                Logger.Log(string.Format("{0}. {1}", i++, match.Groups[8].Value), showTime: false);
+                var id = match.Groups[1].Value;
+                var url = match.Groups[2].Value;
+                var name = match.Groups[8].Value;
+                var username = match.Groups[9].Value;
+                var password = match.Groups[10].Value;
+                var server = url.Substring(7, url.IndexOf('.') - 7);
+                var tuple = web.LoginService(username, password, server);
+                var code = tuple.Item1;
+                var time = tuple.Item2;
+                var hash = tuple.Item3;
+                var time1 = tuple.Item4;
+                var hash1 = tuple.Item5;
+                Logger.Log(string.Format("code: {0}, time: {1}, hash: {2}, time1: {3}, hash1: {4}", code, time, hash, time1, hash1));
 
-                    var username = userX.Element("username").Value;
-                    var password = userX.Element("password").Value;
-                    var user = web.LoginService(username, password);
+                var pattern2 = string.Format(File.ReadAllText("pattern.txt"), id, string.Empty);
+                var replacement = string.Format(File.ReadAllText("replacement.txt"), id, url, code, time, hash, time1, hash1, name);
 
-                    var id = userX.Element("id").Value;
-                    var url = userX.Element("url").Value;
-                    var name = userX.Element("name").Value;
+                var user2 = File.ReadAllText(ConfigurationManager.AppSettings["userPath"], Encoding.GetEncoding("GBK"));
+                File.WriteAllText(ConfigurationManager.AppSettings["userPath"], Regex.Replace(user2, pattern2, replacement), Encoding.GetEncoding("GBK"));
+            }
 
-                    var userIni = File.ReadAllText(userPath, Encoding.GetEncoding("GBK"));
-                    File.WriteAllText(userPath, Regex.Replace(userIni, string.Format(pattern, id), string.Format(replacement, id, url, user.Code, user.Time, user.Hash, user.Time1, user.Hash1, name)), Encoding.GetEncoding("GBK"));
-
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-            }//foreach
         }//GenerateUserIni
 
         public static void Test()
@@ -48,8 +49,6 @@ namespace 神仙道
             var userPath = ConfigurationManager.AppSettings["userPath"];
 
 
-            /*var user = SxdClient.LoginPrepare("dayyear2", "orange", "s1");
-            Console.WriteLine(user);*/
 
 
             var id = "35586616.s1";
@@ -66,7 +65,6 @@ namespace 神仙道
             var hash = match.Groups[4].Value;
             var time1 = match.Groups[5].Value;
             var hash1 = match.Groups[6].Value;
-            //Console.WriteLine(match.Value);
 
 
             var client = new SxdClientOld();
@@ -114,15 +112,15 @@ namespace 神仙道
 
         public static void TestWhileInThread()
         {
-            Logger.Log("程序开始", ConsoleColor.Green);
-            while (true)
+            var client = new SxdClient();
+            for (var j = 0; j > -1; j++)
             {
                 try
                 {
                     // 1. 玩家选择
                     var i = 0;
                     var user = File.ReadAllText(ConfigurationManager.AppSettings["userPath"], Encoding.GetEncoding("GBK"));
-                    var pattern = string.Format(File.ReadAllText("pattern.txt"), "(.*)");
+                    var pattern = string.Format(File.ReadAllText("pattern.txt"), "(.*)", string.Empty);
                     var matches = Regex.Matches(user, pattern);
                     foreach (Match match in matches)
                         Logger.Log(string.Format("{0}. {1}", i++, match.Groups[8].Value), showTime: false);
@@ -143,7 +141,6 @@ namespace 神仙道
                     var hash1 = matches[i].Groups[7].Value;
 
                     // 3. 开始工作
-                    var client = new SxdClient();
                     client.Login(url, code, time, hash, time1, hash1);
                     client.GetPlayerInfo();
                     client.PlayerInfoContrast();
@@ -152,19 +149,23 @@ namespace 神仙道
                     client.GetLoginInfo();
 
                     client.GetPlayerFunction();
+                    client.PeachInfo();
+                    client.BatchGetPeach();
+
+
                     client.ChatWithPlayers("新年快乐");
 
 
-
                     //Thread.Sleep(1000);
-                    client.Login(url, code, time, hash, time1, hash1, true);
+                    //client.Login(url, code, time, hash, time1, hash1, true);
 
+                    //Console.ReadLine();
                     // E. 线程锁死
-                    Thread.CurrentThread.Join();
+                    //Thread.CurrentThread.Join();
                 }//try
                 catch (Exception ex)
                 {
-                    Logger.Log(string.Format("发现错误：{0}", ex.Message), ConsoleColor.Red);
+                    Logger.Log(string.Format("发现错误：{0}", ex.ToString()), ConsoleColor.Red);
                 }
             }//while (true)
         }//TestWhileInThread
