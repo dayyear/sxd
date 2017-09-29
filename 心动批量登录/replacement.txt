@@ -1,0 +1,8 @@
+﻿[{0}]
+url={1}
+code={2}
+time={3}
+hash={4}
+time1={5}
+hash1={6}
+name={7}
