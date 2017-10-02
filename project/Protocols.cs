@@ -147,5 +147,13 @@ namespace 神仙道
             return match.Groups[1].Value;
         }//GetTownName
 
+        public static string GetFunctionName(int functionId)
+        {
+            var match = Regex.Match(File.ReadAllText("protocols/FunctionTypeData.as"), string.Format(@"{0}:\[""(.*?)"",""(.*?)"",""(.*?)""\]", functionId));
+            if (!match.Success)
+                throw new Exception(string.Format("Not find function with id: {0}", functionId));
+            return match.Groups[3].Value;
+        }//GetFunctionName
+
     }//class
 }//namespace

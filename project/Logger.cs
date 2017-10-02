@@ -23,7 +23,6 @@ public static class Logger
         bool console = true, bool file = true,
         bool showTime = true, bool writeLine = true)
     {
-        Console.ForegroundColor = foregroundColor;
         using (var mtx = new Mutex(false, "Log"))
         {
             try
@@ -41,11 +40,14 @@ public static class Logger
                     if (file)
                         sw.WriteLine("<div style='color:{1};background:#000;'>{0}</div>",
                             HttpUtility.HtmlEncode(message), map[foregroundColor]);
+                    var currentColor = Console.ForegroundColor;
+                    Console.ForegroundColor = foregroundColor;
                     if (console)
                         if (writeLine)
                             Console.WriteLine(message);
                         else
                             Console.Write(message);
+                    Console.ForegroundColor = currentColor;
                 }//StreamWriter
             }//try
             finally { mtx.ReleaseMutex(); }

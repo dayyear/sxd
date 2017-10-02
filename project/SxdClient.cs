@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -18,15 +17,13 @@ namespace 神仙道
     {
         // Socket
         private Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        private Socket socketST = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-        // Socket状态
+        // 状态
         private short previousModule;
         private short previousAction;
-        private short previousModuleST;
-        private short previousActionST;
-
-        private bool reconnect;
+        private bool isConnected;
+        private readonly ManualResetEvent done = new ManualResetEvent(false);
+        private readonly ManualResetEvent receiveDone = new ManualResetEvent(false);
 
         // 用于Receive Callback
         readonly byte[] bufferRcvd = new byte[256];
@@ -34,33 +31,24 @@ namespace 神仙道
 
 
         // 玩家信息
-        private int playerId;           // Get from Mod_Player_Base.login(0, 0), used in Mod_Player_Base.player_info_contrast(0,48)
-        private string nickName;        // Get from Mod_Player_Base.get_player_info(0,2)
-        private string serverName;      // Get from Mod_StcLogin_Base.get_login_info(96,0)
-        private string passCode;        // Get from Mod_StcLogin_Base.get_login_info(96,0)
-
-        // 服务器地址与端口
-        private string serverHostST;
-        private int portST;
-
-        // 用于登录仙界
-        private int serverTime;
+        public int playerId;           // Get from Mod_Player_Base.login(0, 0), used in Mod_Player_Base.player_info_contrast(0,48)
         private int townMapId;
 
-        private readonly ManualResetEvent done = new ManualResetEvent(false);
 
-        private readonly ManualResetEvent receiveDone = new ManualResetEvent(false);
-        /*private readonly ManualResetEvent loginDone = new ManualResetEvent(false);
-        private readonly ManualResetEvent getLoginInfoDone = new ManualResetEvent(false);
-        private readonly ManualResetEvent getPlayerInfoDone = new ManualResetEvent(false);
-        private readonly ManualResetEvent stLoginDone = new ManualResetEvent(false);*/
+        // 用于仙界登录
+        public string serverHostST;
+        public int portST;
+        public string serverName;      // Get from Mod_StcLogin_Base.get_login_info(96,0)
+        public string nickName;        // Get from Mod_Player_Base.get_player_info(0,2)
+        public int serverTime;
+        public string passCode;        // Get from Mod_StcLogin_Base.get_login_info(96,0)
 
-        private bool getLoginInfoSuccess;
-        private bool getPlayerInfoSuccess;
-        private bool stLoginSuccess;
+
+
 
         //private Thread receiveThread;
 
+        private readonly List<int> functionList = new List<int>();
 
         /// <summary>
         /// Mod_Player_Base.login(0,0)
@@ -95,7 +83,7 @@ namespace 神仙道
             // -----------------------------------------------------------------------------
             // 2. 建立链接
             // -----------------------------------------------------------------------------
-            if (reconnect)
+            if (isConnected)
             {
                 // Shutdown掉socket
                 socket.Shutdown(SocketShutdown.Send);
@@ -106,8 +94,9 @@ namespace 神仙道
                 socket.Close();
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             }
+            isConnected = false;
             socket.Connect(new IPEndPoint(Dns.GetHostEntry(serverHost).AddressList[0], int.Parse(port)));
-            reconnect = true;
+            isConnected = true;
 
             // -----------------------------------------------------------------------------
             // 3. 接收数据
@@ -187,7 +176,7 @@ namespace 神仙道
             var power = (int)data[6];
             var experience = (long)data[7];
             townMapId = (int)data[9];
-            Logger.Log(string.Format("昵称：{0}，等级：{1}，元宝：{2}，铜钱：{3}，生命：{4}，体力：{5}，经验值：{6}，城镇ID：{7}", nickName, level, ingot, coins, health, power, experience, townMapId), ConsoleColor.Green);
+            Logger.Log(string.Format("昵称：{0}，等级：{1}，元宝：{2}，铜钱：{3}，生命：{4}，体力：{5}，经验值：{6}，城镇ID：{7}", nickName, level, ingot, coins, health, power, experience, townMapId));
             done.Set();
         }//GetPlayerInfoCallback
 
@@ -244,7 +233,7 @@ namespace 神仙道
             var statePoint = (int)data[0][0][8];
             var flowerCount = (int)data[0][0][9];
             var xianLing = (int)data[0][0][10];
-            Logger.Log(string.Format("竞技：{0}，帮派：{1}，战力：{2}，声望：{3}，阅历：{4}，成就：{5}，先攻：{6}，境界：{7}，鲜花：{8}，仙令：{9}", rankIng, factionName, combat, fame, skill, achievmentPoints, firstAttack, statePoint, flowerCount, xianLing), ConsoleColor.Green);
+            Logger.Log(string.Format("竞技：{0}，帮派：{1}，战力：{2}，声望：{3}，阅历：{4}，成就：{5}，先攻：{6}，境界：{7}，鲜花：{8}，仙令：{9}", rankIng, factionName, combat, fame, skill, achievmentPoints, firstAttack, statePoint, flowerCount, xianLing));
             done.Set();
         }//PlayerInfoContrastCallback
 
@@ -271,7 +260,7 @@ namespace 神仙道
         /// </summary>
         private void EnterTownCallback(JArray data)
         {
-            Logger.Log(string.Format("进入{0}，坐标X：{1}，坐标Y：{2}", Protocols.GetTownName(townMapId), (short)data[6], (short)data[7]), ConsoleColor.Green);
+            Logger.Log(string.Format("进入{0}，坐标X：{1}，坐标Y：{2}", Protocols.GetTownName(townMapId), (short)data[6], (short)data[7]));
             done.Set();
         }//EnterTownCallback
 
@@ -300,7 +289,7 @@ namespace 神仙道
             var status = (int)data[0];
             //var close_time_list = (JArray)data[1];
 
-            Logger.Log(string.Format("仙界入口状态：{0}", status == 0 ? "开启" : status.ToString()), ConsoleColor.Green);
+            Logger.Log(string.Format("仙界入口状态：{0}", status == 0 ? "开启" : status.ToString()));
             /*foreach (var item in close_time_list)
             {
                 Logger.Log(string.Format("关闭时间1：{0}", TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds((int)item[0]).ToString("yyyy-MM-dd HH:mm:ss")));
@@ -348,7 +337,7 @@ namespace 神仙道
             serverName = (string)data[2];
             serverTime = (int)data[3];
             passCode = (string)data[4];
-            Logger.Log(string.Format("仙界服务器地址：{0}:{1}，服务器名称：{2}，服务器时间：{3}", serverHostST, portST, serverName, TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds(serverTime).ToString("yyyy-MM-dd HH:mm:ss")), ConsoleColor.Green);
+            Logger.Log(string.Format("仙界服务器地址：{0}:{1}，服务器名称：{2}，服务器时间：{3}", serverHostST, portST, serverName, TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds(serverTime).ToString("yyyy-MM-dd HH:mm:ss")));
             done.Set();
         }//GetLoginInfoCallback
 
@@ -388,14 +377,9 @@ namespace 神仙道
         /// </summary>
         private void GetPlayerFunctionCallback(JArray data)
         {
-            var sb = new StringBuilder();
-            foreach (var item in data[0])
-            {
-                var id = (int)item[0];
-                var isPlayed = (byte)item[1];
-                sb.AppendFormat("{{id: {0}, isPlayed: {1}}}", id, isPlayed);
-            }
-            Logger.Log(sb.ToString(), ConsoleColor.Green);
+            functionList.Clear();
+            functionList.AddRange(data[0].Select(x => (int)x[0]));
+            Logger.Log(string.Format("玩家共开通{1}项功能：{0}", string.Join(",", functionList.Select(x => string.Format("{0}({1})", Protocols.GetFunctionName(x), x))), data[0].Count()));
             done.Set();
         }//GetPlayerFunctionCallback
 
@@ -406,10 +390,15 @@ namespace 神仙道
         /// </summary>
         public void PeachInfo()
         {
-            done.Reset();
-            Send(null, 40, 3);
-            if (!done.WaitOne(10000))
-                Logger.Log("获取仙桃信息超时", ConsoleColor.Red);
+            const int id = 56;
+            if (functionList.Contains(id))
+            {
+                done.Reset();
+                Send(null, 40, 3);
+                done.WaitOne();
+            }
+            else
+                Logger.Log(string.Format("未开通{0}功能", Protocols.GetFunctionName(id)), ConsoleColor.Red);
         }//PeachInfo
 
         /// <summary>
@@ -430,7 +419,7 @@ namespace 神仙道
             var peachNum = (byte)data[1];
             //var bAllGet = (byte)data[2] == 1;
             //var bCallPeach = (byte)data[3] == 1;
-            Logger.Log(string.Format("桃子等级：{0}，桃子数量：{1}", fruitLv, peachNum), ConsoleColor.Green);
+            Logger.Log(string.Format("还剩{1}个{0}级仙桃", fruitLv, peachNum));
             done.Set();
         }//PeachInfoCallback
 
@@ -441,10 +430,15 @@ namespace 神仙道
         /// </summary>
         public void BatchGetPeach()
         {
-            done.Reset();
-            Send(null, 40, 5);
-            if (!done.WaitOne(10000))
-                Logger.Log("一键摘桃超时", ConsoleColor.Red);
+            const int id = 56;
+            if (functionList.Contains(id))
+            {
+                done.Reset();
+                Send(null, 40, 5);
+                done.WaitOne();
+            }
+            else
+                Logger.Log(string.Format("未开通{0}功能", Protocols.GetFunctionName(id)), ConsoleColor.Red);
         }//BatchGetPeach
 
         /// <summary>
@@ -464,7 +458,10 @@ namespace 神仙道
         {
             var batchGetPeachResult = (byte)data[0];
             var warExp = (long)data[1];
-            Logger.Log(string.Format("batchGetPeachResult：{0}，warExp：{1}", batchGetPeachResult, warExp), ConsoleColor.Green);
+            if (batchGetPeachResult == 0)
+                Logger.Log(string.Format("一键摘桃成功，摘取经验值：{0}", warExp));
+            else
+                Logger.Log("一键摘桃失败", ConsoleColor.Red);
             done.Set();
         }//BatchGetPeachCallback
 
@@ -483,7 +480,7 @@ namespace 神仙道
             bytes.AddRange(Protocols.Encode(data, Protocols.GetPattern(module, action).Item2));
 
             // 1.3 在尾部添加上次的module和action
-            if (module + action != 0)
+            if (module != 0 || action != 0)
             {
                 bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
                 bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
@@ -532,7 +529,7 @@ namespace 神仙道
             {
                 var playName = (string)item[1];
                 var msgTxt = (string)item[5];
-                Logger.Log(string.Format("{0}说: {1}", playName, msgTxt), ConsoleColor.Green);
+                Logger.Log(string.Format("{0}说: {1}", playName, msgTxt));
             }
             done.Set();
         }//BroToPlayersCallback
@@ -834,56 +831,6 @@ namespace 神仙道
 
 
 
-        /// <summary>
-        /// Mod_StLogin_Base.login(94, 0)
-        /// 必备参数
-        /// serverName: from Http
-        /// playerId: from Mod_Player_Base.login
-        /// nickName: from Mod_Player_Base.get_player_info
-        /// passCode: from Mod_StcLogin_Base.get_login_info
-        /// </summary>
-        /*public bool StLogin()
-        {
-            stLoginSuccess = false;
-            stLoginDone.Reset();
-
-            var sentBytes = new List<byte>();
-
-            // 0. add module and action
-            const short module = 94;
-            const short action = 0;
-            AppendInt16(sentBytes, module);
-            AppendInt16(sentBytes, action);
-
-            // 1. add serverName
-            AppendString(sentBytes, serverName);
-            // 2. add playerId
-            AppendInt32(sentBytes, playerId);
-            // 3. add nickName
-            AppendString(sentBytes, nickName);
-            // 4. add time
-            AppendInt32(sentBytes, serverTime);
-            // 5. add passCode
-            AppendString(sentBytes, passCode);
-            // E. intert hader
-            IntertHead(sentBytes);
-
-            if (socketST.Connected)
-            {
-                socketST.Shutdown(SocketShutdown.Both);
-                socketST.Close();
-            }
-            socketST = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socketST.Connect(new IPEndPoint(Dns.GetHostEntry(serverHostST).AddressList[0], portST));
-            socketST.Send(sentBytes.ToArray());
-            //ReceiveST(socketST);
-
-            previousModuleST = module;
-            previousActionST = action;
-
-            stLoginDone.WaitOne();
-            return stLoginSuccess;
-        }//StLogin*/
 
         /// <summary>
         /// 世界聊天(6, 0)

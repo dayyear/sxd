@@ -113,61 +113,63 @@ namespace 神仙道
         public static void TestWhileInThread()
         {
             var client = new SxdClient();
-            for (var j = 0; j > -1; j++)
+            var clientST = new SxdClientST();
+            try
             {
-                try
-                {
-                    // 1. 玩家选择
-                    var i = 0;
-                    var user = File.ReadAllText(ConfigurationManager.AppSettings["userPath"], Encoding.GetEncoding("GBK"));
-                    var pattern = string.Format(File.ReadAllText("pattern.txt"), "(.*)", string.Empty);
-                    var matches = Regex.Matches(user, pattern);
-                    foreach (Match match in matches)
-                        Logger.Log(string.Format("{0}. {1}", i++, match.Groups[8].Value), showTime: false);
-                    Logger.Log("请选择: ", showTime: false, writeLine: false);
+                // 1. 玩家选择
+                var i = 0;
+                var user = File.ReadAllText(ConfigurationManager.AppSettings["userPath"], Encoding.GetEncoding("GBK"));
+                var pattern = string.Format(File.ReadAllText("pattern.txt"), "(.*)", string.Empty);
+                var matches = Regex.Matches(user, pattern);
+                foreach (Match match in matches)
+                    Logger.Log(string.Format("{0}. {1}", i++, match.Groups[8].Value), showTime: false);
+                Logger.Log("请选择: ", showTime: false, writeLine: false);
 
-                    var readLine = Console.ReadLine();
-                    Logger.Log(readLine, console: false, showTime: false);
-                    i = int.Parse(readLine);
-                    if (i >= matches.Count)
-                        throw new IndexOutOfRangeException();
+                var readLine = Console.ReadLine();
+                Logger.Log(readLine, console: false, showTime: false);
+                i = int.Parse(readLine);
+                if (i >= matches.Count)
+                    throw new IndexOutOfRangeException();
 
-                    // 2. 读取相应的玩家参数url, code, time, hash, time1, hash1
-                    var url = matches[i].Groups[2].Value;
-                    var code = matches[i].Groups[3].Value;
-                    var time = matches[i].Groups[4].Value;
-                    var hash = matches[i].Groups[5].Value;
-                    var time1 = matches[i].Groups[6].Value;
-                    var hash1 = matches[i].Groups[7].Value;
+                // 2. 读取相应的玩家参数url, code, time, hash, time1, hash1
+                var url = matches[i].Groups[2].Value;
+                var code = matches[i].Groups[3].Value;
+                var time = matches[i].Groups[4].Value;
+                var hash = matches[i].Groups[5].Value;
+                var time1 = matches[i].Groups[6].Value;
+                var hash1 = matches[i].Groups[7].Value;
 
-                    // 3. 开始工作
-                    client.Login(url, code, time, hash, time1, hash1);
-                    client.GetPlayerInfo();
-                    client.PlayerInfoContrast();
-                    client.EnterTown();
-                    client.GetStatus();
-                    client.GetLoginInfo();
-
-                    client.GetPlayerFunction();
-                    client.PeachInfo();
-                    client.BatchGetPeach();
+                // 3. 开始工作
+                client.Login(url, code, time, hash, time1, hash1);
+                client.GetPlayerInfo();
+                client.PlayerInfoContrast();
 
 
-                    client.ChatWithPlayers("新年快乐");
+                client.EnterTown();
+                client.GetPlayerFunction();
+
+                client.PeachInfo();
+                client.BatchGetPeach();
 
 
-                    //Thread.Sleep(1000);
-                    //client.Login(url, code, time, hash, time1, hash1, true);
+                client.ChatWithPlayers("BeelzebubTrials_360223_悠哉小魔王_360223_1_13");
 
-                    //Console.ReadLine();
-                    // E. 线程锁死
-                    //Thread.CurrentThread.Join();
-                }//try
-                catch (Exception ex)
-                {
-                    Logger.Log(string.Format("发现错误：{0}", ex.ToString()), ConsoleColor.Red);
-                }
-            }//while (true)
+                // 登录仙界
+                client.GetStatus();
+                client.GetLoginInfo();
+                clientST.Login(client);
+                //clientST.OpenTakeBible();
+                clientST.GetTakeBibleInfo();
+
+                //client.Login(url, code, time, hash, time1, hash1);
+
+                // E. 线程锁死
+                Thread.CurrentThread.Join();
+            }//try
+            catch (Exception ex)
+            {
+                Logger.Log(string.Format("发现错误：{0}", ex.ToString()), ConsoleColor.Red);
+            }
         }//TestWhileInThread
     }//class
 }//namespace

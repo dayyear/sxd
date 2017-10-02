@@ -62,9 +62,9 @@
     <Compile Include="SxdClientOld.cs" />
     <Compile Include="SxdWeb.cs" />
     <Compile Include="User.cs" />
+    <Compile Include="SxdClientST.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="HTMLPage1.htm" />
     <Content Include="replacement.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -79,6 +79,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="protocols\DramaXMLLang.as">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="protocols\FunctionTypeData.as">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="protocols\Mod_Abnormal_Base.as">
