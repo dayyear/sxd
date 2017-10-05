@@ -260,8 +260,9 @@ namespace 神仙道
         /// </summary>
         private void EnterTownCallback(JArray data)
         {
-            Logger.Log(string.Format("进入{0}，坐标X：{1}，坐标Y：{2}", Protocols.GetTownName(townMapId), (short)data[6], (short)data[7]));
-            done.Set();
+            Logger.Log(string.Format("{3}进入{0}，坐标X：{1}，坐标Y：{2}", Protocols.GetTownName(townMapId), data[6], data[7], data[5]));
+            if ((string)data[5] == nickName)
+                done.Set();
         }//EnterTownCallback
 
         /// <summary>
@@ -465,40 +466,6 @@ namespace 神仙道
             done.Set();
         }//BatchGetPeachCallback
 
-        private void Send(JArray data, short module, short action)
-        {
-            // -----------------------------------------------------------------------------
-            // 1. 构造命令字节
-            // -----------------------------------------------------------------------------
-            var bytes = new List<byte>();
-
-            // 1.1 添加module和action
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
-
-            // 1.2 添加实体
-            bytes.AddRange(Protocols.Encode(data, Protocols.GetPattern(module, action).Item2));
-
-            // 1.3 在尾部添加上次的module和action
-            if (module != 0 || action != 0)
-            {
-                bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
-                bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
-            }
-
-            // 1.4 在首部插入命令字节数
-            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
-
-            // 2. 发送数据
-            socket.Send(bytes.ToArray());
-
-            // -----------------------------------------------------------------------------
-            // E. 留存module和action
-            // -----------------------------------------------------------------------------
-            previousModule = module;
-            previousAction = action;
-        }//Send
-
         /// <summary>
         /// Mod_Chat_Base.chat_with_players(6,0)
         /// module:6, action:0
@@ -530,9 +497,99 @@ namespace 神仙道
                 var playName = (string)item[1];
                 var msgTxt = (string)item[5];
                 Logger.Log(string.Format("{0}说: {1}", playName, msgTxt));
+                if (playName == nickName)
+                    done.Set();
             }
-            done.Set();
         }//BroToPlayersCallback
+
+        // 领取奖励
+        /// <summary>
+        /// Mod_FunctionEnd_Base.game_function_end_gift(127,1)
+        /// module:127, action:1
+        /// request:[]
+        /// 
+        /// 
+        /// </summary>
+        public void GameFunctionEndGift()
+        {
+            done.Reset();
+            Send(null, 127, 1);
+            done.WaitOne();
+        }//GameFunctionEndGift
+
+        /// <summary>
+        /// Mod_FunctionEnd_Base.game_function_end_gift(127,1)
+        /// module:127, action:1
+        /// response:[[Utils.ShortUtil, Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.IntUtil, Utils.ByteUtil]]
+        /// 
+        /// 
+        /// </summary>
+        private void GameFunctionEndGiftCallback(JArray data)
+        {
+            Logger.Log("GameFunctionEndGift");
+            done.Set();
+        }//GameFunctionEndGiftCallback
+
+        /// <summary>
+        /// Mod_Item_Base.get_player_gift_all_info(2,6)
+        /// module:2, action:6
+        /// request:[]
+        /// 
+        ///   
+        /// </summary>
+        public void GetPlayerGiftAllInfo()
+        {
+            done.Reset();
+            Send(null, 2, 6);
+            done.WaitOne();
+        }//GetPlayerGiftAllInfo
+
+        /// <summary>
+        /// Mod_Item_Base.get_player_gift_all_info(2,6)
+        /// module:2, action:6
+        /// response:[[Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, [Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil]]]
+        /// 
+        ///   
+        /// </summary>
+        private void GetPlayerGiftAllInfoCallback(JArray data)
+        {
+            Logger.Log(string.Format("GetPlayerGiftAllInfo"));
+            done.Set();
+        }//GetPlayerGiftAllInfoCallback
+
+        /// <summary>
+        /// Mod_HeroesWar_Base.get_end_gift_info(42,17)
+        /// module:42, action:17
+        /// request:[]
+        /// 
+        ///   
+        /// </summary>
+        public void GetEndGiftInfo()
+        {
+            done.Reset();
+            Send(null, 42, 17);
+            done.WaitOne();
+        }//GetEndGiftInfo
+
+        /// <summary>
+        /// Mod_HeroesWar_Base.get_end_gift_info(42,17)
+        /// module:42, action:17
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil]
+        /// 
+        ///   
+        /// </summary>
+        private void GetEndGiftInfoCallback(JArray data)
+        {
+            Logger.Log(string.Format("GetEndGiftInfo"));
+            done.Set();
+        }//GetEndGiftInfoCallback
+
+
+
+
+
+
+
 
         private void ProcessPackage(byte[] package)
         {
@@ -583,15 +640,58 @@ namespace 神仙道
                     case "bro_to_players":
                         BroToPlayersCallback(data);
                         break;
+                    case "game_function_end_gift":
+                        GameFunctionEndGiftCallback(data);
+                        break;
+                    case "get_player_gift_all_info":
+                        GetPlayerGiftAllInfoCallback(data);
+                        break;
+                    case "get_end_gift_info":
+                        GetEndGiftInfoCallback(data);
+                        break;
                     default:
-                        return;
+                        break;
                 }
 
-                Logger.Log(string.Format("　package: {0}", BytesToString(package)), console: false);
-                Logger.Log(string.Format("　method: {0}({1},{2})", method, module, action), console: false);
-                Logger.Log(string.Format("　data: {0}", data.ToString(Formatting.None)), console: false);
+                //Logger.Log(string.Format("　package: {0}", BytesToString(package)), console: false);
+                Logger.Log(string.Format("　method: {0}({1},{2})", method, module, action), ConsoleColor.Yellow, console: false);
+                Logger.Log(string.Format("　data: {0}", data.ToString(Formatting.None)), ConsoleColor.Yellow, console: false);
             }//br, ms
         }//ProcessPackage
+
+        private void Send(JArray data, short module, short action)
+        {
+            // -----------------------------------------------------------------------------
+            // 1. 构造命令字节
+            // -----------------------------------------------------------------------------
+            var bytes = new List<byte>();
+
+            // 1.1 添加module和action
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
+            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
+
+            // 1.2 添加实体
+            bytes.AddRange(Protocols.Encode(data, Protocols.GetPattern(module, action).Item2));
+
+            // 1.3 在尾部添加上次的module和action
+            if (module != 0 || action != 0)
+            {
+                bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
+                bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
+            }
+
+            // 1.4 在首部插入命令字节数
+            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
+
+            // 2. 发送数据
+            socket.Send(bytes.ToArray());
+
+            // -----------------------------------------------------------------------------
+            // E. 留存module和action
+            // -----------------------------------------------------------------------------
+            previousModule = module;
+            previousAction = action;
+        }//Send
 
         /// <summary>
         /// 接收数据（异步I/O）
@@ -622,12 +722,12 @@ namespace 神仙道
             }//try
             catch (SocketException se)
             {
-                Logger.Log(string.Format("发现错误：{0}，错误代码：{1}", se.ToString(), se.ErrorCode), ConsoleColor.Red);
+                Logger.Log(string.Format("发现错误：{0}，错误代码：{1}", se, se.ErrorCode), ConsoleColor.Red);
                 receiveDone.Set();
             }
             catch (Exception ex)
             {
-                Logger.Log(string.Format("发现错误：{0}", ex.ToString()), ConsoleColor.Red);
+                Logger.Log(string.Format("发现错误：{0}", ex), ConsoleColor.Red);
                 receiveDone.Set();
             }
         }//ReceiveCallback
@@ -832,52 +932,6 @@ namespace 神仙道
 
 
 
-        /// <summary>
-        /// 世界聊天(6, 0)
-        /// [1. data.messageType, 2. data.message, 3. data.eipNum, 4. data.eipIndex]
-        /// public static const chat_with_players:Object = {
-        /// module:6, action:0, 
-        /// request:[1. Utils.UByteUtil, 2. Utils.StringUtil, 3. Utils.StringUtil, 4. Utils.StringUtil], 
-        /// response:[1. Utils.IntUtil, 2. Utils.UByteUtil]};
-        /// </summary>
-        /// <param name="message"></param>
-        /*public void ChatWithPlayers(string message)
-        {
-            var sentBytes = new List<byte>();
-
-            // 0. add module and action
-            const short module = 6;
-            const short action = 0;
-            AppendInt16(sentBytes, module);
-            AppendInt16(sentBytes, action);
-
-            // 1. add messageType
-            byte messageType = 1;
-            AppendByte(sentBytes, messageType);
-
-            // 2. add message
-            AppendString(sentBytes, message);
-
-            // 3. add eipNum
-            var eipNum = string.Empty;
-            AppendString(sentBytes, eipNum);
-
-            // 4. add eipIndex
-            var eipIndex = string.Empty;
-            AppendString(sentBytes, eipIndex);
-
-            // L. last module and action
-            AppendInt16(sentBytes, previousModule);
-            AppendInt16(sentBytes, previousAction);
-
-            // E. intert hader
-            IntertHead(sentBytes);
-
-            socket.Send(sentBytes.ToArray());
-            previousModule = module;
-            previousAction = action;
-
-        }//ChatWithPlayers*/
 
         /// <summary>
         /// 领取俸禄(0, 20)
@@ -886,7 +940,7 @@ namespace 神仙道
         /// request:[], 
         /// response:[Utils.UByteUtil, Utils.IntUtil]};
         /// </summary>
-        public void GetPlayerCampSalary()
+        /*public void GetPlayerCampSalary()
         {
             var sentBytes = new List<byte>();
 
@@ -906,7 +960,7 @@ namespace 神仙道
             socket.Send(sentBytes.ToArray());
             previousModule = module;
             previousAction = action;
-        }//getDayStone
+        }//getDayStone*/
 
         /// <summary>
         /// 领取仙令(13, 20)

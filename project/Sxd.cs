@@ -145,21 +145,41 @@ namespace 神仙道
                 client.PlayerInfoContrast();
 
 
-                client.EnterTown();
+                //client.EnterTown();
                 client.GetPlayerFunction();
 
-                client.PeachInfo();
-                client.BatchGetPeach();
+                // 领取奖励
+                client.GameFunctionEndGift();
+                client.GetPlayerGiftAllInfo();
+                client.GetEndGiftInfo();
+
+                //client.PeachInfo();
+                //client.BatchGetPeach();
 
 
-                client.ChatWithPlayers("BeelzebubTrials_360223_悠哉小魔王_360223_1_13");
+                //client.ChatWithPlayers("BeelzebubTrials_360223_悠哉小魔王_360223_1_13");
 
                 // 登录仙界
-                client.GetStatus();
+                /*client.GetStatus();
                 client.GetLoginInfo();
                 clientST.Login(client);
+
+
+                //clientST.GetRecentRobPlayer();
                 //clientST.OpenTakeBible();
-                clientST.GetTakeBibleInfo();
+                var takeBibleInfo = clientST.GetTakeBibleInfo();
+                switch (takeBibleInfo)
+                {
+                    case TakeBibleStatus.ReadyToRefresh:
+                        clientST.Refresh();
+                        clientST.StartTakeBible();
+                        clientST.GetTakeBibleInfo();
+                        break;
+                    case TakeBibleStatus.ReadyToStart:
+                        clientST.StartTakeBible();
+                        clientST.GetTakeBibleInfo();
+                        break;
+                }*/
 
                 //client.Login(url, code, time, hash, time1, hash1);
 

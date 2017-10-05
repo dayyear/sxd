@@ -6,12 +6,13 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace 神仙道
 {
+    public enum TakeBibleStatus { None, ReadyToRefresh, ReadyToStart, IsRunning, NoMoreTimes };
+
     public class SxdClientST
     {
         // Socket
@@ -29,9 +30,11 @@ namespace 神仙道
         readonly byte[] bufferRcvd = new byte[256];
         readonly List<byte> bytesRcvd = new List<byte>();
 
+        readonly Dictionary<byte, string> protections = new Dictionary<byte, string> { { 0, "未刷新" }, { 1, "白龙马" }, { 2, "沙悟净" }, { 3, "猪八戒" }, { 4, "孙悟空" }, { 5, "唐僧" } };
 
 
         /// <summary>
+        /// 登录
         /// Mod_StLogin_Base.login(94,0)
         /// module:94, action:0
         /// request:[Utils.StringUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.StringUtil]
@@ -78,6 +81,7 @@ namespace 神仙道
         }//Login
 
         /// <summary>
+        /// 登录
         /// Mod_StLogin_Base.login(94,0)
         /// module:94, action:0
         /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil]
@@ -125,43 +129,184 @@ namespace 神仙道
         /// Mod_StTakeBible_Base.open_take_bible(114,0)
         /// module:114, action:0
         /// response:[[Utils.IntUtil, Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil], Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.UByteUtil, Utils.IntUtil, [Utils.ByteUtil, Utils.ShortUtil, Utils.StringUtil, Utils.StringUtil, Utils.StringUtil, Utils.ShortUtil], Utils.ByteUtil]
-        /// example: [[[6849,3,1506952585,1506954385,1800,621,1,0],[206714,2,1506953866,1506955366,1500,0,1,0],[5855,2,1506953811,1506955311,1500,0,1,0],[14674,2,1506952910,1506954410,1500,0,1,0],[3560,3,1506952904,1506954704,1800,2064,1,0],[11708,3,1506953210,1506955010,1800,0,1,0],[8352,2,1506952856,1506954356,1500,0,1,0],[2128,4,1506953868,1506955968,2100,0,1,0],[6334,4,1506952803,1506954903,2100,0,1,0],[8210,2,1506953647,1506955147,1500,0,1,0],[206971,3,1506953231,1506955031,1800,0,1,0],[613,4,1506952703,1506954803,2100,322,1,0],[200937,1,1506953705,1506954905,1200,0,1,0],[7913,3,1506952853,1506954653,1800,0,1,0],[1884,1,1506953633,1506954833,1200,0,1,0],[168712,3,1506952617,1506954417,1800,0,1,0],[206954,2,1506952921,1506954421,1500,0,1,0],[7898,1,1506953671,1506954871,1200,0,1,0],[8007,2,1506953007,1506954507,1500,0,1,0],[168680,3,1506954276,1506956076,1800,0,1,0],[642,2,1506952853,1506954353,1500,0,1,0],[8351,2,1506952852,1506954352,1500,0,1,0],[206,1,1506953676,1506954876,1200,0,1,0],[802,3,1506952705,1506954505,1800,0,1,0]],0,5,2,2,0,0,6,0,[],0]
-        /// Line in StTakeBibleController.as
-        ///   
+        /// example: [[[3520,1,1507113758,1507114958,1200,0,1,0],[17995,3,1507114743,1507116543,1800,0,1,0],[815,1,1507113740,1507114940,1200,0,1,0],[1977,3,1507113586,1507115386,1800,1780,1,0],[205317,4,1507113927,1507116027,2100,0,1,0],[205754,2,1507114498,1507115998,1500,0,1,0],[205960,1,1507114244,1507115444,1200,0,1,0],[8897,2,1507114448,1507115948,1500,7659,1,0],[17764,4,1507112830,1507114930,2100,1033,1,0],[17840,3,1507113415,1507115215,1800,0,1,0],[206801,1,1507114333,1507115533,1200,0,1,0],[3122,2,1507114699,1507116199,1500,0,1,0],[22160,2,1507114020,1507115520,1500,0,1,0],[7815,3,1507113095,1507114895,1800,7714,1,0],[203725,2,1507114698,1507116198,1500,0,1,0],[19232,2,1507113777,1507115277,1500,0,1,0],[903,1,1507114319,1507115519,1200,0,1,0],[8247,3,1507113148,1507114948,1800,0,1,0],[1980,2,1507113904,1507115404,1500,0,1,0],[3445,1,1507114254,1507115454,1200,0,1,0],[3507,4,1507113562,1507115662,2100,3520,1,0],[19173,1,1507114151,1507115351,1200,0,1,0],[7790,4,1507113300,1507115400,2100,0,1,0],[205320,1,1507113579,1507114779,1200,0,1,0]],
+        ///             0,5,2,3,0,0,6,0,[],0]
+        /// Line 58-66 in StTakeBibleController.as:
+        ///   _loc_2.protectPlayerId = _loc_1[1];
+        ///   _loc_2.classTakePlayer = this.renderClssTakePlayer(_loc_1[0]);
+        ///   _loc_2.canRobTimes = _loc_1[2];
+        ///   _loc_2.canProtectTimes = _loc_1[3];
+        ///   _loc_2.canTakeBibleTimes = _loc_1[4];
+        ///   _loc_2.quicklyTimes = _loc_1[5];
+        ///   _loc_2.bless = _loc_1[6];
+        ///   _loc_2.type = _loc_1[7];
+        ///   _loc_2.time = _loc_1[8];
+        /// Line 99-110 in StTakeBibleController.as:
+        ///   _loc_7.protectPlayerId = param1[_loc_6][5];
+        ///   _loc_7.playerId = param1[_loc_6][0];
+        ///   _loc_7.isMainPlayer = _loc_7.playerId == _ctrl.stLogin.playerId;
+        ///   _loc_7.isProtectPlayer = _loc_7.protectPlayerId == _ctrl.stLogin.playerId;
+        ///   _loc_7.protection = param1[_loc_6][1];
+        ///   _loc_7.startTime = DateTime.formatServerTime(param1[_loc_6][2]);
+        ///   _loc_7.mainTime = _loc_3;
+        ///   _loc_7.arrivalTime = DateTime.formatServerTime(param1[_loc_6][3]);
+        ///   _loc_7.distance = param1[_loc_6][4];
+        ///   _loc_7.sequence_id = param1[_loc_6][6];
+        ///   _loc_7.is_deeds_so = param1[_loc_6][7];
+        ///   _loc_7.isDeeds = _loc_7.is_deeds_so == 1;
         /// </summary>
         private void OpenTakeBibleCallback(JArray data)
         {
-            Logger.Log("OpenTakeBible");
+            var players = (JArray)data[0];
+            Logger.Log(string.Format("打开护送取经界面，获取取经玩家：{0}", string.Join(",", players.Select(x => string.Format("{0}({1})", protections[(byte)x[1]], x[0])))));
+            Logger.Log(string.Format("今日还可拦截{0}次，可取经{1}次，帮助好友护送{2}次", data[2], data[4], data[3]));
             done.Set();
         }//OpenTakeBibleCallback
 
+        // 取经状态
+        private TakeBibleStatus takeBibleStatus;
         /// <summary>
         /// Mod_StTakeBible_Base.get_take_bible_info(114,2)
         /// module:114, action:2
         /// request:[]
         /// </summary>
-        public void GetTakeBibleInfo()
+        public TakeBibleStatus GetTakeBibleInfo()
         {
             done.Reset();
             Send(null, 114, 2);
             done.WaitOne();
+            return takeBibleStatus;
         }//GetTakeBibleInfo
 
         /// <summary>
         /// Mod_StTakeBible_Base.get_take_bible_info(114,2)
         /// module:114, action:2
-        /// response:[[Utils.UByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil, Utils.StringUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil], Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.UByteUtil, Utils.StringUtil, Utils.ByteUtil, Utils.ByteUtil]
-        /// example: [[[1,20,775000,90,40,5,13],[2,25,925000,180,80,3,538],[3,30,1265000,340,150,3,600],[4,35,1815000,550,300,2,560],[5,40,4199980,1500,1000,1,0]],[],1,3,0,0,0,"",0,0]
-        /// example: [[[1,20,775000,90,40,5,13],[2,25,925000,180,80,3,538],[3,30,1265000,340,150,3,600],[4,35,1815000,550,300,2,560],[5,40,4199980,1500,1000,1,0]],[],2,3,10,1,3,"",0,16] 正在护送猪八戒
-        /// 2.takeBibleTimes, 3.totalTakeBibleTimes, 4.refreshPrice, 5.takeBibleStatus, 6.canProtection, 7.protectPlayer, 8.bless, 9.buff(声望加成)
-        /// Line in StTakeBibleController.as
-        ///   
+        /// response:[[Utils.UByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil], 
+        ///           [Utils.IntUtil, Utils.StringUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil], 
+        ///            Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.UByteUtil, Utils.StringUtil, Utils.ByteUtil, Utils.ByteUtil]
+        /// example: [[[1,20,775000,90,40,5,13],[2,25,925000,180,80,3,538],[3,30,1265000,340,150,3,625],[4,35,1815000,550,300,2,560],[5,40,4199980,1500,1000,1,0]],
+        ///          [],0,3,0,0,0,"",0,0]
+        /// 白龙马:  [[[1,20,775000,90,40,5,13],[2,25,925000,180,80,3,538],[3,30,1265000,340,150,3,625],[4,35,1815000,550,300,2,560],[5,40,4199980,1500,1000,1,0]],
+        ///          [],0,3,10,0,1,"",0,2]
+        /// 开始护送:[[[1,20,775000,90,40,5,13],[2,25,925000,180,80,3,538],[3,30,1265000,340,150,3,625],[4,35,1815000,550,300,2,560],[5,40,4199980,1500,1000,1,0]],
+        ///          [],1,3,10,1,1,"",0,2]
+        /// 沙悟净： [[[1,20,670000,80,0,4,870],[2,25,830000,180,0,3,120],[3,30,1170000,340,0,3,275],[4,35,1620000,500,0,1,230],[5,40,4134720,1600,0,2,120]],
+        ///          [],0,3,10,0,2,"",0,10]
+        /// 开始护送:[[[1,20,675000,80,0,4,870],[2,25,835000,180,0,3,120],[3,30,1175000,340,0,3,275],[4,35,1625000,500,0,1,230],[5,40,4153500,1600,0,2,120]],
+        ///          [],1,3,10,1,2,"",0,10]
+        /// Line 217-226 in StTakeBibleController.as:
+        ///   _loc_2.protectionList = this.renderProtectionList(_loc_1[0]);
+        ///   _loc_2.protectPlayerList = this.renderProtectPlayerList(_loc_1[1]);
+        ///   _loc_2.takeBibleTimes = _loc_1[2];
+        ///   _loc_2.totalTakeBibleTimes = _loc_1[3];
+        ///   _loc_2.refreshPrice = _loc_1[4];
+        ///   _loc_2.takeBibleStatus = _loc_1[5];
+        ///   _loc_2.canProtection = _loc_1[6];
+        ///   _loc_2.protectPlayer = _ctrl.player.removeNickNameSuffix(_loc_1[7]);
+        ///   _loc_2.bless = _loc_1[8];
+        ///   _loc_2.buff = _loc_1[9]; // 声望加成
         /// </summary>
         private void GetTakeBibleInfoCallback(JArray data)
         {
-            Logger.Log("GetTakeBibleInfo");
+            takeBibleStatus = TakeBibleStatus.None;
+            var _takeBibleTimes = (byte)data[2];
+            var _totalTakeBibleTimes = (byte)data[3];
+            var _takeBibleStatus = (byte)data[5];
+            var _canProtection = (byte)data[6];
+            Logger.Log(string.Format("今日可取经共{0}次，已经取经{1}次，当前取经使者：{2}（{3}）",
+                _totalTakeBibleTimes, _takeBibleTimes, protections[_canProtection], _takeBibleStatus == 0 ? "未开始" : "已开始"));
+
+            if (_takeBibleTimes == _totalTakeBibleTimes)
+                takeBibleStatus = TakeBibleStatus.NoMoreTimes;
+            else if (_canProtection == 0)
+                takeBibleStatus = TakeBibleStatus.ReadyToRefresh;
+            else if (_takeBibleStatus == 0)
+                takeBibleStatus = TakeBibleStatus.ReadyToStart;
+            else
+                takeBibleStatus = TakeBibleStatus.IsRunning;
             done.Set();
         }//GetTakeBibleInfoCallback
+
+        /// <summary>
+        /// 获取最近打劫玩家，猜想可能用于仇人
+        /// Mod_StTakeBible_Base.get_recent_rob_player(114,19)
+        /// module:114, action:19
+        /// request:[]
+        /// </summary>
+        public void GetRecentRobPlayer()
+        {
+            done.Reset();
+            Send(null, 114, 19);
+            done.WaitOne();
+        }//GetRecentRobPlayer
+
+        /// <summary>
+        /// 获取最近打劫玩家，猜想可能用于仇人
+        /// Mod_StTakeBible_Base.get_recent_rob_player(114,19)
+        /// module:114, action:19
+        /// response:[[Utils.IntUtil]]
+        /// </summary>
+        private void GetRecentRobPlayerCallback(JArray data)
+        {
+            Logger.Log("GetRecentRobPlayer");
+            done.Set();
+        }//GetRecentRobPlayerCallback
+
+        /// <summary>
+        /// Mod_StTakeBible_Base.refresh(114,8)
+        /// module:114, action:8
+        /// request:[]
+        /// </summary>
+        public void Refresh()
+        {
+            done.Reset();
+            Send(null, 114, 8);
+            done.WaitOne();
+        }//Refresh
+
+        /// <summary>
+        /// Mod_StTakeBible_Base.refresh(114,8)
+        /// module:114, action:8
+        /// response:[Utils.UByteUtil, Utils.UByteUtil, Utils.ShortUtil, Utils.ByteUtil]
+        /// example: [9,1,12,2]
+        /// Line 340-343 in StTakeBibleController.as:
+        ///   _loc_2.msg = _loc_1[0];
+        ///   _loc_2.newProtection = _loc_1[1];
+        ///   _loc_2.nextPrice = _loc_1[2];
+        ///   _loc_2.buff = _loc_1[3];
+        /// </summary>
+        private void RefreshCallback(JArray data)
+        {
+            Logger.Log(string.Format("刷新当前取经使者{0}，声望加成{1}%", protections[(byte)data[1]], data[3]));
+            done.Set();
+        }//RefreshCallback
+
+        /// <summary>
+        /// Mod_StTakeBible_Base.start_take_bible(114,10)
+        /// module:114, action:10
+        /// request:[]
+        /// </summary>
+        public void StartTakeBible()
+        {
+            done.Reset();
+            Send(null, 114, 10);
+            done.WaitOne();
+        }//StartTakeBible
+
+        /// <summary>
+        /// Mod_StTakeBible_Base.start_take_bible(114,10)
+        /// module:114, action:10
+        /// response:[Utils.UByteUtil, Utils.ByteUtil]
+        /// example: [9,20]
+        /// Line 407-408 in StTakeBibleController.as:
+        ///   _loc_2.msg = _loc_1[0];
+        ///   _loc_2.item_id = _loc_1[1];
+        /// </summary>
+        private void StartTakeBibleCallback(JArray data)
+        {
+            Logger.Log("开始取经");
+            done.Set();
+        }//StartTakeBibleCallback
 
 
 
@@ -195,13 +340,22 @@ namespace 神仙道
                     case "get_take_bible_info":
                         GetTakeBibleInfoCallback(data);
                         break;
+                    case "get_recent_rob_player":
+                        GetRecentRobPlayerCallback(data);
+                        break;
+                    case "refresh":
+                        RefreshCallback(data);
+                        break;
+                    case "start_take_bible":
+                        StartTakeBibleCallback(data);
+                        break;
                     default:
                         break;
                 }
 
-                Logger.Log(string.Format("　package: {0}", BytesToString(package)), console: false);
-                Logger.Log(string.Format("　method: {0}({1},{2})", method, module, action), console: false);
-                Logger.Log(string.Format("　data: {0}", data.ToString(Formatting.None)), console: false);
+                //Logger.Log(string.Format("　package: {0}", BytesToString(package)), console: false);
+                Logger.Log(string.Format("　method: {0}({1},{2})", method, module, action), ConsoleColor.Yellow, console: false);
+                Logger.Log(string.Format("　data: {0}", data.ToString(Formatting.None)), ConsoleColor.Yellow, console: false);
             }//br, ms
         }//ProcessPackage
 
