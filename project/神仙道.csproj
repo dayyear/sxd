@@ -36,11 +36,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ionic.Zlib">
-      <HintPath>G:\zlib\DotNetZipLib-DevKit-v1.9\zlib-v1.9\Release\Ionic.Zlib.dll</HintPath>
+      <HintPath>..\心动批量登录\Ionic.Zlib.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>G:\Json\Json100r3\Bin\net40\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\心动批量登录\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />

@@ -1,7 +1,7 @@
 ﻿*.log
 *.suo
 *.jpg
-user.ini
+/user.ini
 browser.ini
 bin/
 obj/
