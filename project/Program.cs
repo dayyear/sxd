@@ -35,6 +35,7 @@ namespace 神仙道
 
             //Sxd.GenerateUserIni();
             //Sxd.Test();
+            //Sxd.Analyze();
             Sxd.TestWhileInThread();
         }
 

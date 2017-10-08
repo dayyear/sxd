@@ -5,9 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace 神仙道
 {
@@ -30,15 +27,6 @@ namespace 神仙道
                     stamp, rnd.NextDouble(), username, password, captcha_identifier, captcha);
                 var responseString = Get(uri);
 
-                /*var match = Regex.Match(responseString, "\"username\":\".*?\"");
-                if (match.Success &&
-                    JsonConvert.SerializeObject(
-                        new { username },
-                        new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii }
-                    ).Equals("{" + match.Value + "}"))
-                    break;
-                if (!responseString.Contains("needCaptcha"))
-                    throw new Exception("response does not coutain the string \"needCaptcha\"");*/
                 if (!responseString.Contains("needCaptcha"))
                     break;
 

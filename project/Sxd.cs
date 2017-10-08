@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Xml.Linq;
 
 namespace 神仙道
 {
@@ -44,75 +45,22 @@ namespace 神仙道
 
         }//GenerateUserIni
 
-        public static void Test()
+
+        public static void Analyze()
         {
-            var userPath = ConfigurationManager.AppSettings["userPath"];
-
-
-
-
-            var id = "35586616.s1";
-            var match = Regex.Match(File.ReadAllText(userPath, Encoding.GetEncoding("GBK")), string.Format(File.ReadAllText("pattern.txt"), id));
-            if (!match.Success)
+            var client = new SxdClientTown();
+            var isReceive = false;
+            foreach (var item in File.ReadAllText("Log/领取俸禄.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
-                Logger.Log(string.Format("找不到用户[{0}]的信息", id));
-                return;
+                var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
+                client.Analyze(bytes.ToArray(), isReceive);
+                isReceive ^= true;
             }
-
-            var server = match.Groups[1].Value;
-            var code = match.Groups[2].Value;
-            var time = match.Groups[3].Value;
-            var hash = match.Groups[4].Value;
-            var time1 = match.Groups[5].Value;
-            var hash1 = match.Groups[6].Value;
-
-
-            var client = new SxdClientOld();
-            const int gap = 1000;
-
-            Thread.Sleep(gap);
-            Logger.Log(string.Empty);
-            Logger.Log("登录...");
-            Logger.Log(string.Format("Login(server={0}, code={1}, time{2}, hash={3}, time1={4}, hash1={5})", server, code, time, hash, time1, hash1), console: false);
-            client.Login(server, code, time, hash, time1, hash1);
-
-            Thread.Sleep(gap);
-            Logger.Log(string.Empty);
-            Logger.Log("获取用户信息...");
-            Logger.Log("GetPlayerInfo...", console: false);
-            client.GetPlayerInfo();
-
-            Thread.Sleep(gap);
-            Logger.Log(string.Empty);
-            Logger.Log("领取俸禄...");
-            Logger.Log("GetPlayerCampSalary...", console: false);
-            client.GetPlayerCampSalary();
-
-            Thread.Sleep(gap);
-            Logger.Log(string.Empty);
-            Logger.Log("领取仙令...");
-            Logger.Log("PlayerGetXianLingGift...", console: false);
-            client.PlayerGetXianLingGift();
-
-            Thread.Sleep(gap);
-            Logger.Log(string.Empty);
-            Logger.Log("领取灵石...");
-            Logger.Log("GetDayStone...", console: false);
-            client.GetDayStone();
-
-            Thread.Sleep(gap);
-            Logger.Log(string.Empty);
-            Logger.Log("万事如意...");
-            Logger.Log("ChatWithPlayers...", console: false);
-            client.ChatWithPlayers("万事如意");
-
-            Console.ReadKey();
-
-        }//Test
+        }//Analyze
 
         public static void TestWhileInThread()
         {
-            var client = new SxdClient();
+            var clientTown = new SxdClientTown();
             var clientST = new SxdClientST();
             try
             {
@@ -140,33 +88,69 @@ namespace 神仙道
                 var hash1 = matches[i].Groups[7].Value;
 
                 // 3. 开始工作
-                client.Login(url, code, time, hash, time1, hash1);
-                client.GetPlayerInfo();
-                client.PlayerInfoContrast();
+                clientTown.Login(url, code, time, hash, time1, hash1);
+                /*var isReceive = false;
+                foreach (var item in File.ReadAllText("Log/领取礼包.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
+                    if (!isReceive)
+                    {
+                        client.Send(bytes.ToArray());
+                        Thread.Sleep(5000);
+                    }
+                    isReceive ^= true;
+                }*/
 
 
-                //client.EnterTown();
-                client.GetPlayerFunction();
-
-                // 领取奖励
-                client.GameFunctionEndGift();
-                client.GetPlayerGiftAllInfo();
-                client.GetEndGiftInfo();
-
-                //client.PeachInfo();
-                //client.BatchGetPeach();
+                clientTown.GetPlayerInfo();
+                clientTown.PlayerInfoContrast();
 
 
-                //client.ChatWithPlayers("BeelzebubTrials_360223_悠哉小魔王_360223_1_13");
+                clientTown.EnterTown();
+                clientTown.GetPlayerFunction();
+
+                // 领取俸禄、仙令、灵石
+                clientTown.GetPlayerCampSalary();
+                clientTown.PlayerGetXianLingGift();
+                clientTown.GetDayStone();
+
+                // 领取随机礼包
+                var endFunctionGift = new Dictionary<short, string> { { 1, "吉星高照" }, { 4, "龙鱼仙令" }, { 7, "灵脉" }, { 13, "拜关公" }, { 16, "龙鱼境界点" } };
+                foreach (var item in clientTown.GameFunctionEndGift()[0])
+                {
+                    var _id = (short)item[0];
+                    var _ingot = (int)item[8];
+                    Logger.Log(string.Format("领取{0}礼包", endFunctionGift[_id]));
+                    if (_ingot == 0)
+                        clientTown.RandomAward(_id);
+                    clientTown.GetGameFunctionEndGift(_id);
+                }
+
+                // 领取礼包
+                foreach (var item in clientTown.GetPlayerGiftAllInfo()[0])
+                {
+                    var _id = (int)item[0];
+                    var _message = (string)item[2];
+                    Logger.Log(_message);
+                    clientTown.PlayerGetSuperGift(_id);
+                }
+                clientTown.GetEndGiftInfo();
+
+                // 摘仙桃
+                clientTown.PeachInfo();
+                clientTown.BatchGetPeach();
+
+
+                clientTown.ChatWithPlayers("BeelzebubTrials_360223_悠哉小魔王_360223_1_13");
 
                 // 登录仙界
-                /*client.GetStatus();
-                client.GetLoginInfo();
-                clientST.Login(client);
+                clientTown.GetStatus();
+                clientTown.GetLoginInfo();
+                clientST.Login(clientTown);
 
 
-                //clientST.GetRecentRobPlayer();
-                //clientST.OpenTakeBible();
+                clientST.GetRecentRobPlayer();
+                clientST.OpenTakeBible();
                 var takeBibleInfo = clientST.GetTakeBibleInfo();
                 switch (takeBibleInfo)
                 {
@@ -179,7 +163,7 @@ namespace 神仙道
                         clientST.StartTakeBible();
                         clientST.GetTakeBibleInfo();
                         break;
-                }*/
+                }
 
                 //client.Login(url, code, time, hash, time1, hash1);
 

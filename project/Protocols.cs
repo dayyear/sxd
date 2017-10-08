@@ -45,12 +45,12 @@ namespace 神仙道
                                 bytes.AddRange(s);
                                 break;
                             default:
-                                Logger.Log("Unknown item string: " + (string)item);
+                                Logger.Log("Unknown item string: " + (string)item, ConsoleColor.Red);
                                 break;
                         }//switch ((string)item)
                         break;
                     default:
-                        Logger.Log("Unknown item type: " + item.Type);
+                        Logger.Log("Unknown item type: " + item.Type, ConsoleColor.Red);
                         break;
                 }//switch (item.Type)
             }//foreach (var item in pattern)
@@ -98,7 +98,7 @@ namespace 神仙道
                                 data.Add(Encoding.UTF8.GetString(br.ReadBytes(length)));
                                 break;
                             default:
-                                Logger.Log("Unknown item string: " + (string)item);
+                                Logger.Log("Unknown item string: " + (string)item, ConsoleColor.Red);
                                 break;
                         }//switch ((string)item)
                         break;
@@ -107,11 +107,11 @@ namespace 神仙道
                         var count = IPAddress.NetworkToHostOrder(br.ReadInt16());
                         for (var i = 0; i < count; i++)
                             jArray.Add(Decode(br.BaseStream, (JArray)item));
-                            //data.Add(Decode(br.BaseStream, (JArray)item));
+                        //data.Add(Decode(br.BaseStream, (JArray)item));
                         data.Add(jArray);
                         break;
                     default:
-                        Logger.Log("Unknown item type: " + item.Type);
+                        Logger.Log("Unknown item type: " + item.Type, ConsoleColor.Red);
                         break;
                 }//switch (item.Type)
             }//foreach (var item in pattern)
@@ -122,10 +122,10 @@ namespace 神仙道
         /// <summary>
         /// 通过module和action，在protocols目录下查找相应的源文件，返回method, request, response
         /// </summary>
-        public static Tuple<string, JArray, JArray> GetPattern(short module, short action)
+        public static Tuple<string, string, JArray, JArray> GetPattern(short module, short action)
         {
-            var matches = (from _file in Directory.GetFiles("protocols/", "*.as")
-                           let _m = Regex.Match(File.ReadAllText(_file), string.Format(@"public static const (.*?):Object = {{module:{0}, action:{1}, request:(\[.*?\]), response:(\[.*?\])}}", module, action))
+            var matches = (from _file in Directory.GetFiles("protocols/", "*Base.as")
+                           let _m = Regex.Match(File.ReadAllText(_file), string.Format(@"class (\S*) [\s\S]*?public static const (.*?):Object = {{module:{0}, action:{1}, request:(\[.*?\]), response:(\[.*?\])}}", module, action))
                            where _m.Success
                            select _m).ToList();
             if (!matches.Any())
@@ -133,10 +133,11 @@ namespace 神仙道
             if (matches.Count() > 1)
                 throw new Exception(string.Format("Find multiple protocols with module: {0}, action: {1}", module, action));
             var match = matches.First();
-            var method = match.Groups[1].Value;
-            var request = JArray.Parse(Regex.Replace(match.Groups[2].Value, "Utils.*?Util", "\"$0\""));
-            var response = JArray.Parse(Regex.Replace(match.Groups[3].Value, "Utils.*?Util", "\"$0\""));
-            return Tuple.Create(method, request, response);
+            var className = match.Groups[1].Value;
+            var method = match.Groups[2].Value;
+            var request = JArray.Parse(Regex.Replace(match.Groups[3].Value, "Utils.*?Util", "\"$0\""));
+            var response = JArray.Parse(Regex.Replace(match.Groups[4].Value, "Utils.*?Util", "\"$0\""));
+            return Tuple.Create(className, method, request, response);
         }//GetPattern
 
         public static string GetTownName(int townMapId)

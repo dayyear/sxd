@@ -53,15 +53,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocols.cs" />
     <Compile Include="Sxd.cs" />
     <Compile Include="SxdClient.cs" />
-    <Compile Include="SxdClientOld.cs" />
+    <Compile Include="SxdClientTown.cs" />
     <Compile Include="SxdWeb.cs" />
-    <Compile Include="User.cs" />
     <Compile Include="SxdClientST.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -71,10 +71,6 @@
     <Content Include="pattern.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="user.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="笔记.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

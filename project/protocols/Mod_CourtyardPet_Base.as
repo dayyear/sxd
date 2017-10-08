@@ -39,9 +39,11 @@
         public static const LACK_OF_SCRAP:int = 32;
         public static const FAILED:int = 33;
         public static const ERROR:int = 34;
+        public static const FAILD:int = 35;
+        public static const NOT_ENOUGTH_INGOT:int = 36;
         public static const get_player_info:Object = {module:216, action:0, request:[], response:[Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil]};
         public static const call:Object = {module:216, action:1, request:[Utils.UByteUtil], response:[Utils.UByteUtil, Utils.ShortUtil, Utils.UByteUtil]};
-        public static const get_courtyard_pet_list:Object = {module:216, action:2, request:[], response:[[Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.IntUtil, Utils.ShortUtil], [Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil]]};
+        public static const get_courtyard_pet_list:Object = {module:216, action:2, request:[], response:[[Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.IntUtil, Utils.ShortUtil, Utils.IntUtil], [Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil]]};
         public static const merge:Object = {module:216, action:3, request:[Utils.IntUtil], response:[Utils.UByteUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.IntUtil, Utils.ShortUtil]};
         public static const feed:Object = {module:216, action:4, request:[Utils.IntUtil, Utils.IntUtil], response:[Utils.UByteUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.IntUtil, Utils.ShortUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.IntUtil, Utils.ShortUtil]};
         public static const get_quest_list:Object = {module:216, action:5, request:[], response:[Utils.UByteUtil, Utils.ByteUtil, [Utils.IntUtil, [Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil]], Utils.UByteUtil, Utils.UByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.UByteUtil, [Utils.ShortUtil], [Utils.ShortUtil, Utils.IntUtil], [Utils.ShortUtil], Utils.UByteUtil, [Utils.IntUtil, Utils.IntUtil, Utils.IntUtil], Utils.IntUtil], Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil]};
@@ -55,7 +57,8 @@
         public static const set_auto_quest_pet:Object = {module:216, action:13, request:[Utils.ByteUtil, [Utils.ByteUtil, Utils.ByteUtil]], response:[Utils.UByteUtil]};
         public static const set_auto_get_award:Object = {module:216, action:14, request:[Utils.ByteUtil], response:[Utils.UByteUtil]};
         public static const auto_info:Object = {module:216, action:15, request:[], response:[Utils.ByteUtil, [Utils.ByteUtil, Utils.ByteUtil], Utils.ByteUtil, [Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, [Utils.IntUtil, Utils.IntUtil]]]};
-        public static const Actions:Array = ["get_player_info", "call", "get_courtyard_pet_list", "merge", "feed", "get_quest_list", "reload", "accept_quest", "get_award", "get_courtyard_normal_pet_list", "lucky_call", "one_key_feed", "exchange_pet", "set_auto_quest_pet", "set_auto_get_award", "auto_info"];
+        public static const buy_pet:Object = {module:216, action:16, request:[Utils.IntUtil], response:[Utils.UByteUtil]};
+        public static const Actions:Array = ["get_player_info", "call", "get_courtyard_pet_list", "merge", "feed", "get_quest_list", "reload", "accept_quest", "get_award", "get_courtyard_normal_pet_list", "lucky_call", "one_key_feed", "exchange_pet", "set_auto_quest_pet", "set_auto_get_award", "auto_info", "buy_pet"];
 
         public function Mod_CourtyardPet_Base()
         {

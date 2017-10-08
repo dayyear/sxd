@@ -20,13 +20,17 @@
         public static const ITEM_PACK_FULL:int = 13;
         public static const LINK_FATE_PACK_FULL:int = 14;
         public static const DRAGONBALL_PACK_FULL:int = 15;
-        public static const FAILURE:int = 16;
-        public static const NOT_ENOUGH_SCORE:int = 17;
-        public static const get_dunhuang_treasure_info:Object = {module:356, action:0, request:[], response:[[Utils.IntUtil, Utils.IntUtil, Utils.IntUtil], Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]};
+        public static const HAVE_GIFT:int = 16;
+        public static const FAILURE:int = 17;
+        public static const NOT_ENOUGH_SCORE:int = 18;
+        public static const LING_BAO_PACK_FULL:int = 19;
+        public static const NO_GIFT:int = 20;
+        public static const get_dunhuang_treasure_info:Object = {module:356, action:0, request:[], response:[[Utils.IntUtil, Utils.IntUtil, Utils.IntUtil], Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, [Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]]};
         public static const open_treasure:Object = {module:356, action:1, request:[Utils.UByteUtil], response:[Utils.UByteUtil, [Utils.IntUtil, Utils.IntUtil, Utils.IntUtil], Utils.IntUtil]};
         public static const get_exchange_info:Object = {module:356, action:2, request:[], response:[Utils.IntUtil, [Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]]};
         public static const exchange:Object = {module:356, action:3, request:[Utils.IntUtil], response:[Utils.UByteUtil]};
-        public static const Actions:Array = ["get_dunhuang_treasure_info", "open_treasure", "get_exchange_info", "exchange"];
+        public static const get_gift:Object = {module:356, action:4, request:[Utils.UByteUtil], response:[Utils.UByteUtil]};
+        public static const Actions:Array = ["get_dunhuang_treasure_info", "open_treasure", "get_exchange_info", "exchange", "get_gift"];
 
         public function Mod_DunhuangTreasure_Base()
         {

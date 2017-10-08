@@ -13,24 +13,16 @@ namespace 神仙道
 {
     public enum TakeBibleStatus { None, ReadyToRefresh, ReadyToStart, IsRunning, NoMoreTimes };
 
-    public class SxdClientST
+    public class SxdClientST : SxdClient
     {
-        // Socket
-        private Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-        // Socket状态
-        private short previousModule;
-        private short previousAction;
-        private bool isConnected;
-        private readonly ManualResetEvent done = new ManualResetEvent(false);
-        private readonly ManualResetEvent receiveDone = new ManualResetEvent(false);
-
-
-        // 用于Receive Callback
-        readonly byte[] bufferRcvd = new byte[256];
-        readonly List<byte> bytesRcvd = new List<byte>();
 
         readonly Dictionary<byte, string> protections = new Dictionary<byte, string> { { 0, "未刷新" }, { 1, "白龙马" }, { 2, "沙悟净" }, { 3, "猪八戒" }, { 4, "孙悟空" }, { 5, "唐僧" } };
+
+        public SxdClientST()
+        {
+            ServerName = "仙界服务器";
+        }
 
 
         /// <summary>
@@ -41,7 +33,7 @@ namespace 神仙道
         /// Line 6985 in View.as:
         ///   _data.call(Mod_StLogin_Base.login, chatConnectLoginBack, [obj.serverName, _ctrl.player.playerInfo.id, _ctrl.player.originNickName, obj.time, obj.passCode], true, 1);
         /// </summary>
-        public void Login(SxdClient client)
+        public void Login(SxdClientTown clientTown)
         {
             // -----------------------------------------------------------------------------
             // 2. 建立链接
@@ -58,7 +50,7 @@ namespace 神仙道
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             }
             isConnected = false;
-            socket.Connect(new IPEndPoint(Dns.GetHostEntry(client.serverHostST).AddressList[0], client.portST));
+            socket.Connect(new IPEndPoint(Dns.GetHostEntry(clientTown.serverHostST).AddressList[0], clientTown.portST));
             isConnected = true;
 
             // -----------------------------------------------------------------------------
@@ -76,7 +68,7 @@ namespace 神仙道
             // 4. 发送数据
             // -----------------------------------------------------------------------------
             done.Reset();
-            Send(new JArray { client.serverName, client.playerId, client.nickName, client.serverTime, client.passCode }, 94, 0);
+            Send(new JArray { clientTown.serverName, clientTown.playerId, clientTown.nickName, clientTown.serverTime, clientTown.passCode }, 94, 0);
             done.WaitOne();
         }//Login
 
@@ -309,181 +301,6 @@ namespace 神仙道
         }//StartTakeBibleCallback
 
 
-
-
-
-        private void ProcessPackage(byte[] package)
-        {
-            using (var ms = new MemoryStream(package, false))
-            using (var br = new BinaryReader(ms))
-            {
-                var module = IPAddress.NetworkToHostOrder(br.ReadInt16());
-                if (module == 0x789C)
-                {
-                    Logger.Log("  uncompress...", console: false);
-                    ProcessPackage(Ionic.Zlib.ZlibStream.UncompressBuffer(package.ToArray()));
-                    return;
-                }
-                var action = IPAddress.NetworkToHostOrder(br.ReadInt16());
-                var tuple = Protocols.GetPattern(module, action);
-                var data = Protocols.Decode(br.BaseStream, tuple.Item3);
-                var method = tuple.Item1;
-
-                switch (method)
-                {
-                    case "login":
-                        LoginCallback(data);
-                        break;
-                    case "open_take_bible":
-                        OpenTakeBibleCallback(data);
-                        break;
-                    case "get_take_bible_info":
-                        GetTakeBibleInfoCallback(data);
-                        break;
-                    case "get_recent_rob_player":
-                        GetRecentRobPlayerCallback(data);
-                        break;
-                    case "refresh":
-                        RefreshCallback(data);
-                        break;
-                    case "start_take_bible":
-                        StartTakeBibleCallback(data);
-                        break;
-                    default:
-                        break;
-                }
-
-                //Logger.Log(string.Format("　package: {0}", BytesToString(package)), console: false);
-                Logger.Log(string.Format("　method: {0}({1},{2})", method, module, action), ConsoleColor.Yellow, console: false);
-                Logger.Log(string.Format("　data: {0}", data.ToString(Formatting.None)), ConsoleColor.Yellow, console: false);
-            }//br, ms
-        }//ProcessPackage
-
-        /// <summary>
-        /// 接收数据（异步I/O）
-        /// </summary>
-        private void ReceiveCallback(IAsyncResult ar)
-        {
-            try
-            {
-                var bytesRead = socket.EndReceive(ar);
-                if (bytesRead == 0)
-                {
-                    Logger.Log("已断开仙界服务器", ConsoleColor.Red);
-                    receiveDone.Set();
-                    return;
-                }
-                bytesRcvd.AddRange(bufferRcvd.ToList().GetRange(0, bytesRead));
-                while (bytesRcvd.Count > 4)
-                {
-                    var length = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(bytesRcvd.ToArray(), 0));
-                    // 当接收数据不完整时，等待下次接收数据
-                    if (bytesRcvd.Count < 4 + length)
-                        break;
-                    var package = bytesRcvd.GetRange(4, length);
-                    bytesRcvd.RemoveRange(0, 4 + length);
-                    ProcessPackage(package.ToArray());
-                }//while (bytes.Count > 4)
-                socket.BeginReceive(bufferRcvd, 0, bufferRcvd.Length, SocketFlags.None, ReceiveCallback, null);
-            }//try
-            catch (SocketException se)
-            {
-                Logger.Log(string.Format("发现错误：{0}，错误代码：{1}", se.ToString(), se.ErrorCode), ConsoleColor.Red);
-                receiveDone.Set();
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(string.Format("发现错误：{0}", ex.ToString()), ConsoleColor.Red);
-                receiveDone.Set();
-            }
-        }//ReceiveCallback
-
-        /// <summary>
-        /// 接收数据（线程）
-        /// </summary>
-        private void Receive()
-        {
-            var buffer = new byte[256];
-            var bytes = new List<byte>();
-
-            try
-            {
-                while (true)
-                {
-                    if (!socket.Poll(5000000, SelectMode.SelectRead))
-                        continue;
-                    if (socket.Available == 0)
-                        throw new Exception("已断开游戏服务器");
-
-                    var bytesRead = socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
-                    bytes.AddRange(buffer.ToList().GetRange(0, bytesRead));
-                    while (bytes.Count > 4)
-                    {
-                        var length = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(bytes.ToArray(), 0));
-                        // 当接收数据不完整时，等待下次接收数据
-                        if (bytes.Count < 4 + length)
-                            break;
-                        var package = bytes.GetRange(4, length);
-                        bytes.RemoveRange(0, 4 + length);
-                        ProcessPackage(package.ToArray());
-                    }//while (bytes.Count > 4)
-                }//while (true)
-            }//try
-            catch (SocketException se)
-            {
-                Logger.Log(string.Format("发现错误：{0}，错误代码：{1}", se.Message, se.ErrorCode), ConsoleColor.Red);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(string.Format("发现错误：{0}", ex.Message), ConsoleColor.Red);
-            }
-        }//Receive
-
-        private void Send(JArray data, short module, short action)
-        {
-            // -----------------------------------------------------------------------------
-            // 1. 构造命令字节
-            // -----------------------------------------------------------------------------
-            var bytes = new List<byte>();
-
-            // 1.1 添加module和action
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(module)));
-            bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(action)));
-
-            // 1.2 添加实体
-            bytes.AddRange(Protocols.Encode(data, Protocols.GetPattern(module, action).Item2));
-
-            // 1.3 在尾部添加上次的module和action
-            if (module != 94 || action != 0)
-            {
-                bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousModule)));
-                bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder(previousAction)));
-            }
-
-            // 1.4 在首部插入命令字节数
-            bytes.InsertRange(0, BitConverter.GetBytes(IPAddress.HostToNetworkOrder(bytes.Count)));
-
-            // 2. 发送数据
-            socket.Send(bytes.ToArray());
-
-            // -----------------------------------------------------------------------------
-            // E. 留存module和action
-            // -----------------------------------------------------------------------------
-            previousModule = module;
-            previousAction = action;
-        }//Send
-
-        /// <summary>
-        /// 字节列表转化为可输出的十六进制字符串
-        /// </summary>
-        private static string BytesToString(IEnumerable<byte> package)
-        {
-            var sb = new StringBuilder();
-            foreach (var b in package)
-                sb.AppendFormat("{0} ", b.ToString("X2"));
-            sb.Remove(sb.Length - 1, 1);
-            return "[" + sb + "]";
-        }//BytesToString
 
     }//class SxdClient
 
