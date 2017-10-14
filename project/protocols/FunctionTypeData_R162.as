@@ -184,7 +184,8 @@ package com.assist.server.source
          187:["ChangeCard","99999","战斗变身卡"],
          188:["JobStrengthen","454","职业强化"],
          189:["CoinMission","381","铜钱副本"],
-         190:["Artifact","999999","主角神器"]
+         190:["Artifact","999999","主角神器"],
+         191:["FiveDeploy","999999","五行通天阵"]
       };
        
       

@@ -150,7 +150,7 @@ namespace 神仙道
 
         public static string GetFunctionName(int functionId)
         {
-            var match = Regex.Match(File.ReadAllText("protocols/FunctionTypeData.as"), string.Format(@"{0}:\[""(.*?)"",""(.*?)"",""(.*?)""\]", functionId));
+            var match = Regex.Match(File.ReadAllText("protocols/FunctionTypeData_R162.as"), string.Format(@"{0}:\[""(.*?)"",""(.*?)"",""(.*?)""\]", functionId));
             if (!match.Success)
                 throw new Exception(string.Format("Not find function with id: {0}", functionId));
             return match.Groups[3].Value;

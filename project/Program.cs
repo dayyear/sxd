@@ -33,7 +33,6 @@ namespace 神仙道
 
             Logger.Log("程序开始", ConsoleColor.Green);
 
-            //Sxd.GenerateUserIni();
             //Sxd.Test();
             //Sxd.Analyze();
             Sxd.TestWhileInThread();

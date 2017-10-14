@@ -20,7 +20,8 @@
         public static const up_library_level:Object = {module:85, action:2, request:[Utils.ByteUtil], response:[Utils.UByteUtil]};
         public static const use_stunt_skill:Object = {module:85, action:3, request:[Utils.ShortUtil], response:[Utils.UByteUtil, Utils.ShortUtil, Utils.ShortUtil]};
         public static const activate_library_upgrade:Object = {module:85, action:4, request:[], response:[Utils.UByteUtil]};
-        public static const Actions:Array = ["get_library_info", "up_library_level", "use_stunt_skill", "activate_library_upgrade"];
+        public static const get_artifact_stunt_info:Object = {module:85, action:5, request:[], response:[[Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil]]};
+        public static const Actions:Array = ["get_library_info", "up_library_level", "use_stunt_skill", "activate_library_upgrade", "get_artifact_stunt_info"];
 
         public function Mod_Library_Base()
         {

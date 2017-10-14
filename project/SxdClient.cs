@@ -40,11 +40,14 @@ namespace 神仙道
             methoDictionary.Add("Mod_StcLogin_Base.get_status", "GetStatusCallback");
             methoDictionary.Add("Mod_StcLogin_Base.get_login_info", "GetLoginInfoCallback");
             methoDictionary.Add("Mod_Player_Base.get_player_function", "GetPlayerFunctionCallback");
+            methoDictionary.Add("Mod_Player_Base.get_game_assistant_info", "GetGameAssistantInfoCallback");
             methoDictionary.Add("Mod_GetPeach_Base.peach_info", "PeachInfoCallback");
             methoDictionary.Add("Mod_GetPeach_Base.batch_get_peach", "BatchGetPeachCallback");
             methoDictionary.Add("Mod_Chat_Base.bro_to_players", "BroToPlayersCallback");
             methoDictionary.Add("Mod_Player_Base.get_player_camp_salary", "GetPlayerCampSalaryCallback");
+            methoDictionary.Add("Mod_Farm_Base.is_player_get_xian_ling_gift", "IsPlayerGetXianLingGiftCallback");
             methoDictionary.Add("Mod_Farm_Base.player_get_xian_ling_gift", "PlayerGetXianLingGiftCallback");
+            methoDictionary.Add("Mod_SealSoul_Base.day_stone_count", "DayStoneCountCallback");
             methoDictionary.Add("Mod_SealSoul_Base.get_day_stone", "GetDayStoneCallback");
             methoDictionary.Add("Mod_FunctionEnd_Base.game_function_end_gift", "GameFunctionEndGiftCallback");
             methoDictionary.Add("Mod_FunctionEnd_Base.random_award", "RandomAwardCallback");

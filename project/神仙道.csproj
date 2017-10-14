@@ -77,7 +77,7 @@
     <None Include="protocols\DramaXMLLang.as">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="protocols\FunctionTypeData.as">
+    <None Include="protocols\FunctionTypeData_R162.as">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="protocols\Mod_Abnormal_Base.as">

@@ -41,6 +41,7 @@
         public static const ERROR:int = 34;
         public static const FAILD:int = 35;
         public static const NOT_ENOUGTH_INGOT:int = 36;
+        public static const NOT_ENOUGTH_BUY_TIMES:int = 37;
         public static const get_player_info:Object = {module:216, action:0, request:[], response:[Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil]};
         public static const call:Object = {module:216, action:1, request:[Utils.UByteUtil], response:[Utils.UByteUtil, Utils.ShortUtil, Utils.UByteUtil]};
         public static const get_courtyard_pet_list:Object = {module:216, action:2, request:[], response:[[Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.IntUtil, Utils.ShortUtil, Utils.IntUtil], [Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil]]};

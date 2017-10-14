@@ -68,7 +68,7 @@ namespace 神仙道
             // 4. 发送数据
             // -----------------------------------------------------------------------------
             done.Reset();
-            Send(new JArray { clientTown.serverName, clientTown.playerId, clientTown.nickName, clientTown.serverTime, clientTown.passCode }, 94, 0);
+            //Send(new JArray { clientTown.serverName, clientTown.playerId, clientTown.nickName, clientTown.serverTime, clientTown.passCode }, 94, 0);
             done.WaitOne();
         }//Login
 
