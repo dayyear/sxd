@@ -156,5 +156,18 @@ namespace 神仙道
             return match.Groups[3].Value;
         }//GetFunctionName
 
+        // 获取随机礼包名称
+        private static readonly Dictionary<short, string> endFunctionGift =
+            new Dictionary<short, string> { { 1, "吉星高照" }, { 4, "龙鱼仙令" }, { 7, "灵脉" }, { 13, "拜关公" }, { 16, "龙鱼境界点" } };
+        /// <summary>
+        /// Line 7 in GiftTypeData.as:
+        ///     public static const endFunctionGift:Array = [[1, "JiXingZhongJie", "吉星高照", 0, 0, 0, 54, 1], [4, "LongYuZhongJie", "龙鱼仙令", 0, 0, 0, 70, 2], [7, "LingMaiZhongJie", "灵脉", 0, 0, 0, 85, 4], [13, "GuanGongZhongJie", "拜关公", 0, 0, 0, 55, 5], [16, "Longyu1ZhongJie", "龙鱼境界点", 0, 0, 0, 70, 3]];
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static string GetEndFunctionGiftName(short id)
+        {
+            return endFunctionGift[id];
+        }//GetEndFunctionGiftName
     }//class
 }//namespace

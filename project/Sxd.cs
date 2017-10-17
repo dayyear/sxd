@@ -129,16 +129,16 @@ namespace 神仙道
                     // 获取玩家功能列表
                     response = clientTown.GetPlayerFunction();
                     var functionIds = response[0].Select(x => (int)x[0]).ToList();
-                    Logger.Log(string.Format("玩家共开通{1}项功能：{0}", string.Join(",", functionIds.Select(x => string.Format("{0}({1})", Protocols.GetFunctionName(x), x))), functionIds.Count()));
+                    //Logger.Log(string.Format("玩家共开通{1}项功能：{0}", string.Join(",", functionIds.Select(x => string.Format("{0}({1})", Protocols.GetFunctionName(x), x))), functionIds.Count()));
 
                     // 获取游戏助手信息
                     response = clientTown.GetGameAssistantInfo();
                     var isGetCampSalary = (int)response[13];
                     var isCanGetStone = (int)response[30];
                     var stoneState = (int)response[31];
-                    Logger.Log(string.Format("is_can_get_stone：{0}，get_stone_state：{1}", response[30], response[31]));
+                    //Logger.Log(string.Format("is_can_get_stone：{0}，get_stone_state：{1}", response[30], response[31]));
 
-                    // 领取俸禄、仙令、灵石
+                    // 领取俸禄
                     switch (isGetCampSalary)
                     {
                         case -1:
@@ -154,34 +154,53 @@ namespace 神仙道
                         default:
                             throw new Exception(string.Format("未知的isGetCampSalary：{0}", isGetCampSalary));
                     }
-                    response = clientTown.IsPlayerGetXianLingGift();
-                    if ((byte) response[0] > 0)
+                    // 领取仙令
+                    // 70:["FindImmortal","286","喜从天降"],
+                    if (functionIds.Contains(70))
                     {
-                        response = clientTown.PlayerGetXianLingGift();
-                        //if ((byte) response[1] > 0)
+                        response = clientTown.IsPlayerGetXianLingGift();
+                        if ((byte)response[0] > 0)
+                        {
+                            response = clientTown.PlayerGetXianLingGift();
                             Logger.Log(string.Format("成功领取{0}仙令", response[1]));
-                    }
-                    else
-                        Logger.Log("未开通领取仙令功能，或者今日已领过仙令");
-                    if (stoneState > 0)
-                    {
-                        response = clientTown.GetDayStone();
-                        if ((int) response[1] > 0)
-                            Logger.Log(string.Format("成功领取{0}灵石", response[1]));
+                        }
                         else
-                            Logger.Log("今日已领过灵石");
+                            Logger.Log("今日已领过仙令");
                     }
                     else
-                        Logger.Log("未开通领取灵石功能");
-                    Thread.CurrentThread.Join();
+                        Logger.Log("未开通领取仙令功能");
+
+                    // 领取灵石
+                    switch (stoneState)
+                    {
+                        case 0:
+                        case 1:
+                            Logger.Log("未开通领取灵石功能");
+                            break;
+                        case 2:
+                            switch (isCanGetStone)
+                            {
+                                case 0:
+                                    response = clientTown.GetDayStone();
+                                    Logger.Log(string.Format("成功领取{0}灵石", response[1]));
+                                    break;
+                                case 1:
+                                    Logger.Log("今日已领过灵石");
+                                    break;
+                                default:
+                                    throw new Exception(string.Format("未知的isCanGetStone：{0}", isCanGetStone));
+                            }
+                            break;
+                        default:
+                            throw new Exception(string.Format("未知的stoneState：{0}", stoneState));
+                    }
 
                     // 领取随机礼包
-                    var endFunctionGift = new Dictionary<short, string> { { 1, "吉星高照" }, { 4, "龙鱼仙令" }, { 7, "灵脉" }, { 13, "拜关公" }, { 16, "龙鱼境界点" } };
                     foreach (var item in clientTown.GameFunctionEndGift()[0])
                     {
                         var _id = (short)item[0];
                         var _ingot = (int)item[8];
-                        Logger.Log(string.Format("领取{0}礼包", endFunctionGift[_id]));
+                        Logger.Log(string.Format("领取{0}礼包", Protocols.GetEndFunctionGiftName(_id)));
                         if (_ingot == 0)
                             clientTown.RandomAward(_id);
                         clientTown.GetGameFunctionEndGift(_id);
@@ -196,14 +215,37 @@ namespace 神仙道
                         clientTown.PlayerGetSuperGift(_id);
                     }
 
-                    // 领取结束礼包
-                    clientTown.GetEndGiftInfo();
+                    // 领取阵营战礼包
+                    response = clientTown.GetEndGiftInfo();
+                    if ((byte) response[0] == 27)
+                    {
+                        response = clientTown.GetEndGift();
+                        Logger.Log(string.Format("领取阵营战礼包，声望：{0}，铜钱：{1}", response[1], response[2]));
+                    }
+
 
                     // 摘仙桃
-                    clientTown.PeachInfo();
-                    clientTown.BatchGetPeach();
-
-
+                    // 56:["GetPeach","340","摘仙桃"],
+                    if (functionIds.Contains(56))
+                    {
+                        response = clientTown.PeachInfo();
+                        var _fruitLv = 70 + (byte) response[0]*5;
+                        var _peachNum = (byte) response[1];
+                        Logger.Log(string.Format("还剩{0}个{1}级仙桃", _peachNum, _fruitLv));
+                        if (_peachNum > 0)
+                        {
+                            response = clientTown.BatchGetPeach();
+                            if ((byte)response[0] == 0)
+                                Logger.Log(string.Format("一键摘桃成功，摘取经验值：{0}", response[1]));
+                            else
+                                Logger.Log("一键摘桃失败", ConsoleColor.Red);
+                        }
+                    }
+                    else
+                        Logger.Log("未开通摘仙桃功能");
+                    continue;
+                    Thread.CurrentThread.Join();
+                    
                     clientTown.ChatWithPlayers("BeelzebubTrials_360223_悠哉小魔王_360223_1_13");
 
                     // 登录仙界

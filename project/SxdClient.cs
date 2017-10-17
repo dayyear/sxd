@@ -55,6 +55,7 @@ namespace 神仙道
             methoDictionary.Add("Mod_Item_Base.get_player_gift_all_info", "GetPlayerGiftAllInfoCallback");
             methoDictionary.Add("Mod_Item_Base.player_get_super_gift", "PlayerGetSuperGiftCallback");
             methoDictionary.Add("Mod_HeroesWar_Base.get_end_gift_info", "GetEndGiftInfoCallback");
+            methoDictionary.Add("Mod_HeroesWar_Base.get_end_gift", "GetEndGiftCallback");
             //ST
             methoDictionary.Add("Mod_StLogin_Base.login", "LoginCallback");
             methoDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "OpenTakeBibleCallback");

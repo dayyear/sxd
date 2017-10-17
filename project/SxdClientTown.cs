@@ -169,17 +169,17 @@ namespace 神仙道
         ///     {
         ///         var _loc_2:* = param1[0][0];
         ///         var _loc_3:* = {};
-        ///         _loc_3.playerId = _loc_2[0];               // playerId
-        ///         _loc_3.rankIng = _loc_2[1];                // 竞技
-        ///         _loc_3.factionName  = _loc_2[2];           // 帮派
-        ///         _loc_3.combat = _loc_2[3];                 // 战力
-        ///         _loc_3.fame = _loc_2[4];                   // 声望
-        ///         _loc_3.skill = _loc_2[5];                  // 阅历
-        ///         _loc_3.achievmentPoints = _loc_2[6];       // 成就
-        ///         _loc_3.firstAttack = _loc_2[7];            // 先攻
-        ///         _loc_3.statePoint = _loc_2[8];             // 境界
-        ///         _loc_3.flowerCount = _loc_2[9];            // 鲜花
-        ///         _loc_3.xianLing = _loc_2[10];              // 仙令
+        ///         _loc_3.playerId = _loc_2[0];                // playerId
+        ///         _loc_3.rankIng = _loc_2[1];                 // 竞技
+        ///         _loc_3.factionName  = _loc_2[2];            // 帮派
+        ///         _loc_3.combat = _loc_2[3];                  // 战力
+        ///         _loc_3.fame = _loc_2[4];                    // 声望
+        ///         _loc_3.skill = _loc_2[5];                   // 阅历
+        ///         _loc_3.achievmentPoints = _loc_2[6];        // 成就
+        ///         _loc_3.firstAttack = _loc_2[7];             // 先攻
+        ///         _loc_3.statePoint = _loc_2[8];              // 境界
+        ///         _loc_3.flowerCount = _loc_2[9];             // 鲜花
+        ///         _loc_3.xianLing = _loc_2[10];               // 仙令
         ///         if (_loc_3.playerId == this.playerInfo.id)
         ///         {
         ///             this.playerInfo.practiceWar = _loc_3.combat;
@@ -396,6 +396,24 @@ namespace 神仙道
         /// Mod_FunctionEnd_Base.game_function_end_gift(127,1)
         /// module:127, action:1
         /// request:[]
+        /// response:[[0.Utils.ShortUtil, 1.Utils.ShortUtil, 2.Utils.IntUtil, 3.Utils.IntUtil, 4.Utils.IntUtil, 5.Utils.IntUtil, 6.Utils.ShortUtil, 7.Utils.ShortUtil, 8.Utils.IntUtil, 9.Utils.ByteUtil]]
+        /// Line 56-71 in FunctionEndData.as
+        ///     _loc_4 = GiftType.getEndFunctionGift(_loc_1[_loc_3][0]);
+        ///     GiftType.getEndFunctionGift(_loc_1[_loc_3][0]).giftId = _loc_4.id;
+        ///     _loc_4.iconPath = URI.functionEndUrl + _loc_4.id + ".png";
+        ///     _loc_4.flag = 1;
+        ///     _loc_4.message = "";
+        ///     _loc_4.addMsg = "";
+        ///     _loc_4.state_point = _loc_1[_loc_3][1];         // 境界
+        ///     _loc_4.skill = _loc_1[_loc_3][2];               // 阅历
+        ///     _loc_4.xian_ling = _loc_1[_loc_3][3];           // 仙令
+        ///     _loc_4.fame = _loc_1[_loc_3][4];                // 声望
+        ///     _loc_4.nimbus    = _loc_1[_loc_3][5];           // 灵气
+        ///     _loc_4.coin_buff = _loc_1[_loc_3][6];           // 铜钱加成
+        ///     _loc_4.exp_buff = _loc_1[_loc_3][7];            // 经验加成
+        ///     _loc_4.ingot = _loc_1[_loc_3][8];               // 元宝
+        ///     _loc_4.sortNum = 2000 + _loc_4.sort * 100;      // 排序
+        ///     _loc_4.bei = _loc_1[_loc_3][9];                 // 翻倍
         /// </summary>
         public JArray GameFunctionEndGift()
         {
@@ -404,28 +422,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GameFunctionEndGift
-        /// <summary>
-        /// Mod_FunctionEnd_Base.game_function_end_gift(127,1)
-        /// module:127, action:1
-        /// response:[[0.Utils.ShortUtil, 1.Utils.ShortUtil, 2.Utils.IntUtil, 3.Utils.IntUtil, 4.Utils.IntUtil, 5.Utils.IntUtil, 6.Utils.ShortUtil, 7.Utils.ShortUtil, 8.Utils.IntUtil, 9.Utils.ByteUtil]]
-        /// Line 56-71 in FunctionEndData.as
-        ///   _loc_4 = GiftType.getEndFunctionGift(_loc_1[_loc_3][0]);
-        ///   GiftType.getEndFunctionGift(_loc_1[_loc_3][0]).giftId = _loc_4.id;
-        ///   _loc_4.iconPath = URI.functionEndUrl + _loc_4.id + ".png";
-        ///   _loc_4.flag = 1;
-        ///   _loc_4.message = "";
-        ///   _loc_4.addMsg = "";
-        ///   _loc_4.state_point = _loc_1[_loc_3][1];
-        ///   _loc_4.skill = _loc_1[_loc_3][2];
-        ///   _loc_4.xian_ling = _loc_1[_loc_3][3];
-        ///   _loc_4.fame = _loc_1[_loc_3][4];
-        ///   _loc_4.nimbus = _loc_1[_loc_3][5];
-        ///   _loc_4.coin_buff = _loc_1[_loc_3][6];
-        ///   _loc_4.exp_buff = _loc_1[_loc_3][7];
-        ///   _loc_4.ingot = _loc_1[_loc_3][8];
-        ///   _loc_4.sortNum = 2000 + _loc_4.sort * 100;
-        ///   _loc_4.bei = _loc_1[_loc_3][9];
-        /// </summary>
         private void GameFunctionEndGiftCallback(JArray data)
         {
             response = data;
@@ -436,20 +432,26 @@ namespace 神仙道
         /// Mod_FunctionEnd_Base.random_award(127,3)
         /// module:127, action:3
         /// request:[Utils.ShortUtil]
+        /// response:[Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]
+        /// Line 202-208 in FunctionEndData.as
+        ///     _loc_3.state_point = param1[0];
+        ///     _loc_3.skill = param1[1];
+        ///     _loc_3.xian_ling = param1[2];
+        ///     _loc_3.fame = param1[3];
+        ///     _loc_3.nimbus = param1[4];
+        ///     _loc_3.exp_buff = param1[5];
+        ///     this.randomIngot = param1[6];
         /// </summary>
-        public void RandomAward(short id)
+        public JArray RandomAward(short id)
         {
             done.Reset();
             Send(new JArray(id), 127, 3);
             done.WaitOne();
+            return response;
         }//RandomAward
-        /// <summary>
-        /// Mod_FunctionEnd_Base.random_award(127,3)
-        /// module:127, action:3
-        /// response:[Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]
-        /// </summary>
         private void RandomAwardCallback(JArray data)
         {
+            response = data;
             done.Set();
         }//RandomAwardCallback
 
@@ -457,20 +459,21 @@ namespace 神仙道
         /// Mod_FunctionEnd_Base.get_game_function_end_gift(127,2)
         /// module:127, action:2
         /// request:[Utils.ShortUtil]
+        /// response:[0.Utils.UByteUtil, 1.Utils.ShortUtil, 2.Utils.IntUtil, 3.Utils.IntUtil, 4.Utils.IntUtil, 5.Utils.IntUtil, 6.Utils.ShortUtil, 7.Utils.ShortUtil, 8.Utils.ByteUtil]
+        /// Line 191-192 in FunctionEndData.as
+        ///     this.result = param1[0];
+        ///     this.isHaveNext = param1[8] == 1;
         /// </summary>
-        public void GetGameFunctionEndGift(short id)
+        public JArray GetGameFunctionEndGift(short id)
         {
             done.Reset();
             Send(new JArray(id), 127, 2);
             done.WaitOne();
+            return response;
         }//GetGameFunctionEndGift
-        /// <summary>
-        /// Mod_FunctionEnd_Base.get_game_function_end_gift(127,2)
-        /// module:127, action:2
-        /// response:[0.Utils.UByteUtil, 1.Utils.ShortUtil, 2.Utils.IntUtil, 3.Utils.IntUtil, 4.Utils.IntUtil, 5.Utils.IntUtil, 6.Utils.ShortUtil, 7.Utils.ShortUtil, 8.Utils.ByteUtil]
-        /// </summary>
         private void GetGameFunctionEndGiftCallback(JArray data)
         {
+            response = data;
             done.Set();
         }//GetGameFunctionEndGiftCallback
 
@@ -479,6 +482,13 @@ namespace 神仙道
         /// Mod_Item_Base.get_player_gift_all_info(2,6)
         /// module:2, action:6
         /// request:[]
+        /// response:[[Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, [Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil]]]
+        /// Line 1792-1796 in ItemData.as:
+        ///     _loc_2.giftId = param1[0];
+        ///     _loc_2.type = param1[1];
+        ///     _loc_2.name = GiftType.getCommonGiftName(_loc_2.type);
+        ///     _loc_2.message = param1[2];
+        ///     _loc_2.addMsg = param1[3];
         /// </summary>
         public JArray GetPlayerGiftAllInfo()
         {
@@ -487,17 +497,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetPlayerGiftAllInfo
-        /// <summary>
-        /// Mod_Item_Base.get_player_gift_all_info(2,6)
-        /// module:2, action:6
-        /// response:[[Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, [Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil]]]
-        /// Line 1792-1796 in ItemData.as:
-        ///    _loc_2.giftId = param1[0];
-        ///    _loc_2.type = param1[1];
-        ///    _loc_2.name = GiftType.getCommonGiftName(_loc_2.type);
-        ///    _loc_2.message = param1[2];
-        ///    _loc_2.addMsg = param1[3];
-        /// </summary>
         private void GetPlayerGiftAllInfoCallback(JArray data)
         {
             response = data;
@@ -508,127 +507,115 @@ namespace 神仙道
         /// Mod_Item_Base.player_get_super_gift(2,29)
         /// module:2, action:29
         /// request:[Utils.IntUtil]
+        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ShortUtil]]
         /// </summary>
-        public void PlayerGetSuperGift(int id)
+        public JArray PlayerGetSuperGift(int id)
         {
             done.Reset();
             Send(new JArray(id), 2, 29);
             done.WaitOne();
+            return response;
         }//PlayerGetSuperGift
-        /// <summary>
-        /// Mod_Item_Base.player_get_super_gift(2,29)
-        /// module:2, action:29
-        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ShortUtil]]
-        /// </summary>
         private void PlayerGetSuperGiftCallback(JArray data)
         {
+            response = data;
             done.Set();
         }//PlayerGetSuperGiftCallback
 
+        // 领取阵营战礼包
         /// <summary>
         /// Mod_HeroesWar_Base.get_end_gift_info(42,17)
         /// module:42, action:17
         /// request:[]
-        /// 
-        ///   
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil]
+        /// Line 223 in HeroesWarData.as
+        ///     oObject.list(this._objGetEndGiftInfo, _loc_1, ["has_gift"(YES:int = 27, NO:int = 28), "fame"(声望), "coin"(铜钱)]);
         /// </summary>
-        public void GetEndGiftInfo()
+        public JArray GetEndGiftInfo()
         {
             done.Reset();
             Send(null, 42, 17);
             done.WaitOne();
+            return response;
         }//GetEndGiftInfo
-        /// <summary>
-        /// Mod_HeroesWar_Base.get_end_gift_info(42,17)
-        /// module:42, action:17
-        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil]
-        /// 
-        ///   
-        /// </summary>
         private void GetEndGiftInfoCallback(JArray data)
         {
-            Logger.Log(string.Format("GetEndGiftInfo"));
+            response = data;
             done.Set();
         }//GetEndGiftInfoCallback
+
+        /// <summary>
+        /// Mod_HeroesWar_Base.get_end_gift(42,18)
+        /// module:42, action:18
+        /// request:[]
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil]
+        /// Line 233 in HeroesWarData.as
+        ///     oObject.list(this._objGetEndGift, _loc_1, ["has_gift"(YES:int = 27, NO:int = 28), "fame"(声望), "coin"(铜钱)]);
+        /// </summary>
+        public JArray GetEndGift()
+        {
+            done.Reset();
+            Send(null, 42, 18);
+            done.WaitOne();
+            return response;
+        }//GetEndGift
+        private void GetEndGiftCallback(JArray data)
+        {
+            response = data;
+            done.Set();
+        }//GetEndGiftCallback
 
         // 摘仙桃
         /// <summary>
         /// Mod_GetPeach_Base.peach_info(40,3)
         /// module:40, action:3
         /// request:[]
-        /// </summary>
-        public void PeachInfo()
-        {
-            const int _id = 56;
-            //if (functionList.Contains(_id))
-            //{
-            done.Reset();
-            Send(null, 40, 3);
-            done.WaitOne();
-            //}
-            //else
-            //Logger.Log(string.Format("未开通{0}功能", Protocols.GetFunctionName(_id)), ConsoleColor.Red);
-        }//PeachInfo
-        /// <summary>
-        /// Mod_GetPeach_Base.peach_info(40,3)
-        /// module:40, action:3
         /// response:[Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil]
         /// [19,5,1,0]
         /// Line 34,36,45-47 in GetPeachController.as:
-        ///   _loc_2.peachLv = _loc_1[0];
-        ///   _loc_2.fruitLv = 70 + _loc_2.peachLv * 5;
-        ///   _loc_2.peachNum = _loc_1[1];
-        ///   _loc_2.bAllGet = _loc_1[2] == 1;
-        ///   _loc_2.bCallPeach = _loc_1[3] == 1;
+        ///     _loc_2.peachLv = _loc_1[0];
+        ///     _loc_2.fruitLv = 70 + _loc_2.peachLv * 5;
+        ///     _loc_2.peachNum = _loc_1[1];
+        ///     _loc_2.bAllGet = _loc_1[2] == 1;
+        ///     _loc_2.bCallPeach = _loc_1[3] == 1;
         /// </summary>
+        public JArray PeachInfo()
+        {
+            done.Reset();
+            Send(null, 40, 3);
+            done.WaitOne();
+            return response;
+        }//PeachInfo
         private void PeachInfoCallback(JArray data)
         {
-            var fruitLv = 70 + (byte)data[0] * 5;
-            var peachNum = (byte)data[1];
-            //var bAllGet = (byte)data[2] == 1;
-            //var bCallPeach = (byte)data[3] == 1;
-            Logger.Log(string.Format("还剩{1}个{0}级仙桃", fruitLv, peachNum));
+            response = data;
             done.Set();
         }//PeachInfoCallback
 
+        // 没有一键摘桃是什么特征？
         /// <summary>
         /// Mod_GetPeach_Base.batch_get_peach(40,5)
         /// module:40, action:5
         /// request:[]
+        /// response:[Utils.UByteUtil, Utils.LongUtil]
+        /// Line 69-74 in GetPeachData.as:
+        ///     public function batch_get_peach(param1:Array) : void
+        ///     {
+        ///         this.batchGetPeachResult = param1[0];
+        ///         this.warExp = param1[1];
+        ///         return;
+        ///     }// end function
         /// </summary>
-        public void BatchGetPeach()
+        public JArray BatchGetPeach()
         {
-            const int id = 56;
-            //if (functionList.Contains(id))
-            //{
             done.Reset();
             Send(null, 40, 5);
             done.WaitOne();
-            /*}
-            else
-                Logger.Log(string.Format("未开通{0}功能", Protocols.GetFunctionName(id)), ConsoleColor.Red);*/
+            return response;
         }//BatchGetPeach
-        /// <summary>
-        /// Mod_GetPeach_Base.batch_get_peach(40,5)
-        /// module:40, action:5
-        /// response:[Utils.UByteUtil, Utils.LongUtil]
-        /// 
-        /// Line 69-74 in GetPeachData.as:
-        ///   public function batch_get_peach(param1:Array) : void
-        ///   {
-        ///       this.batchGetPeachResult = param1[0];
-        ///       this.warExp = param1[1];
-        ///       return;
-        ///   }// end function
-        /// </summary>
         private void BatchGetPeachCallback(JArray data)
         {
-            var batchGetPeachResult = (byte)data[0];
-            var warExp = (long)data[1];
-            if (batchGetPeachResult == 0)
-                Logger.Log(string.Format("一键摘桃成功，摘取经验值：{0}", warExp));
-            else
-                Logger.Log("一键摘桃失败", ConsoleColor.Red);
+            response = data;
             done.Set();
         }//BatchGetPeachCallback
 
