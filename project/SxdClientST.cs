@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace 神仙道
@@ -16,7 +12,7 @@ namespace 神仙道
     public class SxdClientST : SxdClient
     {
 
-
+        
         readonly Dictionary<byte, string> protections = new Dictionary<byte, string> { { 0, "未刷新" }, { 1, "白龙马" }, { 2, "沙悟净" }, { 3, "猪八戒" }, { 4, "孙悟空" }, { 5, "唐僧" } };
 
         public SxdClientST()
@@ -31,9 +27,26 @@ namespace 神仙道
         /// module:94, action:0
         /// request:[Utils.StringUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.StringUtil]
         /// Line 6985 in View.as:
-        ///   _data.call(Mod_StLogin_Base.login, chatConnectLoginBack, [obj.serverName, _ctrl.player.playerInfo.id, _ctrl.player.originNickName, obj.time, obj.passCode], true, 1);
+        ///     _data.call(Mod_StLogin_Base.login, chatConnectLoginBack, [obj.serverName, _ctrl.player.playerInfo.id, _ctrl.player.originNickName, obj.time, obj.passCode], true, 1);
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil]
+        /// example: [0,203957,1506950717]
+        /// Line 15-28 in STLoginData.as:
+        ///     public function login(param1:Array) : void
+        ///     {
+        ///         this.result = param1[0];
+        ///         this.playerId = param1[1];
+        ///         this._data.stFlyingChessActivity.info.myStPlayerId = this.playerId;
+        ///         var _loc_2:* = new Date();
+        ///         var _loc_3:* = _loc_2.getTime() / 1000;
+        ///         if (_loc_2.timezoneOffset != DateTime.timeArea * 60)
+        ///         {
+        ///             _loc_3 = _loc_3 - (_loc_2.timezoneOffset - DateTime.timeArea * 60) * 60;
+        ///         }
+        ///         _data.player.diffWorldServerTime = _loc_3 - param1[2];
+        ///         return;
+        ///     }// end function
         /// </summary>
-        public void Login(SxdClientTown clientTown)
+        public int Login(string serverHost, int port, string serverName, int playerId, string nickName, int serverTime, string passCode)
         {
             // -----------------------------------------------------------------------------
             // 2. 建立链接
@@ -50,7 +63,7 @@ namespace 神仙道
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             }
             isConnected = false;
-            socket.Connect(new IPEndPoint(Dns.GetHostEntry(clientTown.serverHostST).AddressList[0], clientTown.portST));
+            socket.Connect(new IPEndPoint(Dns.GetHostEntry(serverHost).AddressList[0], port));
             isConnected = true;
 
             // -----------------------------------------------------------------------------
@@ -68,40 +81,21 @@ namespace 神仙道
             // 4. 发送数据
             // -----------------------------------------------------------------------------
             done.Reset();
-            //Send(new JArray { clientTown.serverName, clientTown.playerId, clientTown.nickName, clientTown.serverTime, clientTown.passCode }, 94, 0);
+            Send(new JArray { serverName, playerId, nickName, serverTime, passCode }, 94, 0);
             done.WaitOne();
-        }//Login
 
-        /// <summary>
-        /// 登录
-        /// Mod_StLogin_Base.login(94,0)
-        /// module:94, action:0
-        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil]
-        /// example: [0,203957,1506950717]
-        /// Line 15-28 in STLoginData.as:
-        ///   public function login(param1:Array) : void
-        ///   {
-        ///       this.result = param1[0];
-        ///       this.playerId = param1[1];
-        ///       this._data.stFlyingChessActivity.info.myStPlayerId = this.playerId;
-        ///       var _loc_2:* = new Date();
-        ///       var _loc_3:* = _loc_2.getTime() / 1000;
-        ///       if (_loc_2.timezoneOffset != DateTime.timeArea * 60)
-        ///       {
-        ///           _loc_3 = _loc_3 - (_loc_2.timezoneOffset - DateTime.timeArea * 60) * 60;
-        ///       }
-        ///       _data.player.diffWorldServerTime = _loc_3 - param1[2];
-        ///       return;
-        ///   }// end function
-        /// </summary>
-        /// <param name="data"></param>
+            // -----------------------------------------------------------------------------
+            // 5. 处理返回数据
+            // -----------------------------------------------------------------------------
+            if ((byte)response[0] != 0)
+                throw new Exception("仙界登录失败");
+            _playerId = (int)response[1];
+
+            return _playerId;
+        }//Login
         private void LoginCallback(JArray data)
         {
-            var logined = (byte)data[0];
-            if (logined != 0)
-                throw new Exception("仙界登录失败");
-            var playerId = (int)data[1];
-            Logger.Log(string.Format("仙界登录成功, 玩家ID: {0}", playerId), ConsoleColor.Green);
+            response = data;
             done.Set();
         }//LoginCallback
 
@@ -109,49 +103,43 @@ namespace 神仙道
         /// Mod_StTakeBible_Base.open_take_bible(114,0)
         /// module:114, action:0
         /// request:[]
-        /// </summary>
-        public void OpenTakeBible()
-        {
-            done.Reset();
-            Send(null, 114, 0);
-            done.WaitOne();
-        }//OpenTakeBible
-
-        /// <summary>
-        /// Mod_StTakeBible_Base.open_take_bible(114,0)
-        /// module:114, action:0
         /// response:[[Utils.IntUtil, Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil], Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.UByteUtil, Utils.IntUtil, [Utils.ByteUtil, Utils.ShortUtil, Utils.StringUtil, Utils.StringUtil, Utils.StringUtil, Utils.ShortUtil], Utils.ByteUtil]
         /// example: [[[3520,1,1507113758,1507114958,1200,0,1,0],[17995,3,1507114743,1507116543,1800,0,1,0],[815,1,1507113740,1507114940,1200,0,1,0],[1977,3,1507113586,1507115386,1800,1780,1,0],[205317,4,1507113927,1507116027,2100,0,1,0],[205754,2,1507114498,1507115998,1500,0,1,0],[205960,1,1507114244,1507115444,1200,0,1,0],[8897,2,1507114448,1507115948,1500,7659,1,0],[17764,4,1507112830,1507114930,2100,1033,1,0],[17840,3,1507113415,1507115215,1800,0,1,0],[206801,1,1507114333,1507115533,1200,0,1,0],[3122,2,1507114699,1507116199,1500,0,1,0],[22160,2,1507114020,1507115520,1500,0,1,0],[7815,3,1507113095,1507114895,1800,7714,1,0],[203725,2,1507114698,1507116198,1500,0,1,0],[19232,2,1507113777,1507115277,1500,0,1,0],[903,1,1507114319,1507115519,1200,0,1,0],[8247,3,1507113148,1507114948,1800,0,1,0],[1980,2,1507113904,1507115404,1500,0,1,0],[3445,1,1507114254,1507115454,1200,0,1,0],[3507,4,1507113562,1507115662,2100,3520,1,0],[19173,1,1507114151,1507115351,1200,0,1,0],[7790,4,1507113300,1507115400,2100,0,1,0],[205320,1,1507113579,1507114779,1200,0,1,0]],
         ///             0,5,2,3,0,0,6,0,[],0]
         /// Line 58-66 in StTakeBibleController.as:
-        ///   _loc_2.protectPlayerId = _loc_1[1];
-        ///   _loc_2.classTakePlayer = this.renderClssTakePlayer(_loc_1[0]);
-        ///   _loc_2.canRobTimes = _loc_1[2];
-        ///   _loc_2.canProtectTimes = _loc_1[3];
-        ///   _loc_2.canTakeBibleTimes = _loc_1[4];
-        ///   _loc_2.quicklyTimes = _loc_1[5];
-        ///   _loc_2.bless = _loc_1[6];
-        ///   _loc_2.type = _loc_1[7];
-        ///   _loc_2.time = _loc_1[8];
+        ///     _loc_2.protectPlayerId = _loc_1[1];
+        ///     _loc_2.classTakePlayer = this.renderClssTakePlayer(_loc_1[0]);
+        ///     _loc_2.canRobTimes = _loc_1[2];
+        ///     _loc_2.canProtectTimes = _loc_1[3];
+        ///     _loc_2.canTakeBibleTimes = _loc_1[4];
+        ///     _loc_2.quicklyTimes = _loc_1[5];
+        ///     _loc_2.bless = _loc_1[6];
+        ///     _loc_2.type = _loc_1[7];
+        ///     _loc_2.time = _loc_1[8];
         /// Line 99-110 in StTakeBibleController.as:
-        ///   _loc_7.protectPlayerId = param1[_loc_6][5];
-        ///   _loc_7.playerId = param1[_loc_6][0];
-        ///   _loc_7.isMainPlayer = _loc_7.playerId == _ctrl.stLogin.playerId;
-        ///   _loc_7.isProtectPlayer = _loc_7.protectPlayerId == _ctrl.stLogin.playerId;
-        ///   _loc_7.protection = param1[_loc_6][1];
-        ///   _loc_7.startTime = DateTime.formatServerTime(param1[_loc_6][2]);
-        ///   _loc_7.mainTime = _loc_3;
-        ///   _loc_7.arrivalTime = DateTime.formatServerTime(param1[_loc_6][3]);
-        ///   _loc_7.distance = param1[_loc_6][4];
-        ///   _loc_7.sequence_id = param1[_loc_6][6];
-        ///   _loc_7.is_deeds_so = param1[_loc_6][7];
-        ///   _loc_7.isDeeds = _loc_7.is_deeds_so == 1;
+        ///     _loc_7.protectPlayerId = param1[_loc_6][5];
+        ///     _loc_7.playerId = param1[_loc_6][0];
+        ///     _loc_7.isMainPlayer = _loc_7.playerId == _ctrl.stLogin.playerId;
+        ///     _loc_7.isProtectPlayer = _loc_7.protectPlayerId == _ctrl.stLogin.playerId;
+        ///     _loc_7.protection = param1[_loc_6][1];
+        ///     _loc_7.startTime = DateTime.formatServerTime(param1[_loc_6][2]);
+        ///     _loc_7.mainTime = _loc_3;
+        ///     _loc_7.arrivalTime = DateTime.formatServerTime(param1[_loc_6][3]);
+        ///     _loc_7.distance = param1[_loc_6][4];
+        ///     _loc_7.sequence_id = param1[_loc_6][6];
+        ///     _loc_7.is_deeds_so = param1[_loc_6][7];
+        ///     _loc_7.isDeeds = _loc_7.is_deeds_so == 1;
         /// </summary>
+        public JArray OpenTakeBible()
+        {
+            done.Reset();
+            Send(null, 114, 0);
+            done.WaitOne();
+            return response;
+        }//OpenTakeBible
         private void OpenTakeBibleCallback(JArray data)
         {
-            var players = (JArray)data[0];
-            Logger.Log(string.Format("打开护送取经界面，获取取经玩家：{0}", string.Join(",", players.Select(x => string.Format("{0}({1})", protections[(byte)x[1]], x[0])))));
-            Logger.Log(string.Format("今日还可拦截{0}次，可取经{1}次，帮助好友护送{2}次", data[2], data[4], data[3]));
+            response = data;
             done.Set();
         }//OpenTakeBibleCallback
 

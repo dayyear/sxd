@@ -30,6 +30,10 @@ namespace 神仙道
 
         private readonly Dictionary<string, string> methoDictionary = new Dictionary<string, string>();
 
+        protected int _playerId;
+        protected JArray response;
+
+
         protected SxdClient()
         {
             // Town

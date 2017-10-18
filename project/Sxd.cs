@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Newtonsoft.Json.Linq;
 
 namespace 神仙道
 {
@@ -122,7 +123,7 @@ namespace 神仙道
                     response = clientTown.PlayerInfoContrast(playerId);
                     Logger.Log(string.Format("竞技：{0}，帮派：{1}，战力：{2}，声望：{3}，阅历：{4}，成就：{5}，先攻：{6}，境界：{7}，鲜花：{8}，仙令：{9}", response[0][0][1], response[0][0][2], response[0][0][3], response[0][0][4], response[0][0][5], response[0][0][6], response[0][0][7], response[0][0][8], response[0][0][9], response[0][0][10]));
 
-                    // 进入城镇
+                    /*// 进入城镇
                     response = clientTown.EnterTown(townMapId);
                     Logger.Log(string.Format("{3}进入{0}，坐标X：{1}，坐标Y：{2}", Protocols.GetTownName(townMapId), response[6], response[7], response[5]));
 
@@ -248,24 +249,34 @@ namespace 神仙道
                     response = clientTown.ChatWithPlayers("BeelzebubTrials_360223_悠哉小魔王_360223_1_13");
                     foreach (var item in response[0])
                         Logger.Log(string.Format("{0}({2})说: {1}", item[1], item[5], item[0]));
-                    
+                    */
 
-                    // 登录仙界
+                    // 获取仙界状态
                     response = clientTown.GetStatus();
                     Logger.Log(string.Format("仙界入口状态：{0}", (int)response[0] == 0 ? "开启" : response[0]));
 
-
+                    // 获取仙界登录信息
                     response = clientTown.GetLoginInfo();
-                    Logger.Log(string.Format("仙界服务器地址：{0}:{1}，服务器名称：{2}，服务器时间：{3}，passCode：{4}", response[0], response[1], response[2], TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds((int)response[3]).ToString("yyyy-MM-dd HH:mm:ss"), response[4]));
+                    var serverHostST = (string)response[0];
+                    var portST = (int)response[1];
+                    var serverNameST = (string)response[2];
+                    var serverTimeST = (int)response[3];
+                    var passCodeST = (string)response[4];
+                    Logger.Log(string.Format("仙界服务器地址：{0}:{1}，服务器名称：{2}，服务器时间：{3}，passCode：{4}", serverHostST, portST, serverNameST, TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds(serverTimeST).ToString("yyyy-MM-dd HH:mm:ss"), passCodeST));
 
+                    var playerIdST = clientST.Login(serverHostST, portST, serverNameST, playerId, nickName, serverTimeST, passCodeST);
+                    Logger.Log(string.Format("仙界登录成功, 仙界玩家ID: {0}", playerIdST), ConsoleColor.Green);
+
+                    //clientST.GetRecentRobPlayer();
+
+                    var protections = new Dictionary<byte, string> { { 0, "未刷新" }, { 1, "白龙马" }, { 2, "沙悟净" }, { 3, "猪八戒" }, { 4, "孙悟空" }, { 5, "唐僧" } };
+
+                    response = clientST.OpenTakeBible();
+                    var _players = (JArray)response[0];
+                    Logger.Log(string.Format("打开护送取经界面，获取取经玩家：{0}", string.Join(",", _players.Select(x => string.Format("{0}({1})", protections[(byte)x[1]], x[0])))));
+                    Logger.Log(string.Format("今日还可拦截{0}次，可取经{1}次，帮助好友护送{2}次", response[2], response[4], response[3]));
 
                     continue;
-                    Thread.CurrentThread.Join();
-                    clientST.Login(clientTown);
-
-
-                    clientST.GetRecentRobPlayer();
-                    clientST.OpenTakeBible();
                     var takeBibleInfo = clientST.GetTakeBibleInfo();
                     switch (takeBibleInfo)
                     {

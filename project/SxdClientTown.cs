@@ -9,25 +9,16 @@ namespace 神仙道
 {
     public class SxdClientTown : SxdClient
     {
-        // 玩家信息
-
-        private int _playerId;        // Get from Mod_Player_Base.login(0,0), used in Mod_Player_Base.player_info_contrast(0,48) and SxdClientST.Login()
 
 
 
-        // 用于仙界登录
-        public string serverHostST; // Get from Mod_StcLogin_Base.get_login_info(96,0), used in SxdClientST.Login()
-        public int portST;          // Get from Mod_StcLogin_Base.get_login_info(96,0), used in SxdClientST.Login()
-        public string serverName;   // Get from Mod_StcLogin_Base.get_login_info(96,0), used in SxdClientST.Login()
-        public int serverTime;      // Get from Mod_StcLogin_Base.get_login_info(96,0), used in SxdClientST.Login()
-        public string passCode;     // Get from Mod_StcLogin_Base.get_login_info(96,0), used in SxdClientST.Login()
+
 
 
 
 
         //private Thread receiveThread;
 
-        private JArray response;
 
         public SxdClientTown()
         {
