@@ -217,7 +217,8 @@ namespace 神仙道
 
                     // 领取阵营战礼包
                     response = clientTown.GetEndGiftInfo();
-                    if ((byte) response[0] == 27)
+                    // YES:int = 27;
+                    if ((byte)response[0] == 27)
                     {
                         response = clientTown.GetEndGift();
                         Logger.Log(string.Format("领取阵营战礼包，声望：{0}，铜钱：{1}", response[1], response[2]));
@@ -229,8 +230,8 @@ namespace 神仙道
                     if (functionIds.Contains(56))
                     {
                         response = clientTown.PeachInfo();
-                        var _fruitLv = 70 + (byte) response[0]*5;
-                        var _peachNum = (byte) response[1];
+                        var _fruitLv = 70 + (byte)response[0] * 5;
+                        var _peachNum = (byte)response[1];
                         Logger.Log(string.Format("还剩{0}个{1}级仙桃", _peachNum, _fruitLv));
                         if (_peachNum > 0)
                         {
@@ -243,17 +244,23 @@ namespace 神仙道
                     }
                     else
                         Logger.Log("未开通摘仙桃功能");
-                    continue;
-                    Thread.CurrentThread.Join();
+
+                    response = clientTown.ChatWithPlayers("BeelzebubTrials_360223_悠哉小魔王_360223_1_13");
+                    foreach (var item in response[0])
+                        Logger.Log(string.Format("{0}({2})说: {1}", item[1], item[5], item[0]));
                     
-                    clientTown.ChatWithPlayers("BeelzebubTrials_360223_悠哉小魔王_360223_1_13");
 
                     // 登录仙界
                     response = clientTown.GetStatus();
                     Logger.Log(string.Format("仙界入口状态：{0}", (int)response[0] == 0 ? "开启" : response[0]));
 
 
-                    clientTown.GetLoginInfo();
+                    response = clientTown.GetLoginInfo();
+                    Logger.Log(string.Format("仙界服务器地址：{0}:{1}，服务器名称：{2}，服务器时间：{3}，passCode：{4}", response[0], response[1], response[2], TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds((int)response[3]).ToString("yyyy-MM-dd HH:mm:ss"), response[4]));
+
+
+                    continue;
+                    Thread.CurrentThread.Join();
                     clientST.Login(clientTown);
 
 

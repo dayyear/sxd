@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -38,6 +39,16 @@ namespace 神仙道
                 responseString = sr.ReadToEnd();
             return responseString;
         }//Get
+
+        public static long Stamp64()
+        {
+            return Convert.ToInt64((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalMilliseconds);
+        }//Stamp64
+
+        private static int Stamp32()
+        {
+            return Convert.ToInt32((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds);
+        }//Stamp32
 
     }
 }

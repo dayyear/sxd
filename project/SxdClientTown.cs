@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
@@ -625,39 +623,44 @@ namespace 神仙道
         /// module:6, action:0
         /// request:[Utils.UByteUtil, Utils.StringUtil, Utils.StringUtil, Utils.StringUtil]
         /// Line 118 in ChatView.as
-        ///   _data.call(Mod_Chat_Base.chat_with_players, callBack, [data.messageType, data.message, data.eipNum, data.eipIndex]);
+        ///     _data.call(Mod_Chat_Base.chat_with_players, callBack, [data.messageType, data.message, data.eipNum, data.eipIndex]);
+        /// response:[Utils.IntUtil, Utils.UByteUtil]
         /// </summary>
-        public void ChatWithPlayers(string message)
+        public JArray ChatWithPlayers(string message)
         {
-            var messageType = 1;
-            var eipNum = string.Empty;
-            var eipIndex = string.Empty;
-            //done.Reset();
-            Send(new JArray { messageType, message, eipNum, eipIndex }, 6, 0);
-            //done.WaitOne();
+            done.Reset();
+            Send(new JArray { 1, message, string.Empty, string.Empty }, 6, 0);
+            done.WaitOne();
+            return response;
         }//ChatWithPlayers
         /// <summary>
         /// Mod_Chat_Base.bro_to_players(6,1)
         /// module:6, action:1
+        /// request:[]
         /// response:[[Utils.IntUtil, Utils.StringUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.UByteUtil, Utils.StringUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.ByteUtil]]
         /// Line 36 in ChatController.as
-        ///   oObject.list(_loc_1[_loc_5], _loc_2[_loc_5], ["playId", "playName", "isTester", "isStar", "msgType", "msgTxt", "eipNum", "eipIndex", "roleId", "townKey", "serverName", "stageName", "isNetBar"]);
+        ///     oObject.list(_loc_1[_loc_5], _loc_2[_loc_5], ["playId", "playName", "isTester", "isStar", "msgType", "msgTxt", "eipNum", "eipIndex", "roleId", "townKey", "serverName", "stageName", "isNetBar"]);
         /// </summary>
         private void BroToPlayersCallback(JArray data)
         {
             foreach (var item in data[0])
             {
-                var playName = (string)item[1];
-                var msgTxt = (string)item[5];
-                Logger.Log(string.Format("{0}说: {1}", playName, msgTxt));
-                //done.Set();   
+                if ((int)item[0] != _playerId)
+                    continue;
+                response = data;
+                done.Set();
             }
         }//BroToPlayersCallback
 
+        // 获取仙界状态
         /// <summary>
         /// Mod_StcLogin_Base.get_status(96,1)
         /// module:96, action:1
         /// request:[]
+        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil]]
+        /// Line 38 in StcLoginData.as:
+        ///     oObject.list(param1, this.stcStatusObj, ["status", "close_time_list"]);
+        /// example: [0,[[1505527200,1505534400,4]]]
         /// </summary>
         public JArray GetStatus()
         {
@@ -666,58 +669,43 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetStatus
-        /// <summary>
-        /// Mod_StcLogin_Base.get_status(96,1)
-        /// module:96, action:1
-        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil]]
-        /// Line 38 in StcLoginData.as:
-        ///   oObject.list(param1, this.stcStatusObj, ["status", "close_time_list"]);
-        /// </summary>
-        /// [0,[[1505527200,1505534400,4]]]
         private void GetStatusCallback(JArray data)
         {
             response = data;
             done.Set();
         }//GetStatusCallback
 
+        // 获取仙界登录信息
         /// <summary>
         /// Mod_StcLogin_Base.get_login_info(96,0)
         /// module:96, action:0
         /// request:[]
+        /// response:[0.Utils.StringUtil, 1.Utils.ShortUtil, 2.Utils.StringUtil, 3.Utils.IntUtil, 4.Utils.StringUtil, 5.Utils.StringUtil]
+        /// Line 22-34 in StcLoginData.as:
+        ///     public function get_login_info(param1:Array) : void
+        ///     {
+        ///         this.stcLoginObj = new Object();
+        ///         var _loc_2:* = 0;
+        ///         this.stcLoginObj.serverHost = param1[_loc_2++];
+        ///         this.stcLoginObj.port = param1[_loc_2++];
+        ///         this.stcLoginObj.serverName = param1[_loc_2++];
+        ///         this.stcLoginObj.time = param1[_loc_2++];
+        ///         this.stcLoginObj.passCode = param1[_loc_2++];
+        ///         this.stcLoginObj.serverTownName = param1[_loc_2++];
+        ///         this.stcLoginObj.playerId = 32;
+        ///         return;
+        ///     }// end function
         /// </summary>
-        public void GetLoginInfo()
+        public JArray GetLoginInfo()
         {
             done.Reset();
             Send(null, 96, 0);
             done.WaitOne();
+            return response;
         }//GetLoginInfo
-        /// <summary>
-        /// Mod_StcLogin_Base.get_login_info(96,0)
-        /// module:96, action:0
-        /// response:[0.Utils.StringUtil, 1.Utils.ShortUtil, 2.Utils.StringUtil, 3.Utils.IntUtil, 4.Utils.StringUtil, 5.Utils.StringUtil]
-        /// Line 22-34 in StcLoginData.as:
-        ///   public function get_login_info(param1:Array) : void
-        ///   {
-        ///       this.stcLoginObj = new Object();
-        ///       var _loc_2:* = 0;
-        ///       this.stcLoginObj.serverHost = param1[_loc_2++];
-        ///       this.stcLoginObj.port = param1[_loc_2++];
-        ///       this.stcLoginObj.serverName = param1[_loc_2++];
-        ///       this.stcLoginObj.time = param1[_loc_2++];
-        ///       this.stcLoginObj.passCode = param1[_loc_2++];
-        ///       this.stcLoginObj.serverTownName = param1[_loc_2++];
-        ///       this.stcLoginObj.playerId = 32;
-        ///       return;
-        ///   }// end function
-        /// </summary>
         private void GetLoginInfoCallback(JArray data)
         {
-            serverHostST = (string)data[0];
-            portST = (short)data[1];
-            serverName = (string)data[2];
-            serverTime = (int)data[3];
-            passCode = (string)data[4];
-            Logger.Log(string.Format("仙界服务器地址：{0}:{1}，服务器名称：{2}，服务器时间：{3}", serverHostST, portST, serverName, TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds(serverTime).ToString("yyyy-MM-dd HH:mm:ss")));
+            response = data;
             done.Set();
         }//GetLoginInfoCallback
 
@@ -733,27 +721,11 @@ namespace 神仙道
 
 
 
-        #region 工具类小函数
-
-
-
-        /*private static long Stamp64()
-        {
-            return Convert.ToInt64((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalMilliseconds);
-        }//Stamp
-
-        private static int Stamp32()
-        {
-            return Convert.ToInt32((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds);
-        }//Stamp*/
-
-
-        #endregion
 
 
 
 
-    }//class SxdClient
+    }//class SxdClientTown
 
 
 }//namespace
