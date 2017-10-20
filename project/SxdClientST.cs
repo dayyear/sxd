@@ -12,8 +12,7 @@ namespace 神仙道
     public class SxdClientST : SxdClient
     {
 
-        
-        readonly Dictionary<byte, string> protections = new Dictionary<byte, string> { { 0, "未刷新" }, { 1, "白龙马" }, { 2, "沙悟净" }, { 3, "猪八戒" }, { 4, "孙悟空" }, { 5, "唐僧" } };
+
 
         public SxdClientST()
         {
@@ -144,23 +143,10 @@ namespace 神仙道
         }//OpenTakeBibleCallback
 
         // 取经状态
-        private TakeBibleStatus takeBibleStatus;
         /// <summary>
         /// Mod_StTakeBible_Base.get_take_bible_info(114,2)
         /// module:114, action:2
         /// request:[]
-        /// </summary>
-        public TakeBibleStatus GetTakeBibleInfo()
-        {
-            done.Reset();
-            Send(null, 114, 2);
-            done.WaitOne();
-            return takeBibleStatus;
-        }//GetTakeBibleInfo
-
-        /// <summary>
-        /// Mod_StTakeBible_Base.get_take_bible_info(114,2)
-        /// module:114, action:2
         /// response:[[Utils.UByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil], 
         ///           [Utils.IntUtil, Utils.StringUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil], 
         ///            Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.UByteUtil, Utils.StringUtil, Utils.ByteUtil, Utils.ByteUtil]
@@ -186,9 +172,16 @@ namespace 神仙道
         ///   _loc_2.bless = _loc_1[8];
         ///   _loc_2.buff = _loc_1[9]; // 声望加成
         /// </summary>
+        public JArray GetTakeBibleInfo()
+        {
+            done.Reset();
+            Send(null, 114, 2);
+            done.WaitOne();
+            return response;
+        }//GetTakeBibleInfo
         private void GetTakeBibleInfoCallback(JArray data)
         {
-            takeBibleStatus = TakeBibleStatus.None;
+            /*takeBibleStatus = TakeBibleStatus.None;
             var _takeBibleTimes = (byte)data[2];
             var _totalTakeBibleTimes = (byte)data[3];
             var _takeBibleStatus = (byte)data[5];
@@ -203,7 +196,8 @@ namespace 神仙道
             else if (_takeBibleStatus == 0)
                 takeBibleStatus = TakeBibleStatus.ReadyToStart;
             else
-                takeBibleStatus = TakeBibleStatus.IsRunning;
+                takeBibleStatus = TakeBibleStatus.IsRunning;*/
+            response = data;
             done.Set();
         }//GetTakeBibleInfoCallback
 
@@ -257,7 +251,7 @@ namespace 神仙道
         /// </summary>
         private void RefreshCallback(JArray data)
         {
-            Logger.Log(string.Format("刷新当前取经使者{0}，声望加成{1}%", protections[(byte)data[1]], data[3]));
+            //Logger.Log(string.Format("刷新当前取经使者{0}，声望加成{1}%", protections[(byte)data[1]], data[3]));
             done.Set();
         }//RefreshCallback
 

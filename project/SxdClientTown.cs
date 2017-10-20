@@ -9,16 +9,7 @@ namespace 神仙道
 {
     public class SxdClientTown : SxdClient
     {
-
-
-
-
-
-
-
-
         //private Thread receiveThread;
-
 
         public SxdClientTown()
         {

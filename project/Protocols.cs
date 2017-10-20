@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace 神仙道
@@ -122,7 +123,7 @@ namespace 神仙道
         /// <summary>
         /// 通过module和action，在protocols目录下查找相应的源文件，返回method, request, response
         /// </summary>
-        public static Tuple<string, string, JArray, JArray> GetPattern(short module, short action)
+        /*public static Tuple<string, string, JArray, JArray> GetPattern(short module, short action)
         {
             var matches = (from _file in Directory.GetFiles("protocols/", "*Base.as")
                            let _m = Regex.Match(File.ReadAllText(_file), string.Format(@"class (\S*) [\s\S]*?public static const (.*?):Object = {{module:{0}, action:{1}, request:(\[.*?\]), response:(\[.*?\])}}", module, action))
@@ -137,6 +138,28 @@ namespace 神仙道
             var method = match.Groups[2].Value;
             var request = JArray.Parse(Regex.Replace(match.Groups[3].Value, "Utils.*?Util", "\"$0\""));
             var response = JArray.Parse(Regex.Replace(match.Groups[4].Value, "Utils.*?Util", "\"$0\""));
+            return Tuple.Create(className, method, request, response);
+        }//GetPattern*/
+
+        /// <summary>
+        /// 通过module和action，在protocols目录下查找相应的源文件，返回method, request, response
+        /// </summary>
+        public static Tuple<string, string, JArray, JArray> GetPattern(short module, short action)
+        {
+            var protocols = XElement.Load("protocols/protocolsR162.xml");
+            var actions = (from _action in protocols.Elements("module").Elements("action")
+                           let _module = _action.Parent
+                           where _module.Attribute("id").Value == module.ToString() && _action.Attribute("id").Value == action.ToString()
+                           select _action).ToList();
+            if (!actions.Any())
+                throw new Exception(string.Format("Not find protocol with module: {0}, action: {1}", module, action));
+            if (actions.Count() > 1)
+                throw new Exception(string.Format("Find multiple protocols with module: {0}, action: {1}", module, action));
+            
+            var className = actions[0].Parent.Element("class").Value;
+            var method = actions[0].Element("method").Value;
+            var request = JArray.Parse(Regex.Replace(actions[0].Element("request").Value, "Utils.*?Util", "\"$0\""));
+            var response = JArray.Parse(Regex.Replace(actions[0].Element("response").Value, "Utils.*?Util", "\"$0\""));
             return Tuple.Create(className, method, request, response);
         }//GetPattern
 
@@ -169,5 +192,24 @@ namespace 神仙道
         {
             return endFunctionGift[id];
         }//GetEndFunctionGiftName
+
+        private static readonly Dictionary<byte, string> protections = 
+            new Dictionary<byte, string> { { 0, "未刷新" }, { 1, "白龙马" }, { 2, "沙悟净" }, { 3, "猪八戒" }, { 4, "孙悟空" }, { 5, "唐僧" } };
+        /// <summary>
+        /// Line 7-12 in Mod_StTakeBible_Base.as
+        ///     public static const NO_REFRESH:int = 0;
+        ///     public static const BAI_LONG_MA:int = 1;
+        ///     public static const SHA_WU_JING:int = 2;
+        ///     public static const ZHU_BA_JIE:int = 3;
+        ///     public static const SUN_WU_KONG:int = 4;
+        ///     public static const TANG_SENG:int = 5;
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static string GetProtectionName(byte id)
+        {
+            return protections[id];
+        }
+
     }//class
 }//namespace

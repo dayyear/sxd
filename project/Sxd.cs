@@ -6,13 +6,46 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace 神仙道
 {
     static class Sxd
     {
-        public static void GenerateUserIni()
+        private static void CollectProtocols()
+        {
+            var protocols = new XElement("protocols");
+
+            foreach (var file in Directory.GetFiles(@"I:\神仙道\基础数据准备\R162\Main\Action\com\protocols", "Mod_*_Base.as"))
+            {
+                var content = File.ReadAllText(file);
+                var matches = Regex.Matches(content, @"public static const (.*?):Object = {module:(\d*?), action:(\d*?), request:(.*?), response:(.*?)};");
+                var module = new XElement("module",
+                    new XAttribute("id", matches[0].Groups[2].Value),
+                    new XElement("class", Regex.Match(content, "public class (.*?) extends Object").Groups[1].Value));
+                protocols.Add(module);
+                foreach (Match match in matches)
+                {
+                    var _method = match.Groups[1].Value;
+                    var _module = match.Groups[2].Value;
+                    var _action = match.Groups[3].Value;
+                    var _request = match.Groups[4].Value;
+                    var _response = match.Groups[5].Value;
+                    if (_module != matches[0].Groups[2].Value)
+                        throw new Exception(string.Format("module值不一致，文件：{0}", file));
+                    module.Add(new XElement("action",
+                        new XAttribute("id", _action),
+                        new XElement("method", _method),
+                        new XElement("request", _request),
+                        new XElement("response", _response)));
+                }//action
+            }//module
+
+            protocols.Save("protocols/protocolsR162.xml");
+        }//CollectProtocols
+
+        private static void GenerateUserIni()
         {
             Directory.GetFiles("./", "0*.jpg").ToList().ForEach(File.Delete);
 
@@ -71,6 +104,7 @@ namespace 神仙道
                     // 1. 玩家选择
                     var i = 0;
                     Logger.Log("G. 生成user.ini文件", showTime: false);
+                    Logger.Log("P. 收集游戏协议", showTime: false);
                     var user = File.ReadAllText(ConfigurationManager.AppSettings["userPath"], Encoding.GetEncoding("GBK"));
                     var pattern = string.Format(File.ReadAllText("pattern.txt"), "(.*)", string.Empty);
                     var matches = Regex.Matches(user, pattern);
@@ -83,6 +117,11 @@ namespace 神仙道
                     if (readLine.ToUpper() == "G")
                     {
                         GenerateUserIni();
+                        continue;
+                    }
+                    if (readLine.ToUpper() == "P")
+                    {
+                        CollectProtocols();
                         continue;
                     }
                     i = int.Parse(readLine);
@@ -123,7 +162,7 @@ namespace 神仙道
                     response = clientTown.PlayerInfoContrast(playerId);
                     Logger.Log(string.Format("竞技：{0}，帮派：{1}，战力：{2}，声望：{3}，阅历：{4}，成就：{5}，先攻：{6}，境界：{7}，鲜花：{8}，仙令：{9}", response[0][0][1], response[0][0][2], response[0][0][3], response[0][0][4], response[0][0][5], response[0][0][6], response[0][0][7], response[0][0][8], response[0][0][9], response[0][0][10]));
 
-                    /*// 进入城镇
+                    // 进入城镇
                     response = clientTown.EnterTown(townMapId);
                     Logger.Log(string.Format("{3}进入{0}，坐标X：{1}，坐标Y：{2}", Protocols.GetTownName(townMapId), response[6], response[7], response[5]));
 
@@ -249,7 +288,7 @@ namespace 神仙道
                     response = clientTown.ChatWithPlayers("BeelzebubTrials_360223_悠哉小魔王_360223_1_13");
                     foreach (var item in response[0])
                         Logger.Log(string.Format("{0}({2})说: {1}", item[1], item[5], item[0]));
-                    */
+
 
                     // 获取仙界状态
                     response = clientTown.GetStatus();
@@ -262,23 +301,50 @@ namespace 神仙道
                     var serverNameST = (string)response[2];
                     var serverTimeST = (int)response[3];
                     var passCodeST = (string)response[4];
-                    Logger.Log(string.Format("仙界服务器地址：{0}:{1}，服务器名称：{2}，服务器时间：{3}，passCode：{4}", serverHostST, portST, serverNameST, TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds(serverTimeST).ToString("yyyy-MM-dd HH:mm:ss"), passCodeST));
+                    Logger.Log(string.Format("仙界服务器地址：{0}:{1}，仙界服务器名称：{2}，仙界服务器时间：{3}，passCode：{4}", serverHostST, portST, serverNameST, TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds(serverTimeST).ToString("yyyy-MM-dd HH:mm:ss"), passCodeST));
 
                     var playerIdST = clientST.Login(serverHostST, portST, serverNameST, playerId, nickName, serverTimeST, passCodeST);
                     Logger.Log(string.Format("仙界登录成功, 仙界玩家ID: {0}", playerIdST), ConsoleColor.Green);
 
                     //clientST.GetRecentRobPlayer();
 
-                    var protections = new Dictionary<byte, string> { { 0, "未刷新" }, { 1, "白龙马" }, { 2, "沙悟净" }, { 3, "猪八戒" }, { 4, "孙悟空" }, { 5, "唐僧" } };
 
                     response = clientST.OpenTakeBible();
                     var _players = (JArray)response[0];
-                    Logger.Log(string.Format("打开护送取经界面，获取取经玩家：{0}", string.Join(",", _players.Select(x => string.Format("{0}({1})", protections[(byte)x[1]], x[0])))));
+                    Logger.Log(string.Format("打开护送取经界面，获取取经玩家：{0}", string.Join(",", _players.Select(x => string.Format("{0}({1})", Protocols.GetProtectionName((byte)x[1]), x[0])))));
                     Logger.Log(string.Format("今日还可拦截{0}次，可取经{1}次，帮助好友护送{2}次", response[2], response[4], response[3]));
 
+                    response = clientST.GetTakeBibleInfo();
+                    var _takeBibleTimes = (byte)response[2];
+                    var _totalTakeBibleTimes = (byte)response[3];
+                    var _takeBibleStatus = (byte)response[5];
+                    var _canProtection = (byte)response[6];
+                    Logger.Log(string.Format("今日可取经共{0}次，已经取经{1}次，当前取经使者：{2}（{3}）",
+                        response[3], response[2], Protocols.GetProtectionName((byte)response[6]), (byte)response[5] == 0 ? "未开始" : "已开始"));
+
+                    if (_takeBibleTimes < _totalTakeBibleTimes)
+                    {
+                        if (_canProtection == 0)
+                            clientST.Refresh();
+                        if (_takeBibleStatus == 0)
+                        {
+                            clientST.StartTakeBible();
+                            response = clientST.GetTakeBibleInfo();
+                            Logger.Log(string.Format("今日可取经共{0}次，已经取经{1}次，当前取经使者：{2}（{3}）",
+                                response[3], response[2], Protocols.GetProtectionName((byte)response[6]), (byte)response[5] == 0 ? "未开始" : "已开始"));
+                        }
+                    }
                     continue;
-                    var takeBibleInfo = clientST.GetTakeBibleInfo();
-                    switch (takeBibleInfo)
+                    /*if (_takeBibleTimes == _totalTakeBibleTimes)
+                        takeBibleStatus = TakeBibleStatus.NoMoreTimes;
+                    else if (_canProtection == 0)
+                        takeBibleStatus = TakeBibleStatus.ReadyToRefresh;
+                    else if (_takeBibleStatus == 0)
+                        takeBibleStatus = TakeBibleStatus.ReadyToStart;
+                    else
+                        takeBibleStatus = TakeBibleStatus.IsRunning;*/
+
+                    /*switch (takeBibleInfo)
                     {
                         case TakeBibleStatus.ReadyToRefresh:
                             clientST.Refresh();
@@ -289,7 +355,7 @@ namespace 神仙道
                             clientST.StartTakeBible();
                             clientST.GetTakeBibleInfo();
                             break;
-                    }
+                    }*/
 
                     //client.Login(url, code, time, hash, time1, hash1);
 
