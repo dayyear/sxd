@@ -98,6 +98,7 @@ namespace 神仙道
             done.Set();
         }//LoginCallback
 
+        // 
         /// <summary>
         /// Mod_StTakeBible_Base.open_take_bible(114,0)
         /// module:114, action:0
@@ -206,23 +207,18 @@ namespace 神仙道
         /// Mod_StTakeBible_Base.get_recent_rob_player(114,19)
         /// module:114, action:19
         /// request:[]
+        /// response:[[Utils.IntUtil]]
         /// </summary>
-        public void GetRecentRobPlayer()
+        public JArray GetRecentRobPlayer()
         {
             done.Reset();
             Send(null, 114, 19);
             done.WaitOne();
+            return response;
         }//GetRecentRobPlayer
-
-        /// <summary>
-        /// 获取最近打劫玩家，猜想可能用于仇人
-        /// Mod_StTakeBible_Base.get_recent_rob_player(114,19)
-        /// module:114, action:19
-        /// response:[[Utils.IntUtil]]
-        /// </summary>
         private void GetRecentRobPlayerCallback(JArray data)
         {
-            Logger.Log("GetRecentRobPlayer");
+            response = data;
             done.Set();
         }//GetRecentRobPlayerCallback
 
@@ -230,28 +226,24 @@ namespace 神仙道
         /// Mod_StTakeBible_Base.refresh(114,8)
         /// module:114, action:8
         /// request:[]
+        /// response:[Utils.UByteUtil, Utils.UByteUtil, Utils.ShortUtil, Utils.ByteUtil]
+        /// example: [9,1,12,2]
+        /// Line 340-343 in StTakeBibleController.as:
+        ///     _loc_2.msg = _loc_1[0];
+        ///     _loc_2.newProtection = _loc_1[1];
+        ///     _loc_2.nextPrice = _loc_1[2];
+        ///     _loc_2.buff = _loc_1[3];
         /// </summary>
-        public void Refresh()
+        public JArray Refresh()
         {
             done.Reset();
             Send(null, 114, 8);
             done.WaitOne();
+            return response;
         }//Refresh
-
-        /// <summary>
-        /// Mod_StTakeBible_Base.refresh(114,8)
-        /// module:114, action:8
-        /// response:[Utils.UByteUtil, Utils.UByteUtil, Utils.ShortUtil, Utils.ByteUtil]
-        /// example: [9,1,12,2]
-        /// Line 340-343 in StTakeBibleController.as:
-        ///   _loc_2.msg = _loc_1[0];
-        ///   _loc_2.newProtection = _loc_1[1];
-        ///   _loc_2.nextPrice = _loc_1[2];
-        ///   _loc_2.buff = _loc_1[3];
-        /// </summary>
         private void RefreshCallback(JArray data)
         {
-            //Logger.Log(string.Format("刷新当前取经使者{0}，声望加成{1}%", protections[(byte)data[1]], data[3]));
+            response = data;
             done.Set();
         }//RefreshCallback
 
@@ -259,26 +251,22 @@ namespace 神仙道
         /// Mod_StTakeBible_Base.start_take_bible(114,10)
         /// module:114, action:10
         /// request:[]
+        /// response:[Utils.UByteUtil, Utils.ByteUtil]
+        /// example: [9,20]
+        /// Line 407-408 in StTakeBibleController.as:
+        ///     _loc_2.msg = _loc_1[0];
+        ///     _loc_2.item_id = _loc_1[1];
         /// </summary>
-        public void StartTakeBible()
+        public JArray StartTakeBible()
         {
             done.Reset();
             Send(null, 114, 10);
             done.WaitOne();
+            return response;
         }//StartTakeBible
-
-        /// <summary>
-        /// Mod_StTakeBible_Base.start_take_bible(114,10)
-        /// module:114, action:10
-        /// response:[Utils.UByteUtil, Utils.ByteUtil]
-        /// example: [9,20]
-        /// Line 407-408 in StTakeBibleController.as:
-        ///   _loc_2.msg = _loc_1[0];
-        ///   _loc_2.item_id = _loc_1[1];
-        /// </summary>
         private void StartTakeBibleCallback(JArray data)
         {
-            Logger.Log("开始取经");
+            response = data;
             done.Set();
         }//StartTakeBibleCallback
 

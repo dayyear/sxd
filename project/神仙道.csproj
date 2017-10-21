@@ -65,6 +65,9 @@
     <Compile Include="SxdClientST.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="protocols\protocolsR162.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="replacement.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

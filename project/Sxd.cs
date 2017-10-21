@@ -289,73 +289,106 @@ namespace 神仙道
                     foreach (var item in response[0])
                         Logger.Log(string.Format("{0}({2})说: {1}", item[1], item[5], item[0]));
 
-
-                    // 获取仙界状态
-                    response = clientTown.GetStatus();
-                    Logger.Log(string.Format("仙界入口状态：{0}", (int)response[0] == 0 ? "开启" : response[0]));
-
-                    // 获取仙界登录信息
-                    response = clientTown.GetLoginInfo();
-                    var serverHostST = (string)response[0];
-                    var portST = (int)response[1];
-                    var serverNameST = (string)response[2];
-                    var serverTimeST = (int)response[3];
-                    var passCodeST = (string)response[4];
-                    Logger.Log(string.Format("仙界服务器地址：{0}:{1}，仙界服务器名称：{2}，仙界服务器时间：{3}，passCode：{4}", serverHostST, portST, serverNameST, TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds(serverTimeST).ToString("yyyy-MM-dd HH:mm:ss"), passCodeST));
-
-                    var playerIdST = clientST.Login(serverHostST, portST, serverNameST, playerId, nickName, serverTimeST, passCodeST);
-                    Logger.Log(string.Format("仙界登录成功, 仙界玩家ID: {0}", playerIdST), ConsoleColor.Green);
-
-                    //clientST.GetRecentRobPlayer();
-
-
-                    response = clientST.OpenTakeBible();
-                    var _players = (JArray)response[0];
-                    Logger.Log(string.Format("打开护送取经界面，获取取经玩家：{0}", string.Join(",", _players.Select(x => string.Format("{0}({1})", Protocols.GetProtectionName((byte)x[1]), x[0])))));
-                    Logger.Log(string.Format("今日还可拦截{0}次，可取经{1}次，帮助好友护送{2}次", response[2], response[4], response[3]));
-
-                    response = clientST.GetTakeBibleInfo();
-                    var _takeBibleTimes = (byte)response[2];
-                    var _totalTakeBibleTimes = (byte)response[3];
-                    var _takeBibleStatus = (byte)response[5];
-                    var _canProtection = (byte)response[6];
-                    Logger.Log(string.Format("今日可取经共{0}次，已经取经{1}次，当前取经使者：{2}（{3}）",
-                        response[3], response[2], Protocols.GetProtectionName((byte)response[6]), (byte)response[5] == 0 ? "未开始" : "已开始"));
-
-                    if (_takeBibleTimes < _totalTakeBibleTimes)
+                    // 仙界
+                    // 91:["SuperTown","205","仙界"],
+                    if (functionIds.Contains(91))
                     {
-                        if (_canProtection == 0)
-                            clientST.Refresh();
-                        if (_takeBibleStatus == 0)
+                        // 获取仙界状态
+                        response = clientTown.GetStatus();
+                        Logger.Log(string.Format("仙界入口状态：{0}", (int)response[0] == 0 ? "开启" : response[0]));
+
+                        // 获取仙界登录信息
+                        response = clientTown.GetLoginInfo();
+                        var serverHostST = (string)response[0];
+                        var portST = (int)response[1];
+                        var serverNameST = (string)response[2];
+                        var serverTimeST = (int)response[3];
+                        var passCodeST = (string)response[4];
+                        Logger.Log(string.Format("仙界服务器地址：{0}:{1}，仙界服务器名称：{2}，仙界服务器时间：{3}，passCode：{4}", serverHostST,
+                            portST, serverNameST,
+                            TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1))
+                                .AddSeconds(serverTimeST)
+                                .ToString("yyyy-MM-dd HH:mm:ss"), passCodeST));
+
+                        var playerIdST = clientST.Login(serverHostST, portST, serverNameST, playerId, nickName,
+                            serverTimeST, passCodeST);
+                        Logger.Log(string.Format("仙界登录成功, 仙界玩家ID: {0}", playerIdST), ConsoleColor.Green);
+
+                        //clientST.GetRecentRobPlayer();
+
+
+                        response = clientST.OpenTakeBible();
+                        var _players = (JArray)response[0];
+                        Logger.Log(string.Format("打开护送取经界面，获取取经玩家：{0}", string.Join(",", _players.Select(
+                            x => string.Format("{0}({1})", Protocols.GetProtectionName((byte)x[1]), x[0])))));
+                        Logger.Log(string.Format("今日还可拦截{0}次，可取经{1}次，帮助好友护送{2}次", response[2], response[4], response[3]));
+
+
+                        /*if (_takeBibleTimes < _totalTakeBibleTimes)
                         {
-                            clientST.StartTakeBible();
+                            if (_canProtection == 0)
+                                clientST.Refresh();
+                            if (_takeBibleStatus == 0)
+                            {
+                                clientST.StartTakeBible();
+                                response = clientST.GetTakeBibleInfo();
+                                Logger.Log(string.Format("今日可取经共{0}次，已经取经{1}次，当前取经使者：{2}（{3}）",
+                                    response[3], response[2], Protocols.GetProtectionName((byte)response[6]),
+                                    (byte)response[5] == 0 ? "未开始" : "已开始"));
+                            }
+                        }*/
+                        while (true)
+                        {
                             response = clientST.GetTakeBibleInfo();
+                            var _takeBibleTimes = (byte)response[2];
+                            var _totalTakeBibleTimes = (byte)response[3];
+                            var _takeBibleStatus = (byte)response[5];
+                            var _canProtection = (byte)response[6];
                             Logger.Log(string.Format("今日可取经共{0}次，已经取经{1}次，当前取经使者：{2}（{3}）",
-                                response[3], response[2], Protocols.GetProtectionName((byte)response[6]), (byte)response[5] == 0 ? "未开始" : "已开始"));
-                        }
-                    }
-                    continue;
-                    /*if (_takeBibleTimes == _totalTakeBibleTimes)
-                        takeBibleStatus = TakeBibleStatus.NoMoreTimes;
-                    else if (_canProtection == 0)
-                        takeBibleStatus = TakeBibleStatus.ReadyToRefresh;
-                    else if (_takeBibleStatus == 0)
-                        takeBibleStatus = TakeBibleStatus.ReadyToStart;
-                    else
-                        takeBibleStatus = TakeBibleStatus.IsRunning;*/
+                                _totalTakeBibleTimes, _takeBibleTimes, Protocols.GetProtectionName(_canProtection),
+                                _takeBibleStatus == 0 ? "未开始" : "已开始"));
 
-                    /*switch (takeBibleInfo)
-                    {
-                        case TakeBibleStatus.ReadyToRefresh:
-                            clientST.Refresh();
-                            clientST.StartTakeBible();
-                            clientST.GetTakeBibleInfo();
+                            if (_takeBibleTimes >= _totalTakeBibleTimes)
+                                break;
+                            if (_canProtection == 0)
+                            {
+                                Logger.Log("刷新使者");
+                                clientST.Refresh();
+                                continue;
+                            }
+                            if (_takeBibleStatus == 0)
+                            {
+                                Logger.Log("开始取经");
+                                clientST.StartTakeBible();
+                                continue;
+                            }
                             break;
-                        case TakeBibleStatus.ReadyToStart:
-                            clientST.StartTakeBible();
-                            clientST.GetTakeBibleInfo();
-                            break;
-                    }*/
+                        }
+                        continue;
+                        /*if (_takeBibleTimes == _totalTakeBibleTimes)
+                        takeBibleStatus = TakeBibleStatus.NoMoreTimes;
+                        else if (_canProtection == 0)
+                            takeBibleStatus = TakeBibleStatus.ReadyToRefresh;
+                        else if (_takeBibleStatus == 0)
+                            takeBibleStatus = TakeBibleStatus.ReadyToStart;
+                        else
+                            takeBibleStatus = TakeBibleStatus.IsRunning;*/
+
+                        /*switch (takeBibleInfo)
+                        {
+                            case TakeBibleStatus.ReadyToRefresh:
+                                clientST.Refresh();
+                                clientST.StartTakeBible();
+                                clientST.GetTakeBibleInfo();
+                                break;
+                            case TakeBibleStatus.ReadyToStart:
+                                clientST.StartTakeBible();
+                                clientST.GetTakeBibleInfo();
+                                break;
+                        }*/
+                    }
+                    else
+                        Logger.Log("未开通仙界功能");
 
                     //client.Login(url, code, time, hash, time1, hash1);
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
@@ -625,14 +626,11 @@ namespace 神仙道
         /// </summary>
         private void BroToPlayersCallback(JArray data)
         {
-            foreach (var item in data[0])
-            {
-                if ((int)item[0] != _playerId)
-                    continue;
-                response = data;
-                done.Set();
-            }
-        }//BroToPlayersCallback
+            if (data[0].All(item => (int)item[0] != _playerId))
+                return;
+            response = data;
+            done.Set();
+        } //BroToPlayersCallback
 
         // 获取仙界状态
         /// <summary>
