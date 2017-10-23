@@ -81,11 +81,11 @@ namespace 神仙道
         }//GenerateUserIni
 
 
-        public static void Analyze()
+        private static void Analyze()
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/领取俸禄.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/药园种植.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
                 client.Analyze(bytes.ToArray(), isReceive);
@@ -101,10 +101,11 @@ namespace 神仙道
             {
                 try
                 {
-                    // 1. 玩家选择
+                    // 玩家选择
                     var i = 0;
                     Logger.Log("G. 生成user.ini文件", showTime: false);
                     Logger.Log("P. 收集游戏协议", showTime: false);
+                    Logger.Log("A. 分析抓包数据", showTime: false);
                     var user = File.ReadAllText(ConfigurationManager.AppSettings["userPath"], Encoding.GetEncoding("GBK"));
                     var pattern = string.Format(File.ReadAllText("pattern.txt"), "(.*)", string.Empty);
                     var matches = Regex.Matches(user, pattern);
@@ -124,11 +125,16 @@ namespace 神仙道
                         CollectProtocols();
                         continue;
                     }
+                    if (readLine.ToUpper() == "A")
+                    {
+                        Analyze();
+                        continue;
+                    }
                     i = int.Parse(readLine);
                     if (i >= matches.Count)
                         throw new IndexOutOfRangeException();
 
-                    // 2. 读取相应的玩家参数url, code, time, hash, time1, hash1
+                    // 读取相应的玩家参数url, code, time, hash, time1, hash1
                     var url = matches[i].Groups[2].Value;
                     var code = matches[i].Groups[3].Value;
                     var time = matches[i].Groups[4].Value;
@@ -139,18 +145,6 @@ namespace 神仙道
                     // 登录
                     var playerId = clientTown.Login(url, code, time, hash, time1, hash1);
                     Logger.Log(string.Format("登录成功, 玩家ID: {0}", playerId), ConsoleColor.Green);
-
-                    /*var isReceive = false;
-                    foreach (var item in File.ReadAllText("Log/领取礼包.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
-                        if (!isReceive)
-                        {
-                            client.Send(bytes.ToArray());
-                            Thread.Sleep(5000);
-                        }
-                        isReceive ^= true;
-                    }*/
 
                     // 获取玩家基本信息
                     var response = clientTown.GetPlayerInfo();
@@ -264,6 +258,25 @@ namespace 神仙道
                         Logger.Log(string.Format("领取阵营战礼包，声望：{0}，铜钱：{1}", response[1], response[2]));
                     }
 
+                    // 领取自定义挑战礼包
+                    // 106:["CustomizeChallenge","380","自定义挑战"],
+                    if (functionIds.Contains(106))
+                    {
+                        response = clientTown.GetEndLiBao();
+                        // SUCCESS:int = 10;
+                        if ((byte)response[0] == 10)
+                            Logger.Log(string.Format("领取自定义挑战礼包，铜钱：{0}，道缘：{1}，声望：{2}", response[1], response[2], response[3]));
+                    }
+
+                    // 领取极限挑战宝箱
+                    // 112:["UnlimitChallenge","440","极限挑战"],
+                    if (functionIds.Contains(112))
+                    {
+                        response = clientTown.GetEndAward();
+                        // SUCCESS:int = 6;
+                        if ((byte)response[0] == 6)
+                            Logger.Log("领取极限挑战宝箱");
+                    }
 
                     // 摘仙桃
                     // 56:["GetPeach","340","摘仙桃"],
@@ -282,10 +295,72 @@ namespace 神仙道
                                 Logger.Log("一键摘桃失败", ConsoleColor.Red);
                         }
                     }
-                    else
-                        Logger.Log("未开通摘仙桃功能");
 
-                    response = clientTown.ChatWithPlayers("BeelzebubTrials_360223_悠哉小魔王_360223_1_13");
+                    // 药园
+                    // 15:["Farm","150","药园"],
+                    if (functionIds.Contains(15))
+                    {
+                        response = clientTown.GetFarmlandinfoList();
+                        var _fields = (JArray)response[0];
+                        //foreach (var _field in _fields)
+                        //    Logger.Log(string.Format("farmland_level：{0}，is_plant：{1}，farmland_time：{2}", _field[9], _field[10], _field[8]));
+                        // 可种植土地（is_plant=1 and farmland_time=0）
+                        var _fieldsReady = _fields.Where(_field => (byte)_field[10] == 1 && (int)_field[8] == 0).ToList();
+                        if (!_fieldsReady.Any())
+                        {
+                            Logger.Log("没有可种植的土地");
+                            break;
+                        }
+                        // 土地最大等级
+                        var _fieldMaxLevel = _fieldsReady.Max(_field => (int)_field[9]);
+                        // 最优土地
+                        var _fieldOptimization = _fieldsReady.First(_field => (int)_field[9] == _fieldMaxLevel);
+
+                        // 种植伙伴
+                        response = clientTown.GetPlayerRoleinfoList();
+                        var _partners = (JArray)response[0];
+                        //foreach (var _partner in _partners)
+                        //    Logger.Log(string.Format("{0}，{1}，等级{2}", _partner[0], _partner[2], _partner[3]));
+                        // 伙伴最大等级
+                        var _partnerMaxLevel = _partners.Max(_partner => (int)_partner[3]);
+                        // 最优伙伴
+                        var _partnerOptimization = _partners.First(_partner => (int)_partner[3] == _partnerMaxLevel);
+
+
+                        while (true)
+                        {
+                            // 仙露
+                            response = clientTown.BuyCoinTreeCountInfo();
+                            if ((int)response[0] <= 0)
+                            {
+                                Logger.Log("仙露已用完");
+                                break;
+                            }
+
+                            // 3:发财树; 1:普通
+                            // SUCCESS:int = 8;
+                            response = clientTown.PlantHerbs((int)_fieldOptimization[0], (int)_partnerOptimization[0], 3, 1);
+                            if ((byte)response[0] == 8)
+                            {
+                                response = clientTown.Harvest((int)_fieldOptimization[0]);
+                                if ((byte)response[0] == 8)
+                                    Logger.Log(string.Format("给{0}种植{1}，收获{2}铜钱，", response[1], response[2], response[5]));
+                                else
+                                {
+                                    Logger.Log("收获发财树失败", ConsoleColor.Red);
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                Logger.Log("种植发财树失败", ConsoleColor.Red);
+                                break;
+                            }
+                        }
+                    }
+
+                    // 聊天
+                    response = clientTown.ChatWithPlayers("新年快乐！");
                     foreach (var item in response[0])
                         Logger.Log(string.Format("{0}({2})说: {1}", item[1], item[5], item[0]));
 
@@ -310,85 +385,58 @@ namespace 神仙道
                                 .AddSeconds(serverTimeST)
                                 .ToString("yyyy-MM-dd HH:mm:ss"), passCodeST));
 
+                        // 仙界登录
                         var playerIdST = clientST.Login(serverHostST, portST, serverNameST, playerId, nickName,
                             serverTimeST, passCodeST);
                         Logger.Log(string.Format("仙界登录成功, 仙界玩家ID: {0}", playerIdST), ConsoleColor.Green);
 
-                        //clientST.GetRecentRobPlayer();
-
-
-                        response = clientST.OpenTakeBible();
-                        var _players = (JArray)response[0];
-                        Logger.Log(string.Format("打开护送取经界面，获取取经玩家：{0}", string.Join(",", _players.Select(
-                            x => string.Format("{0}({1})", Protocols.GetProtectionName((byte)x[1]), x[0])))));
-                        Logger.Log(string.Format("今日还可拦截{0}次，可取经{1}次，帮助好友护送{2}次", response[2], response[4], response[3]));
-
-
-                        /*if (_takeBibleTimes < _totalTakeBibleTimes)
+                        // 90:["ServerTakeBible","247","跨服取经"],
+                        if (functionIds.Contains(90))
                         {
-                            if (_canProtection == 0)
-                                clientST.Refresh();
-                            if (_takeBibleStatus == 0)
+                            // 仇人
+                            response = clientST.GetRecentRobPlayer();
+                            var _enemyIds = response[0].Select(x => (int)x[0]).ToList();
+                            //Logger.Log(string.Format("获取仇人：{0}", string.Join(",", _enemyIds)));
+
+                            // 打开护送取经总界面
+                            response = clientST.OpenTakeBible();
+                            var _players = (JArray)response[0];
+                            Logger.Log(string.Format("打开护送取经界面，获取{0}个取经玩家，其中有仇人：{1}", _players.Count, string.Join(",", _players
+                                .Where(x => _enemyIds.Contains((int)x[0]))
+                                .Select(x => string.Format("{0}({1})", Protocols.GetProtectionName((byte)x[1]), x[0])))));
+                            Logger.Log(string.Format("今日还可拦截{0}次，可取经{1}次，帮助好友护送{2}次", response[2], response[4], response[3]));
+
+                            // 打开护送取经面板，刷新使者，开始护送
+                            while (true)
                             {
-                                clientST.StartTakeBible();
                                 response = clientST.GetTakeBibleInfo();
+                                var _takeBibleTimes = (byte)response[2];
+                                var _totalTakeBibleTimes = (byte)response[3];
+                                var _takeBibleStatus = (byte)response[5];
+                                var _canProtection = (byte)response[6];
                                 Logger.Log(string.Format("今日可取经共{0}次，已经取经{1}次，当前取经使者：{2}（{3}）",
-                                    response[3], response[2], Protocols.GetProtectionName((byte)response[6]),
-                                    (byte)response[5] == 0 ? "未开始" : "已开始"));
-                            }
-                        }*/
-                        while (true)
-                        {
-                            response = clientST.GetTakeBibleInfo();
-                            var _takeBibleTimes = (byte)response[2];
-                            var _totalTakeBibleTimes = (byte)response[3];
-                            var _takeBibleStatus = (byte)response[5];
-                            var _canProtection = (byte)response[6];
-                            Logger.Log(string.Format("今日可取经共{0}次，已经取经{1}次，当前取经使者：{2}（{3}）",
-                                _totalTakeBibleTimes, _takeBibleTimes, Protocols.GetProtectionName(_canProtection),
-                                _takeBibleStatus == 0 ? "未开始" : "已开始"));
+                                    _totalTakeBibleTimes, _takeBibleTimes, Protocols.GetProtectionName(_canProtection),
+                                    _takeBibleStatus == 0 ? "未开始" : "已开始"));
 
-                            if (_takeBibleTimes >= _totalTakeBibleTimes)
+                                if (_takeBibleTimes >= _totalTakeBibleTimes)
+                                    break;
+                                if (_canProtection == 0)
+                                {
+                                    Logger.Log("刷新使者");
+                                    clientST.Refresh();
+                                    continue;
+                                }
+                                if (_takeBibleStatus == 0)
+                                {
+                                    Logger.Log("开始取经");
+                                    clientST.StartTakeBible();
+                                    continue;
+                                }
                                 break;
-                            if (_canProtection == 0)
-                            {
-                                Logger.Log("刷新使者");
-                                clientST.Refresh();
-                                continue;
-                            }
-                            if (_takeBibleStatus == 0)
-                            {
-                                Logger.Log("开始取经");
-                                clientST.StartTakeBible();
-                                continue;
-                            }
-                            break;
-                        }
-                        continue;
-                        /*if (_takeBibleTimes == _totalTakeBibleTimes)
-                        takeBibleStatus = TakeBibleStatus.NoMoreTimes;
-                        else if (_canProtection == 0)
-                            takeBibleStatus = TakeBibleStatus.ReadyToRefresh;
-                        else if (_takeBibleStatus == 0)
-                            takeBibleStatus = TakeBibleStatus.ReadyToStart;
-                        else
-                            takeBibleStatus = TakeBibleStatus.IsRunning;*/
-
-                        /*switch (takeBibleInfo)
-                        {
-                            case TakeBibleStatus.ReadyToRefresh:
-                                clientST.Refresh();
-                                clientST.StartTakeBible();
-                                clientST.GetTakeBibleInfo();
-                                break;
-                            case TakeBibleStatus.ReadyToStart:
-                                clientST.StartTakeBible();
-                                clientST.GetTakeBibleInfo();
-                                break;
-                        }*/
-                    }
-                    else
-                        Logger.Log("未开通仙界功能");
+                            }//while(true)
+                        }//if (functionIds.Contains(90))
+                    }//if (functionIds.Contains(91))
+                    continue;
 
                     //client.Login(url, code, time, hash, time1, hash1);
 

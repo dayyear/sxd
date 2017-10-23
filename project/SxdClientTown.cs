@@ -546,6 +546,54 @@ namespace 神仙道
             done.Set();
         }//GetEndGiftCallback
 
+        // 领取自定义挑战礼包
+        /// <summary>
+        /// Mod_StChallenge_Base.get_end_li_bao(136,20)
+        /// module:136, action:20
+        /// request:[]
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ShortUtil]
+        /// Line 253 in StChallengeData.as
+        ///     this.endGiftResult = param1[0];
+        /// Line 17 in Mod_StChallenge_Base.as
+        ///     public static const SUCCESS:int = 10;
+        /// </summary>
+        public JArray GetEndLiBao()
+        {
+            done.Reset();
+            Send(null, 136, 20);
+            done.WaitOne();
+            return response;
+        }//GetEndLiBao
+        private void GetEndLiBaoCallback(JArray data)
+        {
+            response = data;
+            done.Set();
+        }//GetEndLiBaoCallback
+
+        // 领取极限挑战宝箱
+        /// <summary>
+        /// Mod_UnlimitChallenge_Base.get_end_award(169,5)
+        /// module:169, action:5
+        /// request:[]
+        /// response:[Utils.UByteUtil]
+        /// Line 150 in UnlimitChallengeData.as
+        ///     this._getEndAwardResult = param1[0];
+        /// Line 13 in Mod_UnlimitChallenge_Base.as:
+        ///     public static const SUCCESS:int = 6;
+        /// </summary>
+        public JArray GetEndAward()
+        {
+            done.Reset();
+            Send(null, 169, 5);
+            done.WaitOne();
+            return response;
+        }//GetEndAward
+        private void GetEndAwardCallback(JArray data)
+        {
+            response = data;
+            done.Set();
+        }//GetEndAwardCallback
+
         // 摘仙桃
         /// <summary>
         /// Mod_GetPeach_Base.peach_info(40,3)
@@ -599,6 +647,140 @@ namespace 神仙道
             response = data;
             done.Set();
         }//BatchGetPeachCallback
+
+        // 药园
+        /// <summary>
+        /// Mod_Farm_Base.get_farmlandinfo_list(13,0)
+        /// module:13, action:0
+        /// request:[]
+        /// response:[[0.Utils.IntUtil, 1.Utils.IntUtil, 2.Utils.StringUtil, 3.Utils.StringUtil, 4.Utils.IntUtil, 
+        ///            5.Utils.LongUtil, 6.Utils.LongUtil, 7.Utils.IntUtil, 8.Utils.IntUtil, 9.Utils.IntUtil, 
+        ///            10.Utils.UByteUtil, 11.Utils.UByteUtil, 12.Utils.ByteUtil], Utils.IntUtil]
+        /// Line 258,262 in FarmData.as:
+        ///     for each (_loc_2 in param1[0])
+        ///     oObject.list(_loc_2, _loc_6, [
+        ///         0."farmland_id", 1."player_role_id", 2."player_role_sign", 3."player_role_name", 4."player_role_level", 
+        ///         5."player_role_experience", 6."max_experience", 7."herbs_id", 8."farmland_time", 9."farmland_level", 
+        ///         10."is_plant", 11."herbs_type", 12."isNetBar"]);
+        /// Example: [[[146928,0,"","",0,0,0,0,0,1,1,2,0],[146926,0,"","",0,0,0,0,0,1,1,2,0],[146925,0,"","",0,0,0,0,0,1,1,2,0],[146090,0,"","",0,0,0,0,0,1,1,2,0],[146930,0,"","",0,0,0,0,0,1,1,2,0],[146927,0,"","",0,0,0,0,0,1,1,2,0],[147029,0,"","",0,0,0,0,0,1,1,2,0],[146929,0,"","",0,0,0,0,0,1,1,2,0]],8]
+        ///          [[[115175,0,"","",0,0,0,0,0,1,1,2,0],[115218,0,"","",0,0,0,0,0,1,1,2,0],[117143,0,"","",0,0,0,0,0,1,1,2,0],[111186,0,"","",0,0,0,0,0,2,1,2,0],[113994,0,"","",0,0,0,0,0,1,1,2,0],[122215,0,"","",0,0,0,0,0,1,1,2,0],[118427,0,"","",0,0,0,0,0,1,1,2,0],[120677,0,"","",0,0,0,0,0,1,1,2,0]],8]
+        ///     红土地：      [111186,0,"","",0,                             0,0,0,0,**2**,                 1,2,0]
+        ///     经验数可收获：[146090,812186,"XianHeXianGu","仙何仙姑",162,  862218379,3087000000,92,0,1,   0,2,0]
+        ///     CD：          [146090,0,"","",0,                             0,0,0,28765,1,                 1,2,0]
+        ///     发财树可收获：[146925,812186,"XianHeXianGu","仙何仙姑",162,  1000466004,3087000000,31,0,1,  0,3,0]
+        /// </summary>
+        public JArray GetFarmlandinfoList()
+        {
+            done.Reset();
+            Send(null, 13, 0);
+            done.WaitOne();
+            return response;
+        }//GetFarmlandinfoList
+        private void GetFarmlandinfoListCallback(JArray data)
+        {
+            response = data;
+            done.Set();
+        }//GetFarmlandinfoListCallback
+
+        // 仙露
+        /// <summary>
+        /// Mod_Farm_Base.buy_coin_tree_count_info(13,12)
+        /// module:13, action:12
+        /// request:[]
+        /// response:[Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]
+        /// Line 498 in FarmData.as:
+        ///     oObject.list(param1, this._objBuyCoinTreeCountInfo, ["coin_tree_count", "remain_buy_times", "ingot", "recorve_cd"]);
+        /// </summary>
+        public JArray BuyCoinTreeCountInfo()
+        {
+            done.Reset();
+            Send(null, 13, 12);
+            done.WaitOne();
+            return response;
+        }//BuyCoinTreeCountInfo
+        private void BuyCoinTreeCountInfoCallback(JArray data)
+        {
+            response = data;
+            done.Set();
+        }//BuyCoinTreeCountInfoCallback
+
+        // 种植伙伴
+        /// <summary>
+        /// Mod_Farm_Base.get_player_roleinfo_list(13,1)
+        /// module:13, action:1
+        /// request:[]
+        /// response:[[0.Utils.IntUtil, 1.Utils.StringUtil, 2.Utils.StringUtil, 3.Utils.IntUtil, 4.Utils.LongUtil, Utils.LongUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil]]
+        /// Line 310 in FarmData.as:
+        ///     oObject.list(_loc_3, _loc_4, [0."player_role_id", 1."player_role_sign", 2."player_role_name", 3."player_role_level", 4."player_role_experience", "max_experience", "strength", "agile", "intellect", "player_role_state"]);
+        /// </summary>
+        public JArray GetPlayerRoleinfoList()
+        {
+            done.Reset();
+            Send(null, 13, 1);
+            done.WaitOne();
+            return response;
+        }//GetPlayerRoleinfoList
+        private void GetPlayerRoleinfoListCallback(JArray data)
+        {
+            response = data;
+            done.Set();
+        }//GetPlayerRoleinfoListCallback
+
+        // 种植
+        /// <summary>
+        /// Mod_Farm_Base.plant_herbs(13,5)
+        /// module:13, action:5
+        /// request:[Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil, Utils.ByteUtil]
+        /// Line 614 in FarmView.as:
+        ///     this.plant_herbs(intFieldId, intRoleId, intType, herbs_star_level);
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil, Utils.UByteUtil, Utils.ByteUtil]
+        /// Line 430 in FarmData.as:
+        ///     oObject.list(param1, this._objPlantHerbs, ["result", "farmland_id", "player_role_id", "player_role_sign", "player_role_name", "player_role_level", "player_role_experience", "max_experience", "herbs_id", "farmland_level", "coin_tree_count", "xianling_tree_count", "is_plant", "herbs_type", "isNetBar"]);
+        /// Line 15 in FarmData.as:
+        ///     public static const SUCCESS:int = 8;
+        /// Mod_Farm_Base.as:
+        ///     public static const EXP_HERBS:int = 2;
+        ///     public static const COIN_HERBS:int = 3;
+        /// herbs_star_level: 1:普通, 2:优秀, 3:精良, 4:传奇, 5:神话
+        /// </summary>
+        public JArray PlantHerbs(int fieldId, int roleId, byte type, byte herbs_star_level)
+        {
+            done.Reset();
+            Send(new JArray { fieldId, roleId, type, herbs_star_level }, 13, 5);
+            done.WaitOne();
+            return response;
+        }//PlantHerbs
+        private void PlantHerbsCallback(JArray data)
+        {
+            response = data;
+            done.Set();
+        }//PlantHerbsCallback
+
+        // 收获
+        /// <summary>
+        /// Mod_Farm_Base.harvest(13,6)
+        /// module:13, action:6
+        /// request:[Utils.IntUtil]
+        /// response:[Utils.UByteUtil, Utils.StringUtil, Utils.StringUtil, Utils.LongUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil]
+        /// Line 463 in FarmData.as:
+        ///     oObject.list(param1, this._objHarvest, [0."result", 1."role_name", 2."herbs_name", 3."experience", 4."level", 5."coin", 6."xianling", 7."farmland_time", 8."herbs_type"]);
+        /// Example: [8,"神杨戬","普通发财树",0,0,399600,0,0,3]
+        /// Line 15 in FarmData.as:
+        ///     public static const SUCCESS:int = 8;
+        /// </summary>
+        public JArray Harvest(int fieldId)
+        {
+            done.Reset();
+            Send(new JArray { fieldId }, 13, 6);
+            done.WaitOne();
+            return response;
+        }//Harvest
+        private void HarvestCallback(JArray data)
+        {
+            response = data;
+            done.Set();
+        }//HarvestCallback
+
 
         // 聊天
         /// <summary>

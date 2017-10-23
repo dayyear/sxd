@@ -60,6 +60,13 @@ namespace 神仙道
             methoDictionary.Add("Mod_Item_Base.player_get_super_gift", "PlayerGetSuperGiftCallback");
             methoDictionary.Add("Mod_HeroesWar_Base.get_end_gift_info", "GetEndGiftInfoCallback");
             methoDictionary.Add("Mod_HeroesWar_Base.get_end_gift", "GetEndGiftCallback");
+            methoDictionary.Add("Mod_StChallenge_Base.get_end_li_bao", "GetEndLiBaoCallback");
+            methoDictionary.Add("Mod_UnlimitChallenge_Base.get_end_award", "GetEndAwardCallback");
+            methoDictionary.Add("Mod_Farm_Base.get_farmlandinfo_list", "GetFarmlandinfoListCallback");
+            methoDictionary.Add("Mod_Farm_Base.buy_coin_tree_count_info", "BuyCoinTreeCountInfoCallback");
+            methoDictionary.Add("Mod_Farm_Base.get_player_roleinfo_list", "GetPlayerRoleinfoListCallback");
+            methoDictionary.Add("Mod_Farm_Base.plant_herbs", "PlantHerbsCallback");
+            methoDictionary.Add("Mod_Farm_Base.harvest", "HarvestCallback");
             //ST
             methoDictionary.Add("Mod_StLogin_Base.login", "LoginCallback");
             methoDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "OpenTakeBibleCallback");

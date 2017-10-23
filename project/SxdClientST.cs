@@ -19,7 +19,7 @@ namespace 神仙道
             ServerName = "仙界服务器";
         }
 
-
+        // 登录
         /// <summary>
         /// 登录
         /// Mod_StLogin_Base.login(94,0)
@@ -98,7 +98,28 @@ namespace 神仙道
             done.Set();
         }//LoginCallback
 
-        // 
+        // 仇人
+        /// <summary>
+        /// 获取最近打劫玩家，猜想可能用于仇人
+        /// Mod_StTakeBible_Base.get_recent_rob_player(114,19)
+        /// module:114, action:19
+        /// request:[]
+        /// response:[[Utils.IntUtil]]
+        /// </summary>
+        public JArray GetRecentRobPlayer()
+        {
+            done.Reset();
+            Send(null, 114, 19);
+            done.WaitOne();
+            return response;
+        }//GetRecentRobPlayer
+        private void GetRecentRobPlayerCallback(JArray data)
+        {
+            response = data;
+            done.Set();
+        }//GetRecentRobPlayerCallback
+
+        // 打开护送取经总界面
         /// <summary>
         /// Mod_StTakeBible_Base.open_take_bible(114,0)
         /// module:114, action:0
@@ -143,7 +164,7 @@ namespace 神仙道
             done.Set();
         }//OpenTakeBibleCallback
 
-        // 取经状态
+        // 打开护送取经面板
         /// <summary>
         /// Mod_StTakeBible_Base.get_take_bible_info(114,2)
         /// module:114, action:2
@@ -202,26 +223,7 @@ namespace 神仙道
             done.Set();
         }//GetTakeBibleInfoCallback
 
-        /// <summary>
-        /// 获取最近打劫玩家，猜想可能用于仇人
-        /// Mod_StTakeBible_Base.get_recent_rob_player(114,19)
-        /// module:114, action:19
-        /// request:[]
-        /// response:[[Utils.IntUtil]]
-        /// </summary>
-        public JArray GetRecentRobPlayer()
-        {
-            done.Reset();
-            Send(null, 114, 19);
-            done.WaitOne();
-            return response;
-        }//GetRecentRobPlayer
-        private void GetRecentRobPlayerCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GetRecentRobPlayerCallback
-
+        // 刷新使者
         /// <summary>
         /// Mod_StTakeBible_Base.refresh(114,8)
         /// module:114, action:8
@@ -247,6 +249,7 @@ namespace 神仙道
             done.Set();
         }//RefreshCallback
 
+        // 开始护送
         /// <summary>
         /// Mod_StTakeBible_Base.start_take_bible(114,10)
         /// module:114, action:10
