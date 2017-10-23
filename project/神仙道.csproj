@@ -67,6 +67,7 @@
   <ItemGroup>
     <None Include="protocols\protocolsR162.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
     <Content Include="replacement.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

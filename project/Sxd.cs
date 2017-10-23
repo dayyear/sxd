@@ -436,9 +436,8 @@ namespace 神仙道
                             }//while(true)
                         }//if (functionIds.Contains(90))
                     }//if (functionIds.Contains(91))
-                    continue;
 
-                    //client.Login(url, code, time, hash, time1, hash1);
+                    continue;
 
                     // E. 线程锁死
                     Thread.CurrentThread.Join();

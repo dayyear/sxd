@@ -7,13 +7,8 @@ using Newtonsoft.Json.Linq;
 
 namespace 神仙道
 {
-    public enum TakeBibleStatus { None, ReadyToRefresh, ReadyToStart, IsRunning, NoMoreTimes };
-
     public class SxdClientST : SxdClient
     {
-
-
-
         public SxdClientST()
         {
             ServerName = "仙界服务器";

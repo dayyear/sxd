@@ -10,14 +10,14 @@ namespace 神仙道
 {
     public class SxdClientTown : SxdClient
     {
-        //private Thread receiveThread;
-
         public SxdClientTown()
         {
             ServerName = "游戏服务器";
         }
 
+        // -------------------------------------------------------------------------------------------
         // 登录
+        // -------------------------------------------------------------------------------------------
         /// <summary>
         /// Mod_Player_Base.login(0,0)
         /// module:0, action:0
@@ -115,6 +115,9 @@ namespace 神仙道
             done.Set();
         }//LoginCallback
 
+        // -------------------------------------------------------------------------------------------
+        // 初始化
+        // -------------------------------------------------------------------------------------------
         // 获取玩家基本信息
         /// <summary>
         /// Mod_Player_Base.get_player_info(0,2)
@@ -267,6 +270,9 @@ namespace 神仙道
             done.Set();
         }//GetGameAssistantInfoCallback
 
+        // -------------------------------------------------------------------------------------------
+        // 领取礼包
+        // -------------------------------------------------------------------------------------------
         // 领取俸禄、仙令、灵石
         /// <summary>
         /// Mod_Player_Base.get_player_camp_salary(0,20)
@@ -355,16 +361,10 @@ namespace 神仙道
         /// </summary>
         public JArray GetDayStone()
         {
-            /*const int _id = 48;
-            if (functionList.Contains(_id))
-            {*/
             done.Reset();
             Send(new JArray(0), 34, 18);
             done.WaitOne();
             return response;
-            /* }
-             else
-                 Logger.Log(string.Format("未开通{0}功能", Protocols.GetFunctionName(_id)), ConsoleColor.Red);*/
         }//GetDayStone
         private void GetDayStoneCallback(JArray data)
         {
@@ -594,7 +594,9 @@ namespace 神仙道
             done.Set();
         }//GetEndAwardCallback
 
+        // -------------------------------------------------------------------------------------------
         // 摘仙桃
+        // -------------------------------------------------------------------------------------------
         /// <summary>
         /// Mod_GetPeach_Base.peach_info(40,3)
         /// module:40, action:3
@@ -648,7 +650,10 @@ namespace 神仙道
             done.Set();
         }//BatchGetPeachCallback
 
+        // -------------------------------------------------------------------------------------------
         // 药园
+        // -------------------------------------------------------------------------------------------
+        // 获取土地信息
         /// <summary>
         /// Mod_Farm_Base.get_farmlandinfo_list(13,0)
         /// module:13, action:0
@@ -781,8 +786,9 @@ namespace 神仙道
             done.Set();
         }//HarvestCallback
 
-
+        // -------------------------------------------------------------------------------------------
         // 聊天
+        // -------------------------------------------------------------------------------------------
         /// <summary>
         /// Mod_Chat_Base.chat_with_players(6,0)
         /// module:6, action:0
@@ -814,6 +820,9 @@ namespace 神仙道
             done.Set();
         } //BroToPlayersCallback
 
+        // -------------------------------------------------------------------------------------------
+        // 仙界准备
+        // -------------------------------------------------------------------------------------------
         // 获取仙界状态
         /// <summary>
         /// Mod_StcLogin_Base.get_status(96,1)

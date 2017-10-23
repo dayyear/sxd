@@ -16,6 +16,7 @@ namespace 神仙道
         protected string ServerName;
         // Socket
         protected Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        //private Thread receiveThread;
 
         // 状态
         private short previousModule;
