@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
@@ -11,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace 神仙道
 {
-    static class Sxd
+    internal static class Sxd
     {
         private static void CollectProtocols()
         {
@@ -39,11 +38,11 @@ namespace 神仙道
                         new XElement("method", _method),
                         new XElement("request", _request),
                         new XElement("response", _response)));
-                }//action
-            }//module
+                } //action
+            } //module
 
             protocols.Save("protocols/protocolsR162.xml");
-        }//CollectProtocols
+        } //CollectProtocols
 
         private static void GenerateUserIni()
         {
@@ -78,20 +77,20 @@ namespace 神仙道
             }
 
             Directory.GetFiles("./", "0*.jpg").ToList().ForEach(File.Delete);
-        }//GenerateUserIni
+        } //GenerateUserIni
 
 
         private static void Analyze()
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/药园种植.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/英雄副本.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
                 client.Analyze(bytes.ToArray(), isReceive);
                 isReceive ^= true;
             }
-        }//Analyze
+        } //Analyze
 
         public static void TestWhileInThread()
         {
@@ -103,9 +102,9 @@ namespace 神仙道
                 {
                     // 玩家选择
                     var i = 0;
-                    Logger.Log("G. 生成user.ini文件", showTime: false);
-                    Logger.Log("P. 收集游戏协议", showTime: false);
-                    Logger.Log("A. 分析抓包数据", showTime: false);
+                    //Logger.Log("USER. 生成user.ini文件", showTime: false);
+                    // Logger.Log("PROTOCOL. 收集游戏协议", showTime: false);
+                    //Logger.Log("ANALYZE. 分析抓包数据", showTime: false);
                     var user = File.ReadAllText(ConfigurationManager.AppSettings["userPath"], Encoding.GetEncoding("GBK"));
                     var pattern = string.Format(File.ReadAllText("pattern.txt"), "(.*)", string.Empty);
                     var matches = Regex.Matches(user, pattern);
@@ -115,20 +114,17 @@ namespace 神仙道
 
                     var readLine = Console.ReadLine();
                     Logger.Log(readLine, console: false, showTime: false);
-                    if (readLine.ToUpper() == "G")
+                    switch (readLine.ToUpper())
                     {
-                        GenerateUserIni();
-                        continue;
-                    }
-                    if (readLine.ToUpper() == "P")
-                    {
-                        CollectProtocols();
-                        continue;
-                    }
-                    if (readLine.ToUpper() == "A")
-                    {
-                        Analyze();
-                        continue;
+                        case "USER":
+                            GenerateUserIni();
+                            continue;
+                        case "PROTOCOL":
+                            CollectProtocols();
+                            continue;
+                        case "ANALYZE":
+                            Analyze();
+                            continue;
                     }
                     i = int.Parse(readLine);
                     if (i >= matches.Count)
@@ -297,8 +293,7 @@ namespace 神仙道
                     }
 
                     // 药园
-                    // 15:["Farm","150","药园"],
-                    if (functionIds.Contains(15))
+                    if (functionIds.Contains(15)) // 15:["Farm","150","药园"],
                     {
                         response = clientTown.GetFarmlandinfoList();
                         var _fields = (JArray)response[0];
@@ -326,38 +321,40 @@ namespace 神仙道
                         // 最优伙伴
                         var _partnerOptimization = _partners.First(_partner => (int)_partner[3] == _partnerMaxLevel);
 
-
-                        while (true)
+                        if (functionIds.Contains(43)) // 43:["CoinTree","250","发财树"],
                         {
-                            // 仙露
-                            response = clientTown.BuyCoinTreeCountInfo();
-                            if ((int)response[0] <= 0)
+                            while (true)
                             {
-                                Logger.Log("仙露已用完");
-                                break;
-                            }
-
-                            // 3:发财树; 1:普通
-                            // SUCCESS:int = 8;
-                            response = clientTown.PlantHerbs((int)_fieldOptimization[0], (int)_partnerOptimization[0], 3, 1);
-                            if ((byte)response[0] == 8)
-                            {
-                                response = clientTown.Harvest((int)_fieldOptimization[0]);
-                                if ((byte)response[0] == 8)
-                                    Logger.Log(string.Format("给{0}种植{1}，收获{2}铜钱，", response[1], response[2], response[5]));
-                                else
+                                // 仙露
+                                response = clientTown.BuyCoinTreeCountInfo();
+                                if ((int)response[0] <= 0)
                                 {
-                                    Logger.Log("收获发财树失败", ConsoleColor.Red);
+                                    Logger.Log("仙露已用完");
                                     break;
                                 }
-                            }
-                            else
-                            {
-                                Logger.Log("种植发财树失败", ConsoleColor.Red);
-                                break;
-                            }
-                        }
-                    }
+
+                                // 3:发财树; 1:普通
+                                // SUCCESS:int = 8;
+                                response = clientTown.PlantHerbs((int)_fieldOptimization[0], (int)_partnerOptimization[0], 3, 1);
+                                if ((byte)response[0] == 8)
+                                {
+                                    response = clientTown.Harvest((int)_fieldOptimization[0]);
+                                    if ((byte)response[0] == 8)
+                                        Logger.Log(string.Format("给{0}种植{1}，收获{2}铜钱，", response[1], response[2], response[5]));
+                                    else
+                                    {
+                                        Logger.Log("收获发财树失败", ConsoleColor.Red);
+                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    Logger.Log("种植发财树失败", ConsoleColor.Red);
+                                    break;
+                                }
+                            } //while (true)
+                        } //if (functionIds.Contains(43)) // 43:["CoinTree","250","发财树"],
+                    } //if (functionIds.Contains(15)) //15:["Farm","150","药园"],
 
                     // 聊天
                     response = clientTown.ChatWithPlayers("新年快乐！");
@@ -365,8 +362,7 @@ namespace 神仙道
                         Logger.Log(string.Format("{0}({2})说: {1}", item[1], item[5], item[0]));
 
                     // 仙界
-                    // 91:["SuperTown","205","仙界"],
-                    if (functionIds.Contains(91))
+                    if (functionIds.Contains(91)) // 91:["SuperTown","205","仙界"],
                     {
                         // 获取仙界状态
                         response = clientTown.GetStatus();
@@ -379,19 +375,13 @@ namespace 神仙道
                         var serverNameST = (string)response[2];
                         var serverTimeST = (int)response[3];
                         var passCodeST = (string)response[4];
-                        Logger.Log(string.Format("仙界服务器地址：{0}:{1}，仙界服务器名称：{2}，仙界服务器时间：{3}，passCode：{4}", serverHostST,
-                            portST, serverNameST,
-                            TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1))
-                                .AddSeconds(serverTimeST)
-                                .ToString("yyyy-MM-dd HH:mm:ss"), passCodeST));
+                        Logger.Log(string.Format("仙界服务器地址：{0}:{1}，仙界服务器名称：{2}，仙界服务器时间：{3}，passCode：{4}", serverHostST, portST, serverNameST, TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds(serverTimeST).ToString("yyyy-MM-dd HH:mm:ss"), passCodeST));
 
                         // 仙界登录
-                        var playerIdST = clientST.Login(serverHostST, portST, serverNameST, playerId, nickName,
-                            serverTimeST, passCodeST);
+                        var playerIdST = clientST.Login(serverHostST, portST, serverNameST, playerId, nickName, serverTimeST, passCodeST);
                         Logger.Log(string.Format("仙界登录成功, 仙界玩家ID: {0}", playerIdST), ConsoleColor.Green);
 
-                        // 90:["ServerTakeBible","247","跨服取经"],
-                        if (functionIds.Contains(90))
+                        if (functionIds.Contains(90)) // 90:["ServerTakeBible","247","跨服取经"],
                         {
                             // 仇人
                             response = clientST.GetRecentRobPlayer();
@@ -401,9 +391,10 @@ namespace 神仙道
                             // 打开护送取经总界面
                             response = clientST.OpenTakeBible();
                             var _players = (JArray)response[0];
-                            Logger.Log(string.Format("打开护送取经界面，获取{0}个取经玩家，其中有仇人：{1}", _players.Count, string.Join(",", _players
+                            Logger.Log(string.Format("打开护送取经界面，获取{0}个取经玩家，其中有{1}个仇人", _players.Count, string.Join(",", _players
                                 .Where(x => _enemyIds.Contains((int)x[0]))
-                                .Select(x => string.Format("{0}({1})", Protocols.GetProtectionName((byte)x[1]), x[0])))));
+                                .Count() //.Select(x => string.Format("{0}({1})", Protocols.GetProtectionName((byte)x[1]), x[0]))
+                                )));
                             Logger.Log(string.Format("今日还可拦截{0}次，可取经{1}次，帮助好友护送{2}次", response[2], response[4], response[3]));
 
                             // 打开护送取经面板，刷新使者，开始护送
@@ -414,9 +405,7 @@ namespace 神仙道
                                 var _totalTakeBibleTimes = (byte)response[3];
                                 var _takeBibleStatus = (byte)response[5];
                                 var _canProtection = (byte)response[6];
-                                Logger.Log(string.Format("今日可取经共{0}次，已经取经{1}次，当前取经使者：{2}（{3}）",
-                                    _totalTakeBibleTimes, _takeBibleTimes, Protocols.GetProtectionName(_canProtection),
-                                    _takeBibleStatus == 0 ? "未开始" : "已开始"));
+                                Logger.Log(string.Format("今日可取经共{0}次，已经取经{1}次，当前取经使者：{2}（{3}）", _totalTakeBibleTimes, _takeBibleTimes, Protocols.GetProtectionName(_canProtection), _takeBibleStatus == 0 ? "未开始" : "已开始"));
 
                                 if (_takeBibleTimes >= _totalTakeBibleTimes)
                                     break;
@@ -433,9 +422,9 @@ namespace 神仙道
                                     continue;
                                 }
                                 break;
-                            }//while(true)
-                        }//if (functionIds.Contains(90))
-                    }//if (functionIds.Contains(91))
+                            } //while(true)
+                        } //if (functionIds.Contains(90)) // 90:["ServerTakeBible","247","跨服取经"],
+                    } //if (functionIds.Contains(91)) // 91:["SuperTown","205","仙界"],
 
                     continue;
 
@@ -446,7 +435,7 @@ namespace 神仙道
                 {
                     Logger.Log(string.Format("发现错误：{0}", ex.ToString()), ConsoleColor.Red);
                 }
-            }//while(true)
-        }//TestWhileInThread
-    }//class
-}//namespace
+            } //while(true)
+        } //TestWhileInThread
+    } //class
+} //namespace

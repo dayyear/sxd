@@ -125,7 +125,14 @@ namespace 神仙道
         /// request:[]
         /// response:[0.Utils.StringUtil, 1.Utils.IntUtil, 2.Utils.IntUtil, 3.Utils.LongUtil, 4.Utils.IntUtil, 5.Utils.IntUtil, 6.Utils.IntUtil, 7.Utils.LongUtil, 8.Utils.LongUtil, 9.Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil]
         /// Line 786 in PlayerData.as:
-        ///     oObject.list(param1, this, [0."nickname", 1."level", 2."ingot", 3."coins", 4."health", 5."maxHealth", 6."power", 7."experience", 8."maxExperience", 9."townMapId", "bossMapId", "jihuisuoId", "mounts", "mountsCD", "vipLevel", "avatar", "avatarCD", "mainPlayerRoleId", "mainRoleId", "campId", "townKey", "fame", "fameLevel", "extraPower", "maxExtraPower", "netBarPower", "maxNetBarPower", "tester", "lastPlayVersion", "missionKey", "startAccount", "stLevel", "daoYuan", "exploit", "isHaveTangYuan"]);
+        ///     oObject.list(param1, this, [
+        ///         0."nickname", 1."level", 2."ingot", 3."coins", 4."health", 
+        ///         5."maxHealth", 6."power", 7."experience", 8."maxExperience", 9."townMapId", 
+        ///         10."bossMapId", 11."jihuisuoId", 12."mounts",13. "mountsCD", 14."vipLevel", 
+        ///         15."avatar", 16."avatarCD", 17."mainPlayerRoleId", 18."mainRoleId", 19."campId", 
+        ///         20."townKey", 21."fame", 22."fameLevel", 23."extraPower", 24."maxExtraPower", 
+        ///         25."netBarPower", 26."maxNetBarPower", 27."tester", 28."lastPlayVersion", 29."missionKey", 
+        ///         30."startAccount", 31."stLevel", 32."daoYuan", 33."exploit", 34."isHaveTangYuan"]);
         /// </summary>
         public JArray GetPlayerInfo()
         {

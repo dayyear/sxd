@@ -19,7 +19,7 @@ public static class Logger
 
 
     public static void Log(string message,
-        ConsoleColor foregroundColor = ConsoleColor.Gray,
+        ConsoleColor foregroundColor = ConsoleColor.White,
         bool console = true, bool file = true,
         bool showTime = true, bool writeLine = true)
     {

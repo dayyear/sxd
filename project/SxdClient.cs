@@ -29,7 +29,7 @@ namespace 神仙道
         protected readonly byte[] bufferRcvd = new byte[256];
         private readonly List<byte> bytesRcvd = new List<byte>();
 
-        private readonly Dictionary<string, string> methoDictionary = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> methodDictionary = new Dictionary<string, string>();
 
         protected int _playerId;
         protected JArray response;
@@ -38,43 +38,43 @@ namespace 神仙道
         protected SxdClient()
         {
             // Town
-            methoDictionary.Add("Mod_Player_Base.login", "LoginCallback");
-            methoDictionary.Add("Mod_Player_Base.get_player_info", "GetPlayerInfoCallback");
-            methoDictionary.Add("Mod_Player_Base.player_info_contrast", "PlayerInfoContrastCallback");
-            methoDictionary.Add("Mod_Town_Base.enter_town", "EnterTownCallback");
-            methoDictionary.Add("Mod_StcLogin_Base.get_status", "GetStatusCallback");
-            methoDictionary.Add("Mod_StcLogin_Base.get_login_info", "GetLoginInfoCallback");
-            methoDictionary.Add("Mod_Player_Base.get_player_function", "GetPlayerFunctionCallback");
-            methoDictionary.Add("Mod_Player_Base.get_game_assistant_info", "GetGameAssistantInfoCallback");
-            methoDictionary.Add("Mod_GetPeach_Base.peach_info", "PeachInfoCallback");
-            methoDictionary.Add("Mod_GetPeach_Base.batch_get_peach", "BatchGetPeachCallback");
-            methoDictionary.Add("Mod_Chat_Base.bro_to_players", "BroToPlayersCallback");
-            methoDictionary.Add("Mod_Player_Base.get_player_camp_salary", "GetPlayerCampSalaryCallback");
-            methoDictionary.Add("Mod_Farm_Base.is_player_get_xian_ling_gift", "IsPlayerGetXianLingGiftCallback");
-            methoDictionary.Add("Mod_Farm_Base.player_get_xian_ling_gift", "PlayerGetXianLingGiftCallback");
-            methoDictionary.Add("Mod_SealSoul_Base.day_stone_count", "DayStoneCountCallback");
-            methoDictionary.Add("Mod_SealSoul_Base.get_day_stone", "GetDayStoneCallback");
-            methoDictionary.Add("Mod_FunctionEnd_Base.game_function_end_gift", "GameFunctionEndGiftCallback");
-            methoDictionary.Add("Mod_FunctionEnd_Base.random_award", "RandomAwardCallback");
-            methoDictionary.Add("Mod_FunctionEnd_Base.get_game_function_end_gift", "GetGameFunctionEndGiftCallback");
-            methoDictionary.Add("Mod_Item_Base.get_player_gift_all_info", "GetPlayerGiftAllInfoCallback");
-            methoDictionary.Add("Mod_Item_Base.player_get_super_gift", "PlayerGetSuperGiftCallback");
-            methoDictionary.Add("Mod_HeroesWar_Base.get_end_gift_info", "GetEndGiftInfoCallback");
-            methoDictionary.Add("Mod_HeroesWar_Base.get_end_gift", "GetEndGiftCallback");
-            methoDictionary.Add("Mod_StChallenge_Base.get_end_li_bao", "GetEndLiBaoCallback");
-            methoDictionary.Add("Mod_UnlimitChallenge_Base.get_end_award", "GetEndAwardCallback");
-            methoDictionary.Add("Mod_Farm_Base.get_farmlandinfo_list", "GetFarmlandinfoListCallback");
-            methoDictionary.Add("Mod_Farm_Base.buy_coin_tree_count_info", "BuyCoinTreeCountInfoCallback");
-            methoDictionary.Add("Mod_Farm_Base.get_player_roleinfo_list", "GetPlayerRoleinfoListCallback");
-            methoDictionary.Add("Mod_Farm_Base.plant_herbs", "PlantHerbsCallback");
-            methoDictionary.Add("Mod_Farm_Base.harvest", "HarvestCallback");
+            methodDictionary.Add("Mod_Player_Base.login", "LoginCallback");
+            methodDictionary.Add("Mod_Player_Base.get_player_info", "GetPlayerInfoCallback");
+            methodDictionary.Add("Mod_Player_Base.player_info_contrast", "PlayerInfoContrastCallback");
+            methodDictionary.Add("Mod_Town_Base.enter_town", "EnterTownCallback");
+            methodDictionary.Add("Mod_StcLogin_Base.get_status", "GetStatusCallback");
+            methodDictionary.Add("Mod_StcLogin_Base.get_login_info", "GetLoginInfoCallback");
+            methodDictionary.Add("Mod_Player_Base.get_player_function", "GetPlayerFunctionCallback");
+            methodDictionary.Add("Mod_Player_Base.get_game_assistant_info", "GetGameAssistantInfoCallback");
+            methodDictionary.Add("Mod_GetPeach_Base.peach_info", "PeachInfoCallback");
+            methodDictionary.Add("Mod_GetPeach_Base.batch_get_peach", "BatchGetPeachCallback");
+            methodDictionary.Add("Mod_Chat_Base.bro_to_players", "BroToPlayersCallback");
+            methodDictionary.Add("Mod_Player_Base.get_player_camp_salary", "GetPlayerCampSalaryCallback");
+            methodDictionary.Add("Mod_Farm_Base.is_player_get_xian_ling_gift", "IsPlayerGetXianLingGiftCallback");
+            methodDictionary.Add("Mod_Farm_Base.player_get_xian_ling_gift", "PlayerGetXianLingGiftCallback");
+            methodDictionary.Add("Mod_SealSoul_Base.day_stone_count", "DayStoneCountCallback");
+            methodDictionary.Add("Mod_SealSoul_Base.get_day_stone", "GetDayStoneCallback");
+            methodDictionary.Add("Mod_FunctionEnd_Base.game_function_end_gift", "GameFunctionEndGiftCallback");
+            methodDictionary.Add("Mod_FunctionEnd_Base.random_award", "RandomAwardCallback");
+            methodDictionary.Add("Mod_FunctionEnd_Base.get_game_function_end_gift", "GetGameFunctionEndGiftCallback");
+            methodDictionary.Add("Mod_Item_Base.get_player_gift_all_info", "GetPlayerGiftAllInfoCallback");
+            methodDictionary.Add("Mod_Item_Base.player_get_super_gift", "PlayerGetSuperGiftCallback");
+            methodDictionary.Add("Mod_HeroesWar_Base.get_end_gift_info", "GetEndGiftInfoCallback");
+            methodDictionary.Add("Mod_HeroesWar_Base.get_end_gift", "GetEndGiftCallback");
+            methodDictionary.Add("Mod_StChallenge_Base.get_end_li_bao", "GetEndLiBaoCallback");
+            methodDictionary.Add("Mod_UnlimitChallenge_Base.get_end_award", "GetEndAwardCallback");
+            methodDictionary.Add("Mod_Farm_Base.get_farmlandinfo_list", "GetFarmlandinfoListCallback");
+            methodDictionary.Add("Mod_Farm_Base.buy_coin_tree_count_info", "BuyCoinTreeCountInfoCallback");
+            methodDictionary.Add("Mod_Farm_Base.get_player_roleinfo_list", "GetPlayerRoleinfoListCallback");
+            methodDictionary.Add("Mod_Farm_Base.plant_herbs", "PlantHerbsCallback");
+            methodDictionary.Add("Mod_Farm_Base.harvest", "HarvestCallback");
             //ST
-            methoDictionary.Add("Mod_StLogin_Base.login", "LoginCallback");
-            methoDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "OpenTakeBibleCallback");
-            methoDictionary.Add("Mod_StTakeBible_Base.get_take_bible_info", "GetTakeBibleInfoCallback");
-            methoDictionary.Add("Mod_StTakeBible_Base.get_recent_rob_player", "GetRecentRobPlayerCallback");
-            methoDictionary.Add("Mod_StTakeBible_Base.refresh", "RefreshCallback");
-            methoDictionary.Add("Mod_StTakeBible_Base.start_take_bible", "StartTakeBibleCallback");
+            methodDictionary.Add("Mod_StLogin_Base.login", "LoginCallback");
+            methodDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "OpenTakeBibleCallback");
+            methodDictionary.Add("Mod_StTakeBible_Base.get_take_bible_info", "GetTakeBibleInfoCallback");
+            methodDictionary.Add("Mod_StTakeBible_Base.get_recent_rob_player", "GetRecentRobPlayerCallback");
+            methodDictionary.Add("Mod_StTakeBible_Base.refresh", "RefreshCallback");
+            methodDictionary.Add("Mod_StTakeBible_Base.start_take_bible", "StartTakeBibleCallback");
         }
 
         private void ProcessPackage(byte[] package, bool isReceive = true)
@@ -96,18 +96,20 @@ namespace 神仙道
 
                 if (isReceive)
                 {
-                    if (methoDictionary.ContainsKey(className_method))
-                        GetType().GetMethod(methoDictionary[className_method], BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, new object[] { data });
-                    
+                    //if (!methodDictionary.ContainsKey(className_method))
+                    //    return;
+                    if (methodDictionary.ContainsKey(className_method))
+                        GetType().GetMethod(methodDictionary[className_method], BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, new object[] { data });
+
                     //Logger.Log(string.Format("package: {0}", Common.BytesToString(package)), ConsoleColor.Yellow, console: false);
-                    Logger.Log(string.Format("Receive method: {0}({1},{2})", className_method, module, action), ConsoleColor.Yellow, console: false);
-                    Logger.Log(string.Format("Receive data: {0}", data.ToString(Formatting.None)), ConsoleColor.Yellow, console: false);
+                    Logger.Log(string.Format("Receive method: {0}({1},{2})", className_method, module, action), ConsoleColor.Cyan, console: false);
+                    Logger.Log(string.Format("Receive data: {0}", data.ToString(Formatting.None)), ConsoleColor.Cyan, console: false);
                 }
                 else
                 {
                     //Logger.Log(string.Format("package: {0}", Common.BytesToString(package)), ConsoleColor.White, console: false);
-                    Logger.Log(string.Format("Send method: {0}({1},{2})", className_method, module, action), ConsoleColor.White, console: false);
-                    Logger.Log(string.Format("Send data: {0}", data.ToString(Formatting.None)), ConsoleColor.White, console: false);
+                    Logger.Log(string.Format("Send method: {0}({1},{2})", className_method, module, action), ConsoleColor.Magenta, console: false);
+                    Logger.Log(string.Format("Send data: {0}", data.ToString(Formatting.None)), ConsoleColor.Magenta, console: false);
                 }
             }//br, ms
         }//ProcessPackage

@@ -123,27 +123,6 @@ namespace 神仙道
         /// <summary>
         /// 通过module和action，在protocols目录下查找相应的源文件，返回method, request, response
         /// </summary>
-        /*public static Tuple<string, string, JArray, JArray> GetPattern(short module, short action)
-        {
-            var matches = (from _file in Directory.GetFiles("protocols/", "*Base.as")
-                           let _m = Regex.Match(File.ReadAllText(_file), string.Format(@"class (\S*) [\s\S]*?public static const (.*?):Object = {{module:{0}, action:{1}, request:(\[.*?\]), response:(\[.*?\])}}", module, action))
-                           where _m.Success
-                           select _m).ToList();
-            if (!matches.Any())
-                throw new Exception(string.Format("Not find protocol with module: {0}, action: {1}", module, action));
-            if (matches.Count() > 1)
-                throw new Exception(string.Format("Find multiple protocols with module: {0}, action: {1}", module, action));
-            var match = matches.First();
-            var className = match.Groups[1].Value;
-            var method = match.Groups[2].Value;
-            var request = JArray.Parse(Regex.Replace(match.Groups[3].Value, "Utils.*?Util", "\"$0\""));
-            var response = JArray.Parse(Regex.Replace(match.Groups[4].Value, "Utils.*?Util", "\"$0\""));
-            return Tuple.Create(className, method, request, response);
-        }//GetPattern*/
-
-        /// <summary>
-        /// 通过module和action，在protocols目录下查找相应的源文件，返回method, request, response
-        /// </summary>
         public static Tuple<string, string, JArray, JArray> GetPattern(short module, short action)
         {
             var protocols = XElement.Load("protocols/protocolsR162.xml");
