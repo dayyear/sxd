@@ -87,11 +87,6 @@ namespace 神仙道
 
             return _playerId;
         }//Login
-        private void LoginCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//LoginCallback
 
         // 仇人
         /// <summary>
@@ -108,11 +103,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetRecentRobPlayer
-        private void GetRecentRobPlayerCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GetRecentRobPlayerCallback
 
         // 打开护送取经总界面
         /// <summary>
@@ -153,11 +143,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//OpenTakeBible
-        private void OpenTakeBibleCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//OpenTakeBibleCallback
 
         // 打开护送取经面板
         /// <summary>
@@ -196,27 +181,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetTakeBibleInfo
-        private void GetTakeBibleInfoCallback(JArray data)
-        {
-            /*takeBibleStatus = TakeBibleStatus.None;
-            var _takeBibleTimes = (byte)data[2];
-            var _totalTakeBibleTimes = (byte)data[3];
-            var _takeBibleStatus = (byte)data[5];
-            var _canProtection = (byte)data[6];
-            Logger.Log(string.Format("今日可取经共{0}次，已经取经{1}次，当前取经使者：{2}（{3}）",
-                _totalTakeBibleTimes, _takeBibleTimes, protections[_canProtection], _takeBibleStatus == 0 ? "未开始" : "已开始"));
-
-            if (_takeBibleTimes == _totalTakeBibleTimes)
-                takeBibleStatus = TakeBibleStatus.NoMoreTimes;
-            else if (_canProtection == 0)
-                takeBibleStatus = TakeBibleStatus.ReadyToRefresh;
-            else if (_takeBibleStatus == 0)
-                takeBibleStatus = TakeBibleStatus.ReadyToStart;
-            else
-                takeBibleStatus = TakeBibleStatus.IsRunning;*/
-            response = data;
-            done.Set();
-        }//GetTakeBibleInfoCallback
 
         // 刷新使者
         /// <summary>
@@ -238,11 +202,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//Refresh
-        private void RefreshCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//RefreshCallback
 
         // 开始护送
         /// <summary>
@@ -262,11 +221,14 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//StartTakeBible
-        private void StartTakeBibleCallback(JArray data)
+
+
+
+        private void Callback(JArray data)
         {
             response = data;
             done.Set();
-        }//StartTakeBibleCallback
+        }//Callback
 
 
 

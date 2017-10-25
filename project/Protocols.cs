@@ -12,7 +12,9 @@ namespace 神仙道
 {
     public static class Protocols
     {
-
+        /// <summary>
+        /// 编码
+        /// </summary>
         public static IEnumerable<byte> Encode(JArray data, JArray pattern)
         {
             var bytes = new List<byte>();
@@ -48,22 +50,28 @@ namespace 神仙道
                             default:
                                 Logger.Log("Unknown item string: " + (string)item, ConsoleColor.Red);
                                 break;
-                        }//switch ((string)item)
+                        } //switch ((string)item)
                         break;
                     default:
                         Logger.Log("Unknown item type: " + item.Type, ConsoleColor.Red);
                         break;
-                }//switch (item.Type)
-            }//foreach (var item in pattern)
+                } //switch (item.Type)
+            } //foreach (var item in pattern)
 
             return bytes;
-        }//Encode
+        } //Encode
 
+        /// <summary>
+        /// 解码
+        /// </summary>
         public static JArray Decode(byte[] bytes, JArray pattern)
         {
             return Decode(new MemoryStream(bytes, false), pattern);
-        }//Decode
+        } //Decode
 
+        /// <summary>
+        /// 解码
+        /// </summary>
         public static JArray Decode(Stream stream, JArray pattern)
         {
             var data = new JArray();
@@ -101,7 +109,7 @@ namespace 神仙道
                             default:
                                 Logger.Log("Unknown item string: " + (string)item, ConsoleColor.Red);
                                 break;
-                        }//switch ((string)item)
+                        } //switch ((string)item)
                         break;
                     case JTokenType.Array:
                         var jArray = new JArray();
@@ -114,11 +122,11 @@ namespace 神仙道
                     default:
                         Logger.Log("Unknown item type: " + item.Type, ConsoleColor.Red);
                         break;
-                }//switch (item.Type)
-            }//foreach (var item in pattern)
+                } //switch (item.Type)
+            } //foreach (var item in pattern)
 
             return data;
-        }//Decode
+        } //Decode
 
         /// <summary>
         /// 通过module和action，在protocols目录下查找相应的源文件，返回method, request, response
@@ -134,47 +142,60 @@ namespace 神仙道
                 throw new Exception(string.Format("Not find protocol with module: {0}, action: {1}", module, action));
             if (actions.Count() > 1)
                 throw new Exception(string.Format("Find multiple protocols with module: {0}, action: {1}", module, action));
-            
+
             var className = actions[0].Parent.Element("class").Value;
             var method = actions[0].Element("method").Value;
             var request = JArray.Parse(Regex.Replace(actions[0].Element("request").Value, "Utils.*?Util", "\"$0\""));
             var response = JArray.Parse(Regex.Replace(actions[0].Element("response").Value, "Utils.*?Util", "\"$0\""));
             return Tuple.Create(className, method, request, response);
-        }//GetPattern
+        } //GetPattern
 
-        public static string GetTownName(int townMapId)
-        {
-            var match = Regex.Match(File.ReadAllText("protocols/DramaXMLLang.as"), string.Format("town{0}:String = \"(.*?)\";", townMapId));
-            if (!match.Success)
-                throw new Exception(string.Format("Not find town with id: {0}", townMapId));
-            return match.Groups[1].Value;
-        }//GetTownName
-
-        public static string GetFunctionName(int functionId)
-        {
-            var match = Regex.Match(File.ReadAllText("protocols/FunctionTypeData_R162.as"), string.Format(@"{0}:\[""(.*?)"",""(.*?)"",""(.*?)""\]", functionId));
-            if (!match.Success)
-                throw new Exception(string.Format("Not find function with id: {0}", functionId));
-            return match.Groups[3].Value;
-        }//GetFunctionName
-
-        // 获取随机礼包名称
-        private static readonly Dictionary<short, string> endFunctionGift =
-            new Dictionary<short, string> { { 1, "吉星高照" }, { 4, "龙鱼仙令" }, { 7, "灵脉" }, { 13, "拜关公" }, { 16, "龙鱼境界点" } };
         /// <summary>
+        /// 根据id获取城镇名称
+        /// </summary>
+        public static string GetTownName(int id)
+        {
+            var match = Regex.Match(File.ReadAllText("protocols/DramaXMLLang.as"), string.Format("town{0}:String = \"(.*?)\";", id));
+            if (!match.Success)
+                throw new Exception(string.Format("Not find town with id: {0}", id));
+            return match.Groups[1].Value;
+        } //GetTownName
+
+        /// <summary>
+        /// 获取城镇id列表
+        /// </summary>
+        public static IEnumerable<int> GetTownIds()
+        {
+            return Regex.Matches(File.ReadAllText("protocols/DramaXMLLang.as"), @"town(\d*):String").Cast<Match>()
+                .Select(match => int.Parse(match.Groups[1].Value)).ToList();
+        } //GetTownIds
+
+        /// <summary>
+        /// 根据id获取功能名称
+        /// </summary>
+        public static string GetFunctionName(int id)
+        {
+            var match = Regex.Match(File.ReadAllText("protocols/FunctionTypeData_R162.as"), string.Format(@"{0}:\[""(.*?)"",""(.*?)"",""(.*?)""\]", id));
+            if (!match.Success)
+                throw new Exception(string.Format("Not find function with id: {0}", id));
+            return match.Groups[3].Value;
+        } //GetFunctionName
+
+        /// <summary>
+        /// 根据id获取随机礼包名称
         /// Line 7 in GiftTypeData.as:
         ///     public static const endFunctionGift:Array = [[1, "JiXingZhongJie", "吉星高照", 0, 0, 0, 54, 1], [4, "LongYuZhongJie", "龙鱼仙令", 0, 0, 0, 70, 2], [7, "LingMaiZhongJie", "灵脉", 0, 0, 0, 85, 4], [13, "GuanGongZhongJie", "拜关公", 0, 0, 0, 55, 5], [16, "Longyu1ZhongJie", "龙鱼境界点", 0, 0, 0, 70, 3]];
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        private static readonly Dictionary<short, string> endFunctionGift =
+            new Dictionary<short, string> { { 1, "吉星高照" }, { 4, "龙鱼仙令" }, { 7, "灵脉" }, { 13, "拜关公" }, { 16, "龙鱼境界点" } };
+
         public static string GetEndFunctionGiftName(short id)
         {
             return endFunctionGift[id];
-        }//GetEndFunctionGiftName
+        } //GetEndFunctionGiftName
 
-        private static readonly Dictionary<byte, string> protections = 
-            new Dictionary<byte, string> { { 0, "未刷新" }, { 1, "白龙马" }, { 2, "沙悟净" }, { 3, "猪八戒" }, { 4, "孙悟空" }, { 5, "唐僧" } };
         /// <summary>
+        /// 根据id获取取经使者名称
         /// Line 7-12 in Mod_StTakeBible_Base.as
         ///     public static const NO_REFRESH:int = 0;
         ///     public static const BAI_LONG_MA:int = 1;
@@ -183,12 +204,13 @@ namespace 神仙道
         ///     public static const SUN_WU_KONG:int = 4;
         ///     public static const TANG_SENG:int = 5;
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        private static readonly Dictionary<byte, string> protections =
+            new Dictionary<byte, string> { { 0, "未刷新" }, { 1, "白龙马" }, { 2, "沙悟净" }, { 3, "猪八戒" }, { 4, "孙悟空" }, { 5, "唐僧" } };
+
         public static string GetProtectionName(byte id)
         {
             return protections[id];
         }
 
-    }//class
-}//namespace
+    } //class
+} //namespace

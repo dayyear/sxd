@@ -12,88 +12,9 @@ namespace 神仙道
 {
     internal static class Sxd
     {
-        private static void CollectProtocols()
+        public static void Run()
         {
-            var protocols = new XElement("protocols");
-
-            foreach (var file in Directory.GetFiles(@"I:\神仙道\基础数据准备\R162\Main\Action\com\protocols", "Mod_*_Base.as"))
-            {
-                var content = File.ReadAllText(file);
-                var matches = Regex.Matches(content, @"public static const (.*?):Object = {module:(\d*?), action:(\d*?), request:(.*?), response:(.*?)};");
-                var module = new XElement("module",
-                    new XAttribute("id", matches[0].Groups[2].Value),
-                    new XElement("class", Regex.Match(content, "public class (.*?) extends Object").Groups[1].Value));
-                protocols.Add(module);
-                foreach (Match match in matches)
-                {
-                    var _method = match.Groups[1].Value;
-                    var _module = match.Groups[2].Value;
-                    var _action = match.Groups[3].Value;
-                    var _request = match.Groups[4].Value;
-                    var _response = match.Groups[5].Value;
-                    if (_module != matches[0].Groups[2].Value)
-                        throw new Exception(string.Format("module值不一致，文件：{0}", file));
-                    module.Add(new XElement("action",
-                        new XAttribute("id", _action),
-                        new XElement("method", _method),
-                        new XElement("request", _request),
-                        new XElement("response", _response)));
-                } //action
-            } //module
-
-            protocols.Save("protocols/protocolsR162.xml");
-        } //CollectProtocols
-
-        private static void GenerateUserIni()
-        {
-            Directory.GetFiles("./", "0*.jpg").ToList().ForEach(File.Delete);
-
-            var web = new SxdWeb();
-            var user1 = File.ReadAllText(ConfigurationManager.AppSettings["userPath"], Encoding.GetEncoding("GBK"));
-            var pattern1 = string.Format(File.ReadAllText("pattern.txt"), "(.*)", "username=(.*)\r\npassword=(.*)\r\n");
-            var matches = Regex.Matches(user1, pattern1);
-            foreach (Match match in matches)
-            {
-                Logger.Log(string.Format("{0}", match.Groups[8].Value), showTime: false);
-                var id = match.Groups[1].Value;
-                var url = match.Groups[2].Value;
-                var name = match.Groups[8].Value;
-                var username = match.Groups[9].Value;
-                var password = match.Groups[10].Value;
-                var server = url.Substring(7, url.IndexOf('.') - 7);
-                var tuple = web.LoginService(username, password, server);
-                var code = tuple.Item1;
-                var time = tuple.Item2;
-                var hash = tuple.Item3;
-                var time1 = tuple.Item4;
-                var hash1 = tuple.Item5;
-                Logger.Log(string.Format("code: {0}, time: {1}, hash: {2}, time1: {3}, hash1: {4}", code, time, hash, time1, hash1));
-
-                var pattern2 = string.Format(File.ReadAllText("pattern.txt"), id, string.Empty);
-                var replacement = string.Format(File.ReadAllText("replacement.txt"), id, url, code, time, hash, time1, hash1, name);
-
-                var user2 = File.ReadAllText(ConfigurationManager.AppSettings["userPath"], Encoding.GetEncoding("GBK"));
-                File.WriteAllText(ConfigurationManager.AppSettings["userPath"], Regex.Replace(user2, pattern2, replacement), Encoding.GetEncoding("GBK"));
-            }
-
-            Directory.GetFiles("./", "0*.jpg").ToList().ForEach(File.Delete);
-        } //GenerateUserIni
-
-
-        private static void Analyze()
-        {
-            var client = new SxdClientTown();
-            var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/英雄副本.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
-                client.Analyze(bytes.ToArray(), isReceive);
-                isReceive ^= true;
-            }
-        } //Analyze
-
-        public static void TestWhileInThread()
-        {
+            Logger.Log("程序开始", ConsoleColor.Green);
             var clientTown = new SxdClientTown();
             var clientST = new SxdClientST();
             while (true)
@@ -102,9 +23,6 @@ namespace 神仙道
                 {
                     // 玩家选择
                     var i = 0;
-                    //Logger.Log("USER. 生成user.ini文件", showTime: false);
-                    // Logger.Log("PROTOCOL. 收集游戏协议", showTime: false);
-                    //Logger.Log("ANALYZE. 分析抓包数据", showTime: false);
                     var user = File.ReadAllText(ConfigurationManager.AppSettings["userPath"], Encoding.GetEncoding("GBK"));
                     var pattern = string.Format(File.ReadAllText("pattern.txt"), "(.*)", string.Empty);
                     var matches = Regex.Matches(user, pattern);
@@ -426,6 +344,47 @@ namespace 神仙道
                         } //if (functionIds.Contains(90)) // 90:["ServerTakeBible","247","跨服取经"],
                     } //if (functionIds.Contains(91)) // 91:["SuperTown","205","仙界"],
 
+                    if (functionIds.Contains(51)) // 51:["HeroMissionPractice","238","英雄扫荡"],
+                    {
+                        foreach (var _townId in Protocols.GetTownIds().Where(x => x <= 55).OrderByDescending(x => x))
+                        {
+                            response = clientTown.GetHeroMissionList(_townId);
+                            var _missions = (JArray)response[0];
+                            //Logger.Log(string.Format("{0}({1})", Protocols.GetTownName(_townId), _townId));
+                            //foreach (var _mission in _missions)
+                            //    Logger.Log(string.Format("id：{0}，isCanChallenge：{1}，rank：{2}，isFinished：{3}", _mission[0], _mission[1], _mission[2], _mission[3]));
+
+                            var _missionsReady = _missions.Where(x => (byte)x[1] == 1 && (byte)x[3] == 1).ToList();
+                            if (!_missionsReady.Any())
+                                continue;
+                            response = clientTown.StartPractice(_townId, 1, 0);
+                            response = clientTown.Quickly();
+                            switch ((byte)response[0])
+                            {
+                                case 10:
+                                    // FINISH:int = 10;
+                                    Logger.Log(string.Format("扫荡英雄副本{0}完成", Protocols.GetTownName(_townId)));
+                                    break;
+                                case 6:
+                                    // BAG_FULL:int = 6;
+                                    Logger.Log(string.Format("扫荡{0}失败，背包已满", Protocols.GetTownName(_townId)), ConsoleColor.Red);
+                                    break;
+                                case 7:
+                                    // NOT_ENOUGH_POWER:int = 7;
+                                    Logger.Log(string.Format("扫荡{0}失败，体力已用光", Protocols.GetTownName(_townId)), ConsoleColor.Red);
+                                    break;
+                                case 8:
+                                    // NO_MISSION:int = 8;
+                                    Logger.Log(string.Format("扫荡{0}失败，没有副本任务", Protocols.GetTownName(_townId)), ConsoleColor.Red);
+                                    break;
+                                default:
+                                    Logger.Log("Unknown Mod_HeroMission_Base.notify: " + response[0], ConsoleColor.Red);
+                                    break;
+                            }
+                            if ((byte)response[0] != 10)
+                                break;
+                        }
+                    }
                     continue;
 
                     // E. 线程锁死
@@ -436,6 +395,86 @@ namespace 神仙道
                     Logger.Log(string.Format("发现错误：{0}", ex.ToString()), ConsoleColor.Red);
                 }
             } //while(true)
-        } //TestWhileInThread
+        } //Run
+
+        private static void CollectProtocols()
+        {
+            var protocols = new XElement("protocols");
+
+            foreach (var file in Directory.GetFiles(@"I:\神仙道\基础数据准备\R162\Main\Action\com\protocols", "Mod_*_Base.as"))
+            {
+                var content = File.ReadAllText(file);
+                var matches = Regex.Matches(content, @"public static const (.*?):Object = {module:(\d*?), action:(\d*?), request:(.*?), response:(.*?)};");
+                var module = new XElement("module",
+                    new XAttribute("id", matches[0].Groups[2].Value),
+                    new XElement("class", Regex.Match(content, "public class (.*?) extends Object").Groups[1].Value));
+                protocols.Add(module);
+                foreach (Match match in matches)
+                {
+                    var _method = match.Groups[1].Value;
+                    var _module = match.Groups[2].Value;
+                    var _action = match.Groups[3].Value;
+                    var _request = match.Groups[4].Value;
+                    var _response = match.Groups[5].Value;
+                    if (_module != matches[0].Groups[2].Value)
+                        throw new Exception(string.Format("module值不一致，文件：{0}", file));
+                    module.Add(new XElement("action",
+                        new XAttribute("id", _action),
+                        new XElement("method", _method),
+                        new XElement("request", _request),
+                        new XElement("response", _response)));
+                } //action
+            } //module
+
+            protocols.Save("protocols/protocolsR162.xml");
+        } //CollectProtocols
+
+        private static void GenerateUserIni()
+        {
+            Directory.GetFiles("./", "0*.jpg").ToList().ForEach(File.Delete);
+
+            var web = new SxdWeb();
+            var user1 = File.ReadAllText(ConfigurationManager.AppSettings["userPath"], Encoding.GetEncoding("GBK"));
+            var pattern1 = string.Format(File.ReadAllText("pattern.txt"), "(.*)", "username=(.*)\r\npassword=(.*)\r\n");
+            var matches = Regex.Matches(user1, pattern1);
+            foreach (Match match in matches)
+            {
+                Logger.Log(string.Format("{0}", match.Groups[8].Value), showTime: false);
+                var id = match.Groups[1].Value;
+                var url = match.Groups[2].Value;
+                var name = match.Groups[8].Value;
+                var username = match.Groups[9].Value;
+                var password = match.Groups[10].Value;
+                var server = url.Substring(7, url.IndexOf('.') - 7);
+                var tuple = web.LoginService(username, password, server);
+                var code = tuple.Item1;
+                var time = tuple.Item2;
+                var hash = tuple.Item3;
+                var time1 = tuple.Item4;
+                var hash1 = tuple.Item5;
+                Logger.Log(string.Format("code: {0}, time: {1}, hash: {2}, time1: {3}, hash1: {4}", code, time, hash, time1, hash1));
+
+                var pattern2 = string.Format(File.ReadAllText("pattern.txt"), id, string.Empty);
+                var replacement = string.Format(File.ReadAllText("replacement.txt"), id, url, code, time, hash, time1, hash1, name);
+
+                var user2 = File.ReadAllText(ConfigurationManager.AppSettings["userPath"], Encoding.GetEncoding("GBK"));
+                File.WriteAllText(ConfigurationManager.AppSettings["userPath"], Regex.Replace(user2, pattern2, replacement), Encoding.GetEncoding("GBK"));
+            }
+
+            Directory.GetFiles("./", "0*.jpg").ToList().ForEach(File.Delete);
+        } //GenerateUserIni
+
+        private static void Analyze()
+        {
+            var client = new SxdClientTown();
+            var isReceive = false;
+            foreach (var item in File.ReadAllText("Log/21个英雄副本城镇.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
+                client.Analyze(bytes.ToArray(), isReceive);
+                isReceive ^= true;
+            }
+        } //Analyze
+
     } //class
 } //namespace

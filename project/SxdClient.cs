@@ -29,7 +29,7 @@ namespace 神仙道
         protected readonly byte[] bufferRcvd = new byte[256];
         private readonly List<byte> bytesRcvd = new List<byte>();
 
-        private readonly Dictionary<string, string> methodDictionary = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> classDotMethodDictionary = new Dictionary<string, string>();
 
         protected int _playerId;
         protected JArray response;
@@ -38,43 +38,47 @@ namespace 神仙道
         protected SxdClient()
         {
             // Town
-            methodDictionary.Add("Mod_Player_Base.login", "LoginCallback");
-            methodDictionary.Add("Mod_Player_Base.get_player_info", "GetPlayerInfoCallback");
-            methodDictionary.Add("Mod_Player_Base.player_info_contrast", "PlayerInfoContrastCallback");
-            methodDictionary.Add("Mod_Town_Base.enter_town", "EnterTownCallback");
-            methodDictionary.Add("Mod_StcLogin_Base.get_status", "GetStatusCallback");
-            methodDictionary.Add("Mod_StcLogin_Base.get_login_info", "GetLoginInfoCallback");
-            methodDictionary.Add("Mod_Player_Base.get_player_function", "GetPlayerFunctionCallback");
-            methodDictionary.Add("Mod_Player_Base.get_game_assistant_info", "GetGameAssistantInfoCallback");
-            methodDictionary.Add("Mod_GetPeach_Base.peach_info", "PeachInfoCallback");
-            methodDictionary.Add("Mod_GetPeach_Base.batch_get_peach", "BatchGetPeachCallback");
-            methodDictionary.Add("Mod_Chat_Base.bro_to_players", "BroToPlayersCallback");
-            methodDictionary.Add("Mod_Player_Base.get_player_camp_salary", "GetPlayerCampSalaryCallback");
-            methodDictionary.Add("Mod_Farm_Base.is_player_get_xian_ling_gift", "IsPlayerGetXianLingGiftCallback");
-            methodDictionary.Add("Mod_Farm_Base.player_get_xian_ling_gift", "PlayerGetXianLingGiftCallback");
-            methodDictionary.Add("Mod_SealSoul_Base.day_stone_count", "DayStoneCountCallback");
-            methodDictionary.Add("Mod_SealSoul_Base.get_day_stone", "GetDayStoneCallback");
-            methodDictionary.Add("Mod_FunctionEnd_Base.game_function_end_gift", "GameFunctionEndGiftCallback");
-            methodDictionary.Add("Mod_FunctionEnd_Base.random_award", "RandomAwardCallback");
-            methodDictionary.Add("Mod_FunctionEnd_Base.get_game_function_end_gift", "GetGameFunctionEndGiftCallback");
-            methodDictionary.Add("Mod_Item_Base.get_player_gift_all_info", "GetPlayerGiftAllInfoCallback");
-            methodDictionary.Add("Mod_Item_Base.player_get_super_gift", "PlayerGetSuperGiftCallback");
-            methodDictionary.Add("Mod_HeroesWar_Base.get_end_gift_info", "GetEndGiftInfoCallback");
-            methodDictionary.Add("Mod_HeroesWar_Base.get_end_gift", "GetEndGiftCallback");
-            methodDictionary.Add("Mod_StChallenge_Base.get_end_li_bao", "GetEndLiBaoCallback");
-            methodDictionary.Add("Mod_UnlimitChallenge_Base.get_end_award", "GetEndAwardCallback");
-            methodDictionary.Add("Mod_Farm_Base.get_farmlandinfo_list", "GetFarmlandinfoListCallback");
-            methodDictionary.Add("Mod_Farm_Base.buy_coin_tree_count_info", "BuyCoinTreeCountInfoCallback");
-            methodDictionary.Add("Mod_Farm_Base.get_player_roleinfo_list", "GetPlayerRoleinfoListCallback");
-            methodDictionary.Add("Mod_Farm_Base.plant_herbs", "PlantHerbsCallback");
-            methodDictionary.Add("Mod_Farm_Base.harvest", "HarvestCallback");
+            classDotMethodDictionary.Add("Mod_Town_Base.enter_town", "EnterTownCallback");
+            classDotMethodDictionary.Add("Mod_Chat_Base.bro_to_players", "BroToPlayersCallback");
+            classDotMethodDictionary.Add("Mod_HeroMission_Base.notify", "NotifyCallback");
+
+            classDotMethodDictionary.Add("Mod_Player_Base.login", "Callback");
+            classDotMethodDictionary.Add("Mod_Player_Base.get_player_info", "Callback");
+            classDotMethodDictionary.Add("Mod_Player_Base.player_info_contrast", "Callback");
+            classDotMethodDictionary.Add("Mod_StcLogin_Base.get_status", "Callback");
+            classDotMethodDictionary.Add("Mod_StcLogin_Base.get_login_info", "Callback");
+            classDotMethodDictionary.Add("Mod_Player_Base.get_player_function", "Callback");
+            classDotMethodDictionary.Add("Mod_Player_Base.get_game_assistant_info", "Callback");
+            classDotMethodDictionary.Add("Mod_GetPeach_Base.peach_info", "Callback");
+            classDotMethodDictionary.Add("Mod_GetPeach_Base.batch_get_peach", "Callback");
+            classDotMethodDictionary.Add("Mod_Player_Base.get_player_camp_salary", "Callback");
+            classDotMethodDictionary.Add("Mod_Farm_Base.is_player_get_xian_ling_gift", "Callback");
+            classDotMethodDictionary.Add("Mod_Farm_Base.player_get_xian_ling_gift", "Callback");
+            classDotMethodDictionary.Add("Mod_SealSoul_Base.day_stone_count", "Callback");
+            classDotMethodDictionary.Add("Mod_SealSoul_Base.get_day_stone", "Callback");
+            classDotMethodDictionary.Add("Mod_FunctionEnd_Base.game_function_end_gift", "Callback");
+            classDotMethodDictionary.Add("Mod_FunctionEnd_Base.random_award", "Callback");
+            classDotMethodDictionary.Add("Mod_FunctionEnd_Base.get_game_function_end_gift", "Callback");
+            classDotMethodDictionary.Add("Mod_Item_Base.get_player_gift_all_info", "Callback");
+            classDotMethodDictionary.Add("Mod_Item_Base.player_get_super_gift", "Callback");
+            classDotMethodDictionary.Add("Mod_HeroesWar_Base.get_end_gift_info", "Callback");
+            classDotMethodDictionary.Add("Mod_HeroesWar_Base.get_end_gift", "Callback");
+            classDotMethodDictionary.Add("Mod_StChallenge_Base.get_end_li_bao", "Callback");
+            classDotMethodDictionary.Add("Mod_UnlimitChallenge_Base.get_end_award", "Callback");
+            classDotMethodDictionary.Add("Mod_Farm_Base.get_farmlandinfo_list", "Callback");
+            classDotMethodDictionary.Add("Mod_Farm_Base.buy_coin_tree_count_info", "Callback");
+            classDotMethodDictionary.Add("Mod_Farm_Base.get_player_roleinfo_list", "Callback");
+            classDotMethodDictionary.Add("Mod_Farm_Base.plant_herbs", "Callback");
+            classDotMethodDictionary.Add("Mod_Farm_Base.harvest", "Callback");
+            classDotMethodDictionary.Add("Mod_HeroMission_Base.get_hero_mission_list", "Callback");
+            classDotMethodDictionary.Add("Mod_HeroMission_Base.start_practice", "Callback");
             //ST
-            methodDictionary.Add("Mod_StLogin_Base.login", "LoginCallback");
-            methodDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "OpenTakeBibleCallback");
-            methodDictionary.Add("Mod_StTakeBible_Base.get_take_bible_info", "GetTakeBibleInfoCallback");
-            methodDictionary.Add("Mod_StTakeBible_Base.get_recent_rob_player", "GetRecentRobPlayerCallback");
-            methodDictionary.Add("Mod_StTakeBible_Base.refresh", "RefreshCallback");
-            methodDictionary.Add("Mod_StTakeBible_Base.start_take_bible", "StartTakeBibleCallback");
+            classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
+            classDotMethodDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "Callback");
+            classDotMethodDictionary.Add("Mod_StTakeBible_Base.get_take_bible_info", "Callback");
+            classDotMethodDictionary.Add("Mod_StTakeBible_Base.get_recent_rob_player", "Callback");
+            classDotMethodDictionary.Add("Mod_StTakeBible_Base.refresh", "Callback");
+            classDotMethodDictionary.Add("Mod_StTakeBible_Base.start_take_bible", "Callback");
         }
 
         private void ProcessPackage(byte[] package, bool isReceive = true)
@@ -92,23 +96,23 @@ namespace 神仙道
                 var action = IPAddress.NetworkToHostOrder(br.ReadInt16());
                 var tuple = Protocols.GetPattern(module, action);
                 var data = isReceive ? Protocols.Decode(br.BaseStream, tuple.Item4) : Protocols.Decode(br.BaseStream, tuple.Item3);
-                var className_method = tuple.Item1 + "." + tuple.Item2;
+                var classNameDotMethod = tuple.Item1 + "." + tuple.Item2;
 
                 if (isReceive)
                 {
                     //if (!methodDictionary.ContainsKey(className_method))
                     //    return;
-                    if (methodDictionary.ContainsKey(className_method))
-                        GetType().GetMethod(methodDictionary[className_method], BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, new object[] { data });
+                    if (classDotMethodDictionary.ContainsKey(classNameDotMethod))
+                        GetType().GetMethod(classDotMethodDictionary[classNameDotMethod], BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, new object[] { data });
 
                     //Logger.Log(string.Format("package: {0}", Common.BytesToString(package)), ConsoleColor.Yellow, console: false);
-                    Logger.Log(string.Format("Receive method: {0}({1},{2})", className_method, module, action), ConsoleColor.Cyan, console: false);
+                    Logger.Log(string.Format("Receive method: {0}({1},{2})", classNameDotMethod, module, action), ConsoleColor.Cyan, console: false);
                     Logger.Log(string.Format("Receive data: {0}", data.ToString(Formatting.None)), ConsoleColor.Cyan, console: false);
                 }
                 else
                 {
                     //Logger.Log(string.Format("package: {0}", Common.BytesToString(package)), ConsoleColor.White, console: false);
-                    Logger.Log(string.Format("Send method: {0}({1},{2})", className_method, module, action), ConsoleColor.Magenta, console: false);
+                    Logger.Log(string.Format("Send method: {0}({1},{2})", classNameDotMethod, module, action), ConsoleColor.Magenta, console: false);
                     Logger.Log(string.Format("Send data: {0}", data.ToString(Formatting.None)), ConsoleColor.Magenta, console: false);
                 }
             }//br, ms
@@ -248,7 +252,7 @@ namespace 神仙道
             }
         }//Receive
 
-        public void Analyze(byte[] bytes, bool isReceive)
+        public void Analyze(IEnumerable<byte> bytes, bool isReceive)
         {
             var byteList = bytes.ToList();
             while (byteList.Count > 4)
@@ -263,7 +267,6 @@ namespace 神仙道
             if (byteList.Count != 0)
                 throw new Exception("数据有冗余");
         }//Analyze
-
 
     }//class
 }//namespace

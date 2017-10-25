@@ -109,11 +109,6 @@ namespace 神仙道
 
             return _playerId;
         }//Login
-        private void LoginCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//LoginCallback
 
         // -------------------------------------------------------------------------------------------
         // 初始化
@@ -141,11 +136,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetPlayerInfo
-        private void GetPlayerInfoCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GetPlayerInfoCallback
 
         // 获取玩家对比信息
         /// <summary>
@@ -185,11 +175,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//PlayerInfoContrast
-        private void PlayerInfoContrastCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//PlayerInfoContrastCallback
 
         // 进入城镇
         /// <summary>
@@ -249,11 +234,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetPlayerFunction
-        private void GetPlayerFunctionCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GetPlayerFunctionCallback
 
         // 获取游戏助手信息
         /// <summary>
@@ -271,11 +251,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetGameAssistantInfo
-        private void GetGameAssistantInfoCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GetGameAssistantInfoCallback
 
         // -------------------------------------------------------------------------------------------
         // 领取礼包
@@ -297,11 +272,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetPlayerCampSalary
-        private void GetPlayerCampSalaryCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GetPlayerCampSalaryCallback
 
         /// <summary>
         /// Mod_Farm_Base.is_player_get_xian_ling_gift(13,19)
@@ -316,11 +286,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//IsPlayerGetXianLingGift
-        private void IsPlayerGetXianLingGiftCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//IsPlayerGetXianLingGiftCallback
 
         /// <summary>
         /// Mod_Farm_Base.player_get_xian_ling_gift(13,20)
@@ -335,11 +300,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//PlayerGetXianLingGift
-        private void PlayerGetXianLingGiftCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//PlayerGetXianLingGiftCallback
 
         /// <summary>
         /// Mod_SealSoul_Base.day_stone_count(34,20)
@@ -354,11 +314,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//PlayerGetXianLDayStoneCountingGift
-        private void DayStoneCountCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//DayStoneCountCallback
 
         /// <summary>
         /// Mod_SealSoul_Base.get_day_stone(34,18)
@@ -373,11 +328,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetDayStone
-        private void GetDayStoneCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GetDayStoneCallback
 
         // 领取随机礼包
         /// <summary>
@@ -410,11 +360,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GameFunctionEndGift
-        private void GameFunctionEndGiftCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GameFunctionEndGiftCallback
 
         /// <summary>
         /// Mod_FunctionEnd_Base.random_award(127,3)
@@ -437,11 +382,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//RandomAward
-        private void RandomAwardCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//RandomAwardCallback
 
         /// <summary>
         /// Mod_FunctionEnd_Base.get_game_function_end_gift(127,2)
@@ -459,11 +399,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetGameFunctionEndGift
-        private void GetGameFunctionEndGiftCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GetGameFunctionEndGiftCallback
 
         // 领取礼包
         /// <summary>
@@ -485,11 +420,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetPlayerGiftAllInfo
-        private void GetPlayerGiftAllInfoCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GetPlayerGiftAllInfoCallback
 
         /// <summary>
         /// Mod_Item_Base.player_get_super_gift(2,29)
@@ -504,11 +434,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//PlayerGetSuperGift
-        private void PlayerGetSuperGiftCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//PlayerGetSuperGiftCallback
 
         // 领取阵营战礼包
         /// <summary>
@@ -526,11 +451,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetEndGiftInfo
-        private void GetEndGiftInfoCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GetEndGiftInfoCallback
 
         /// <summary>
         /// Mod_HeroesWar_Base.get_end_gift(42,18)
@@ -547,11 +467,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetEndGift
-        private void GetEndGiftCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GetEndGiftCallback
 
         // 领取自定义挑战礼包
         /// <summary>
@@ -571,11 +486,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetEndLiBao
-        private void GetEndLiBaoCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GetEndLiBaoCallback
 
         // 领取极限挑战宝箱
         /// <summary>
@@ -595,11 +505,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetEndAward
-        private void GetEndAwardCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GetEndAwardCallback
 
         // -------------------------------------------------------------------------------------------
         // 摘仙桃
@@ -624,11 +529,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//PeachInfo
-        private void PeachInfoCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//PeachInfoCallback
 
         // 没有一键摘桃是什么特征？
         /// <summary>
@@ -651,11 +551,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//BatchGetPeach
-        private void BatchGetPeachCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//BatchGetPeachCallback
 
         // -------------------------------------------------------------------------------------------
         // 药园
@@ -688,11 +583,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetFarmlandinfoList
-        private void GetFarmlandinfoListCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GetFarmlandinfoListCallback
 
         // 仙露
         /// <summary>
@@ -710,11 +600,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//BuyCoinTreeCountInfo
-        private void BuyCoinTreeCountInfoCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//BuyCoinTreeCountInfoCallback
 
         // 种植伙伴
         /// <summary>
@@ -732,11 +617,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetPlayerRoleinfoList
-        private void GetPlayerRoleinfoListCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GetPlayerRoleinfoListCallback
 
         // 种植
         /// <summary>
@@ -762,11 +642,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//PlantHerbs
-        private void PlantHerbsCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//PlantHerbsCallback
 
         // 收获
         /// <summary>
@@ -787,11 +662,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//Harvest
-        private void HarvestCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//HarvestCallback
 
         // -------------------------------------------------------------------------------------------
         // 聊天
@@ -847,11 +717,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetStatus
-        private void GetStatusCallback(JArray data)
-        {
-            response = data;
-            done.Set();
-        }//GetStatusCallback
 
         // 获取仙界登录信息
         /// <summary>
@@ -881,17 +746,111 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetLoginInfo
-        private void GetLoginInfoCallback(JArray data)
+
+        // -------------------------------------------------------------------------------------------
+        // 英雄副本
+        // -------------------------------------------------------------------------------------------
+        // 获取英雄副本列表
+        /// <summary>
+        /// Mod_HeroMission_Base.get_hero_mission_list(35,0)
+        /// module:35, action:0
+        /// request:[Utils.ShortUtil]
+        /// response:[[Utils.IntUtil, Utils.ByteUtil, Utils.UByteUtil, Utils.ByteUtil], Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil]
+        /// Line 52-55 in HeroMissionController.as:
+        ///     _loc_2.id = param1[0];
+        ///     _loc_2.isCanChallenge = param1[1];
+        ///     _loc_2.rank = this._rankobj[param1[2]];
+        ///     _loc_2.isFinished = param1[3];
+        /// </summary>
+        public JArray GetHeroMissionList(int townId)
+        {
+            done.Reset();
+            Send(new JArray { townId }, 35, 0);
+            done.WaitOne();
+            return response;
+        }//GetHeroMissionList
+
+        // 开始扫荡
+        /// <summary>
+        /// Mod_HeroMission_Base.start_practice(35,2)
+        /// module:35, action:2
+        /// request:[Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil]
+        /// Line 50 in HeroPracticeView.as:
+        ///     _data.call(Mod_HeroMission_Base.start_practice, this.startPracticeCallBack, [this.showTownId, this._autoNum(1:自动售出副本掉落物品;0:不售出), this.heroType]);
+        /// response:[Utils.UByteUtil, Utils.IntUtil]
+        /// Line 77-80 in HeroMissionController.as
+        ///     var _loc_1:* = _data.heroMission.startPractice;
+        ///     var _loc_2:* = {};
+        ///     _loc_2.msg = _loc_1[0];
+        ///     _loc_2.practiceTime = _loc_1[1];
+        /// Line 10 in Mod_HeroMission_Base.as
+        ///     public static const SUCCESS:int = 3;
+        /// </summary>
+        public JArray StartPractice(int townId, byte autoNum, byte heroType)
+        {
+            done.Reset();
+            Send(new JArray { townId, autoNum, heroType }, 35, 2);
+            done.WaitOne();
+            return response;
+        }//StartPractice
+
+        /// <summary>
+        /// Mod_HeroMission_Base.quickly(35,7)
+        /// module:35, action:7
+        /// request:[]
+        /// response:[Utils.UByteUtil]
+        /// Line 206-208 in HeroMissionController.as
+        ///     var _loc_1:* = _data.heroMission.getQuickly;
+        ///     var _loc_2:* = {};
+        ///     _loc_2.msg = _loc_1[0];
+        /// Line 10 in Mod_HeroMission_Base.as
+        ///     public static const SUCCESS:int = 3;
+        /// </summary>
+        public JArray Quickly()
+        {
+            done.Reset();
+            Send(null, 35, 7);
+            done.WaitOne();
+            return response;
+        }//Quickly
+
+        /// <summary>
+        /// Mod_HeroMission_Base.notify(35,4)
+        /// module:35, action:4
+        /// request:[]
+        /// response:[Utils.UByteUtil, 
+        ///           [[Utils.IntUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil], Utils.ShortUtil], 
+        ///           [Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.IntUtil, [Utils.IntUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil], 
+        ///           Utils.ShortUtil]
+        /// Line 13 in Mod_HeroMission_Base.as
+        ///     public static const BAG_FULL:int = 6;
+        /// Line 14 in Mod_HeroMission_Base.as
+        ///     public static const NOT_ENOUGH_POWER:int = 7;
+        /// Line 15 in Mod_HeroMission_Base.as
+        ///     public static const NO_MISSION:int = 8;
+        /// Line 17 in Mod_HeroMission_Base.as
+        ///     public static const FINISH:int = 10;
+        /// </summary>
+        private void NotifyCallback(JArray data)
+        {
+            if ((byte)data[0] == 6 || (byte)data[0] == 7 || (byte)data[0] == 8 || (byte)data[0] == 10)
+            {
+                response = data;
+                done.Set();
+            }
+        }//NotifyCallback
+
+
+
+
+
+
+
+        private void Callback(JArray data)
         {
             response = data;
             done.Set();
-        }//GetLoginInfoCallback
-
-
-
-
-
-
+        }//Callback
 
 
 
