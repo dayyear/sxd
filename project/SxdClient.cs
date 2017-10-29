@@ -72,6 +72,15 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_Farm_Base.harvest", "Callback");
             classDotMethodDictionary.Add("Mod_HeroMission_Base.get_hero_mission_list", "Callback");
             classDotMethodDictionary.Add("Mod_HeroMission_Base.start_practice", "Callback");
+            classDotMethodDictionary.Add("Mod_SuperSport_Base.open_super_sport", "Callback");
+            classDotMethodDictionary.Add("Mod_SuperSport_Base.start_challenge", "Callback");
+            classDotMethodDictionary.Add("Mod_Assistant_Base.info", "Callback");
+            classDotMethodDictionary.Add("Mod_Assistant_Base.get_award", "Callback");
+            classDotMethodDictionary.Add("Mod_Fish_Base.get_player_fishhook", "Callback");
+            classDotMethodDictionary.Add("Mod_Fish_Base.do_fishing", "Callback");
+            classDotMethodDictionary.Add("Mod_TravelEvent_Base.get_event_and_answer", "Callback");
+            classDotMethodDictionary.Add("Mod_TravelEvent_Base.answer_travel_event", "Callback");
+            classDotMethodDictionary.Add("Mod_BeelzebubTrials_Base.get_moral_award", "Callback");
             //ST
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "Callback");

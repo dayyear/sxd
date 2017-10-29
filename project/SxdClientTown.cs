@@ -840,7 +840,241 @@ namespace 神仙道
             }
         }//NotifyCallback
 
+        // 竞技场
+        /// <summary>
+        /// 打开竞技场
+        /// Mod_SuperSport_Base.open_super_sport(28,0)
+        /// module:28, action:0
+        /// request:[]
+        /// response:[0.Utils.IntUtil, 1.Utils.ShortUtil, 2.Utils.IntUtil, 3.Utils.ShortUtil, 4.Utils.ShortUtil, 
+        ///           5.Utils.ShortUtil, 6.Utils.ShortUtil, 7.Utils.IntUtil, 8.Utils.IntUtil, 9.Utils.IntUtil, 
+        ///           10.Utils.IntUtil, 11.Utils.IntUtil, 12.[Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil], 
+        ///           13.[Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil]]
+        /// Line 39-57 in SuperSportController.as:
+        ///     _loc_3.mainData.myRank = _loc_2[0];
+        ///     _loc_3.mainData.name = _data.player.nickname;
+        ///     _loc_3.mainData.winCount = _loc_2[1];
+        ///     _loc_3.mainData.fame = _loc_2[2];
+        ///     _loc_3.mainData.fameName = FameLevel.getFameName(_loc_2[3]);
+        ///     _loc_3.ChallengeNum.remainChallengeTimes = _loc_2[4];
+        ///     _loc_3.ChallengeNum.remainBuyTimes = _loc_2[5];
+        ///     _loc_3.ChallengeNum.nextBuyPrice = _loc_2[6];
+        ///     _loc_3.awardInfo.awardCoin = _loc_2[7];
+        ///     _loc_3.awardInfo.awardFame = _loc_2[8];
+        ///     var _loc_4:* = _ctrl.player.serverTime;
+        ///     _loc_3.awardInfo.awardTime = DateTime.formatServerTimeNull(_loc_2[9]) - _loc_4;
+        ///     _loc_3.openTimer = DateTime.formatServerTimeNull(_loc_2[10]) - _loc_4;
+        ///     _loc_3.cdTimer = _loc_2[11];
+        ///     _loc_3.challengePersonList = this.renderChallengePersonList(_loc_2[12]);
+        ///     _loc_3.sportReportList = this.renderSportReportList(_loc_2[13]);
+        ///     _loc_3.winCountData.winId = _loc_2[14];
+        ///     _loc_3.winCountData.winName = _loc_2[15];
+        ///     _loc_3.winCountData.winTimesTop = _loc_2[16];
+        /// Example: [2874,0,993468,40,5,
+        ///           0,2,1000,0,1509325906,
+        ///           1509067006,0,
+        ///           [[2824,239651,1,142,"大魔导师.s1",1000,0],[2774,321395,1,145,"邹濯检.s4",1000,0],[2724,276806,1,149,"殷桥奉.s1",1000,0],[2674,35779,1,151,"弑神信仰.s1",1000,0],[2624,252730,106,148,"念乖乖.s1",1000,0]],
+        ///           [[748912,1,23753,"lx1026.s1",355553,"甄斐斐.s1",355553,2874,2874,"2017101401",1508042103],[622667,1,355553,"甄斐斐.s1",252730,"念乖乖.s1",252730,2874,2874,"2017081801",1503818074],[607023,1,355553,"甄斐斐.s1",252730,"念乖乖.s1",252730,2874,2874,"2017081801",1503508173],[427194,1,355553,"甄斐斐.s1",239651,"大魔导师.s1",239651,2874,2874,"2017072101",1501820490],[427172,1,355553,"甄斐斐.s1",239651,"大魔导师.s1",239651,2874,2874,"2017072101",1501820459]]]
+        /// </summary>
+        public JArray OpenSuperSport()
+        {
+            done.Reset();
+            Send(null, 28, 0);
+            done.WaitOne();
+            return response;
+        }//OpenSuperSport
 
+        /// <summary>
+        /// 开始挑战
+        /// Mod_SuperSport_Base.start_challenge(28,2)
+        /// module:28, action:2
+        /// request:[Utils.IntUtil]
+        /// response:[0.Utils.UByteUtil, 1.Utils.ShortUtil, 2.Utils.IntUtil, 3.[Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, [Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.StringUtil, [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil], Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil, [Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil], Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil], Utils.LongUtil, Utils.LongUtil, [Utils.IntUtil], Utils.ByteUtil, [Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, [Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil]]], [[Utils.ByteUtil, Utils.StringUtil, [Utils.UByteUtil, Utils.StringUtil], [Utils.StringUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil]], [Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.StringUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil]], [Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, [Utils.UByteUtil, Utils.ShortUtil, Utils.ByteUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.IntUtil], [Utils.StringUtil], Utils.IntUtil, Utils.ShortUtil, Utils.LongUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.StringUtil, Utils.IntUtil, Utils.UByteUtil, [Utils.IntUtil, Utils.ShortUtil, [Utils.UByteUtil, Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], [Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], Utils.StringUtil, [Utils.IntUtil], Utils.IntUtil, Utils.IntUtil, Utils.LongUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.ByteUtil], [Utils.IntUtil, Utils.StringUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil], [Utils.UByteUtil, Utils.StringUtil]], [Utils.IntUtil, Utils.IntUtil], [Utils.UByteUtil, Utils.StringUtil, [Utils.UByteUtil, Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil]], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil]], Utils.ShortUtil], [Utils.IntUtil, Utils.IntUtil]]]
+        /// Line 166-189 in SuperSportController.as:
+        ///     _loc_2.result = _loc_1[0];
+        ///     _loc_2.msg = _loc_1[0];
+        ///     _loc_2.remain = _loc_1[1];
+        ///     _loc_2.cdTimer = _loc_1[2];
+        ///     if (_loc_2.result == Mod_SuperSport_Base.SUCCESS)
+        ///     {
+        ///         _loc_3 = _loc_1[3][0];
+        ///         _loc_2.awardFame = _loc_3[0];
+        ///         _loc_2.awardCoin = _loc_3[1];
+        ///         _loc_2.awardGun = _loc_3[2];
+        ///         _loc_2.scrapId = _loc_3[3];
+        ///         _loc_2.reportId = _loc_3[4];
+        ///         _loc_2.warData = [0, 0, 0, [_loc_3[5][0]]];
+        ///         _loc_2.itemList = new Array();
+        ///         _loc_4 = _loc_3[6];
+        ///         for each (_loc_5 in _loc_4)
+        ///         {
+        ///             
+        ///             _loc_6 = new Object();
+        ///             _loc_6.itemId = _loc_5[0];
+        ///             _loc_6.count = _loc_5[1];
+        ///             _loc_2.itemList.push(_loc_6);
+        ///         }
+        ///     }
+        /// Line 7 in Mod_SuperSport_Base.as
+        ///     public static const SUCCESS:int = 0;
+        /// </summary>
+        public JArray StartChallenge(int rank)
+        {
+            done.Reset();
+            Send(new JArray { rank }, 28, 2);
+            done.WaitOne();
+            return response;
+        }//StartChallenge
+
+        // 小助手
+        /// <summary>
+        /// Mod_Assistant_Base.info(52,0)
+        /// module:52, action:0
+        /// request:[]
+        /// response:[Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil]
+        /// Line 253-259 in AssistantData.as
+        ///     public function info(param1:Array) : void
+        ///     {
+        ///         this._aryBoxInfo = this.getBoxData(param1);
+        ///         this._liveNum = param1[0] * 5;
+        ///         this._boxInfo = this.renderBoxInfo(param1);
+        ///         return;
+        ///     }// end function
+        /// </summary>
+        public JArray AssistantInfo()
+        {
+            done.Reset();
+            Send(null, 52, 0);
+            done.WaitOne();
+            return response;
+        }//AssistantInfo
+
+        /// <summary>
+        /// Mod_Assistant_Base.get_award(52,1)
+        /// module:52, action:1
+        /// request:[Utils.IntUtil]
+        /// response:[Utils.UByteUtil]
+        /// Line 264 in AssistantData.as
+        ///     oObject.list(param1, this._objGetAward, ["result"]);
+        /// Line 7 in Mod_Assistant_Base.as
+        ///     public static const SUCCESS:int = 0;
+        /// </summary>
+        public JArray AssistantGetAward(int sn)
+        {
+            done.Reset();
+            Send(new JArray { sn }, 52, 1);
+            done.WaitOne();
+            return response;
+        }//AssistantGetAward
+
+        // 钓鱼
+        /// <summary>
+        /// Mod_Fish_Base.get_player_fishhook(217,0)
+        /// module:217, action:0
+        /// request:[]
+        /// response:[Utils.IntUtil]
+        /// Line 23 in FishData.as
+        ///     oObject.list(this._aryGetPlayerFishhook, _loc_1, ["fishhook_number"]);
+        /// </summary>
+        public JArray GetPlayerFishhook()
+        {
+            done.Reset();
+            Send(null, 217, 0);
+            done.WaitOne();
+            return response;
+        }//GetPlayerFishhook
+
+        /// <summary>
+        /// Mod_Fish_Base.do_fishing(217,1)
+        /// module:217, action:1
+        /// request:[]
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil]
+        /// Line 31 in FishData.as
+        ///     oObject.list(this._aryDoFishing, _loc_1, ["result", "item_id", "number"]);
+        /// Line 7 in Mod_Fish_Base.as
+        ///     public static const SUCCESS:int = 0;
+        /// </summary>
+        public JArray DoFishing()
+        {
+            done.Reset();
+            Send(null, 217, 1);
+            done.WaitOne();
+            return response;
+        }//DoFishing
+
+        // 仙旅奇缘
+        /// <summary>
+        /// Mod_TravelEvent_Base.get_event_and_answer(21,1)
+        /// module:21, action:1
+        /// request:[]
+        /// response:[Utils.IntUtil, Utils.StringUtil, [Utils.IntUtil, Utils.StringUtil, Utils.StringUtil], Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]
+        /// Example: [37,"鬼谷子传人在此开山收徒，传授奇门遁甲，玄道法术。\n",[[54,"B","专心修仙之道，不走歪路。\r\n"],[52,"A","拜师学艺，练就一身奇术。\r\n"]],2,0,5,9]
+        /// Example: [0,"",[],1,0,0,0]
+        /// </summary>
+        public JArray GetEventAndAnswer()
+        {
+            done.Reset();
+            Send(null, 21, 1);
+            done.WaitOne();
+            return response;
+        }//GetEventAndAnswer
+
+        /// <summary>
+        /// Mod_TravelEvent_Base.answer_travel_event(21,2)
+        /// module:21, action:2
+        /// request:[Utils.IntUtil, Utils.IntUtil]
+        /// ?
+        /// response:[Utils.StringUtil, [Utils.UByteUtil, Utils.IntUtil], Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]
+        /// Line 31-37 in TravelEventController.as
+        ///     _loc_2.eventId = _loc_1[0];
+        ///     _loc_2.event = _loc_1[1];
+        ///     _loc_2.answerList = this.renderAnswer(_loc_1[2]);
+        ///     _loc_2.msg = _loc_1[3];
+        ///     _loc_2.cur_answer_times = _loc_1[4];
+        ///     _loc_2.tol_answer_times = _loc_1[5];
+        ///     _loc_2.joinCount = _loc_1[6];
+        /// </summary>
+        public JArray AnswerTravelEvent(int eventId, int answerId)
+        {
+            done.Reset();
+            Send(new JArray { eventId, answerId }, 21, 2);
+            done.WaitOne();
+            return response;
+        }//AnswerTravelEvent
+
+        // 魔王试炼
+        /// <summary>
+        /// 领取道行奖励
+        /// Mod_BeelzebubTrials_Base.get_moral_award(57,24)
+        /// module:57, action:24
+        /// request:[Utils.IntUtil]
+        /// Line 170 in BeelzebubTrialsTeamCreatView.as
+        ///     _data.call(Mod_BeelzebubTrials_Base.get_moral_award, this.onGetAwardBack, [0]);
+        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.IntUtil]]
+        /// Line 787-199 in BeelzebubTrialsData.as
+        ///     this.moralObj.result = param1[0];
+        ///     if (this.moralObj.result == Mod_BeelzebubTrials_Base.SUCCESS)
+        ///     {
+        ///         this.moralObj.bGet = true;
+        ///         this.moralAwardItems = new Array();
+        ///         for each (_loc_2 in param1[1])
+        ///         {
+        ///             
+        ///             _loc_3 = {};
+        ///             oObject.list(_loc_2, _loc_3, ["item_id", "count"]);
+        ///             this.moralAwardItems.push(_loc_3);
+        ///         }
+        ///     }
+        /// Line 12 in .as
+        ///     public static const SUCCESS:int = 5;
+        /// </summary>
+        public JArray GetMoralAward()
+        {
+            done.Reset();
+            Send(new JArray { 0 }, 57, 24);
+            done.WaitOne();
+            return response;
+        }//GetMoralAward
 
 
 
