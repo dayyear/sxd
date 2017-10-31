@@ -83,7 +83,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/道行奖励.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/吉星高照.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
                 client.Analyze(bytes.ToArray(), isReceive);
@@ -437,6 +437,31 @@ namespace 神仙道
                         if ((byte)response[0] == 5)
                             Logger.Log("领取道行奖励成功");
                     } //if (functionIds.Contains(68)) // 68:["BeelzebubTrials","85","魔王试炼"],
+
+                    if (functionIds.Contains(60)) // 60:["PetAnimal","325","叶公好龙"],
+                    {
+                        while (true)
+                        {
+                            response = clientTown.PetAnimalInfo();
+                            var _lv = (byte)response[1];
+                            var _star = (byte)response[2];
+                            var _feedNum = (int)response[4];
+                            if (_lv >= 10 && _star >= 10)
+                            {
+                                Logger.Log("【叶公好龙】当前龙王已升级至最高等级");
+                                break;
+                            }
+                            if (_feedNum <= 0)
+                                break;
+
+                            response = clientTown.FeedPetAnimal();
+                            // SUCCESS:int = 0;
+                            if ((byte)response[0] == 0)
+                                Logger.Log(string.Format("【叶公好龙】普通培养，{1}获得[经验值{0}]", response[4], (byte)response[7] == 1 ? "暴击" : string.Empty));
+                            else
+                                Logger.Log("【叶公好龙】普通培养错误", ConsoleColor.Red);
+                        }
+                    } //if (functionIds.Contains(60)) // 60:["PetAnimal","325","叶公好龙"],
 
                     if (functionIds.Contains(34)) // 34:["TravelEvent","240","仙旅奇缘"],
                     {

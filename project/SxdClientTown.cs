@@ -1076,6 +1076,77 @@ namespace 神仙道
             return response;
         }//GetMoralAward
 
+        // -------------------------------------------------------------------------------------------
+        // 叶公好龙
+        // -------------------------------------------------------------------------------------------
+        /// <summary>
+        /// 打开叶公好龙
+        /// Mod_PetAnimal_Base.pet_animal_info(48,0)
+        /// module:48, action:0
+        /// request:[Utils.IntUtil]
+        /// response:[Utils.StringUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil]
+        /// Line 19 in PetAnimalData.as
+        ///     this.info.reset(param1[1], param1[2], param1[3], param1[4]);
+        /// Line 44-55 in PetAnimalData.as
+        ///     public function reset(param1:int = 0, param2:int = 0, param3:int = 0, param4:int = 0) : void
+        ///     {
+        ///         this.lv = param1;
+        ///         this.star = param2;
+        ///         this.isUpStar = false;
+        ///         this.isUpLv = false;
+        ///         this.exp = param3;
+        ///         this.expAdd = 0;
+        ///         this.expMax = PetType.getExp(param1, param2);
+        ///         this.feedNum = param4;
+        ///         return;
+        ///     }// end function
+        /// </summary>
+        public JArray PetAnimalInfo()
+        {
+            done.Reset();
+            Send(new JArray { _playerId }, 48, 0);
+            done.WaitOne();
+            return response;
+        }//PetAnimalInfo
+
+        /// <summary>
+        /// 普通培养
+        /// Mod_PetAnimal_Base.feed_pet_animal(48,2)
+        /// module:48, action:2
+        /// request:[Utils.ByteUtil]
+        /// response:[Utils.UByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.ByteUtil]
+        /// Line 25-29 in PetAnimalData.as
+        ///     this.result = param1[0];
+        ///     if (this.result == Mod_PetAnimal_Base.SUCCESS)
+        ///     {
+        ///         this.info.feed(param1[1], param1[2], param1[3], param1[4], param1[5], param1[6], param1[7]);
+        ///     }
+        /// Line 57-70 in PetAnimalData.as
+        ///     public function feed(param1:int, param2:int, param3:int, param4:int, param5:int, param6:int, param7:int) : void
+        ///     {
+        ///         this.isUpStar = this.star != param2;
+        ///         this.isUpLv = false;
+        ///         this.lv = param1;
+        ///         this.star = param2;
+        ///         this.feedType = param5;
+        ///         this.hit = param7;
+        ///         this.exp = param3;
+        ///         this.expAdd = param4;
+        ///         this.expMax = PetType.getExp(param1, param2);
+        ///         this.feedNum = param6;
+        ///         return;
+        ///     }// end function
+        /// Line 7 in .as
+        ///     public static const SUCCESS:int = 0;
+        /// </summary>
+        public JArray FeedPetAnimal()
+        {
+            done.Reset();
+            Send(new JArray { 0 }, 48, 2);
+            done.WaitOne();
+            return response;
+        }//FeedPetAnimal
+
 
 
 
