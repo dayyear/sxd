@@ -83,7 +83,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/吉星高照.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/仙旅奇缘-宝箱.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
                 client.Analyze(bytes.ToArray(), isReceive);
@@ -471,6 +471,19 @@ namespace 神仙道
                             var _eventId = (int)response[0];
                             if (_eventId == 0)
                                 break;
+                            var _cur_answer_times = (int)response[4];
+                            var _tol_answer_times = (int)response[5];
+                            if (_cur_answer_times == _tol_answer_times)
+                            {
+                                response = clientTown.LotteryDraw();
+                                if ((byte)response[0] == 2)
+                                {
+                                    Logger.Log("【仙旅奇缘】成功领取[仙旅秘宝]宝箱");
+                                    response = clientTown.GetEventAndAnswer();
+                                }
+                                else
+                                    Logger.Log("【仙旅奇缘】领取[仙旅秘宝]宝箱异常", ConsoleColor.Red);
+                            }
                             var _eventText = (string)response[1];
                             var _answers = (JArray)response[2];
                             var _answerFirst = _answers[0];

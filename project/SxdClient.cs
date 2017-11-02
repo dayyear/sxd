@@ -79,6 +79,7 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_Fish_Base.get_player_fishhook", "Callback");
             classDotMethodDictionary.Add("Mod_Fish_Base.do_fishing", "Callback");
             classDotMethodDictionary.Add("Mod_TravelEvent_Base.get_event_and_answer", "Callback");
+            classDotMethodDictionary.Add("Mod_TravelEvent_Base.lottery_draw", "Callback");
             classDotMethodDictionary.Add("Mod_TravelEvent_Base.answer_travel_event", "Callback");
             classDotMethodDictionary.Add("Mod_BeelzebubTrials_Base.get_moral_award", "Callback");
             classDotMethodDictionary.Add("Mod_PetAnimal_Base.pet_animal_info", "Callback");

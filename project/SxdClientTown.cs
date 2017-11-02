@@ -1007,7 +1007,17 @@ namespace 神仙道
         /// Mod_TravelEvent_Base.get_event_and_answer(21,1)
         /// module:21, action:1
         /// request:[]
-        /// response:[Utils.IntUtil, Utils.StringUtil, [Utils.IntUtil, Utils.StringUtil, Utils.StringUtil], Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]
+        /// response:[0.Utils.IntUtil, 1.Utils.StringUtil, 2.[Utils.IntUtil, Utils.StringUtil, Utils.StringUtil], 3.Utils.UByteUtil, 4.Utils.IntUtil, 5.Utils.IntUtil, 6.Utils.IntUtil]
+        /// Line 31-37 in TravelEventController.as
+        ///     _loc_2.eventId = _loc_1[0];
+        ///     _loc_2.event = _loc_1[1];
+        ///     _loc_2.answerList = this.renderAnswer(_loc_1[2]);
+        ///     _loc_2.msg = _loc_1[3];
+        ///     _loc_2.cur_answer_times = _loc_1[4];
+        ///     _loc_2.tol_answer_times = _loc_1[5];
+        ///     _loc_2.joinCount = _loc_1[6];
+        /// Line 9 in Mod_TravelEvent_Base.as
+        ///     public static const SUCCESS:int = 2;
         /// Example: [37,"鬼谷子传人在此开山收徒，传授奇门遁甲，玄道法术。\n",[[54,"B","专心修仙之道，不走歪路。\r\n"],[52,"A","拜师学艺，练就一身奇术。\r\n"]],2,0,5,9]
         /// Example: [0,"",[],1,0,0,0]
         /// </summary>
@@ -1015,6 +1025,26 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 21, 1);
+            done.WaitOne();
+            return response;
+        }//GetEventAndAnswer
+
+        /// <summary>
+        /// 仙旅秘宝（每完成5天的仙旅奇缘可抽取一次仙旅秘宝）
+        /// Mod_TravelEvent_Base.lottery_draw(21,4)
+        /// module:21, action:4
+        /// request:[]
+        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.IntUtil]]
+        /// Line 64-65 in TravelEventData.as
+        ///     this.drawResult = param1[0];
+        ///     this.awardArray = param1[1];
+        /// Line 9 in Mod_TravelEvent_Base.as
+        ///     public static const SUCCESS:int = 2;
+        /// </summary>
+        public JArray LotteryDraw()
+        {
+            done.Reset();
+            Send(null, 21, 4);
             done.WaitOne();
             return response;
         }//GetEventAndAnswer
