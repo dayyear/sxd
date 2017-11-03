@@ -137,7 +137,7 @@ namespace 神仙道
 
                     // 登录
                     var playerId = clientTown.Login(url, code, time, hash, time1, hash1);
-                    Logger.Log(string.Format("登录成功, 玩家ID: {0}", playerId), ConsoleColor.Green);
+                    Logger.Log(string.Format("登录成功, 玩家ID[{0}]", playerId), ConsoleColor.Green);
 
                     // 获取玩家基本信息
                     var response = clientTown.GetPlayerInfo();
@@ -358,7 +358,7 @@ namespace 神仙道
                     {
                         // 获取仙界状态
                         response = clientTown.GetStatus();
-                        Logger.Log(string.Format("仙界入口状态：{0}", (int)response[0] == 0 ? "开启" : response[0]));
+                        Logger.Log(string.Format("【仙界】入口状态：{0}", (int)response[0] == 0 ? "开启" : response[0]));
 
                         // 获取仙界登录信息
                         response = clientTown.GetLoginInfo();
@@ -367,11 +367,11 @@ namespace 神仙道
                         var serverNameST = (string)response[2];
                         var serverTimeST = (int)response[3];
                         var passCodeST = (string)response[4];
-                        Logger.Log(string.Format("仙界服务器地址：{0}:{1}，仙界服务器名称：{2}，仙界服务器时间：{3}，passCode：{4}", serverHostST, portST, serverNameST, TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds(serverTimeST).ToString("yyyy-MM-dd HH:mm:ss"), passCodeST));
+                        Logger.Log(string.Format("【仙界】服务器地址：{0}:{1}，仙界服务器名称：{2}，仙界服务器时间：{3}，passCode：{4}", serverHostST, portST, serverNameST, TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds(serverTimeST).ToString("yyyy-MM-dd HH:mm:ss"), passCodeST));
 
                         // 仙界登录
                         var playerIdST = clientST.Login(serverHostST, portST, serverNameST, playerId, nickName, serverTimeST, passCodeST);
-                        Logger.Log(string.Format("仙界登录成功, [仙界玩家ID{0}]", playerIdST), ConsoleColor.Green);
+                        Logger.Log(string.Format("【仙界】登录成功, 仙界玩家[ID{0}]", playerIdST), ConsoleColor.Green);
 
                         if (functionIds.Contains(90)) // 90:["ServerTakeBible","247","跨服取经"],
                         {
@@ -383,11 +383,11 @@ namespace 神仙道
                             // 打开护送取经总界面
                             response = clientST.OpenTakeBible();
                             var _players = (JArray)response[0];
-                            Logger.Log(string.Format("打开护送取经界面，获取[{0}]个取经玩家，其中有[{1}]个仇人", _players.Count, string.Join(",", _players
+                            Logger.Log(string.Format("【跨服取经】打开护送取经界面，获取[{0}]个取经玩家，其中有[{1}]个仇人", _players.Count, string.Join(",", _players
                                 .Where(x => _enemyIds.Contains((int)x[0]))
                                 .Count() //.Select(x => string.Format("{0}({1})", Protocols.GetProtectionName((byte)x[1]), x[0]))
                                 )));
-                            Logger.Log(string.Format("今日还可拦截[{0}]次，可取经[{1}]次，帮助好友护送[{2}]次", response[2], response[4], response[3]));
+                            Logger.Log(string.Format("【跨服取经】今日还可拦截[{0}]次，可取经[{1}]次，帮助好友护送[{2}]次", response[2], response[4], response[3]));
 
                             // 打开护送取经面板，刷新使者，开始护送
                             while (true)
@@ -397,19 +397,19 @@ namespace 神仙道
                                 var _totalTakeBibleTimes = (byte)response[3];
                                 var _takeBibleStatus = (byte)response[5];
                                 var _canProtection = (byte)response[6];
-                                Logger.Log(string.Format("今日可取经共[{0}]次，已经取经[{1}]次，当前取经使者：[{2},{3}]", _totalTakeBibleTimes, _takeBibleTimes, Protocols.GetProtectionName(_canProtection), _takeBibleStatus == 0 ? "未开始" : "已开始"));
+                                Logger.Log(string.Format("【跨服取经】今日可取经共[{0}]次，已经取经[{1}]次，当前取经使者：[{2},{3}]", _totalTakeBibleTimes, _takeBibleTimes, Protocols.GetProtectionName(_canProtection), _takeBibleStatus == 0 ? "未开始" : "已开始"));
 
                                 if (_takeBibleTimes >= _totalTakeBibleTimes)
                                     break;
                                 if (_canProtection == 0)
                                 {
-                                    Logger.Log("刷新使者");
+                                    Logger.Log("【跨服取经】刷新使者");
                                     clientST.Refresh();
                                     continue;
                                 }
                                 if (_takeBibleStatus == 0)
                                 {
-                                    Logger.Log("开始取经");
+                                    Logger.Log("【跨服取经】开始取经");
                                     clientST.StartTakeBible();
                                     continue;
                                 }
@@ -435,7 +435,7 @@ namespace 神仙道
                         response = clientTown.GetMoralAward();
                         // SUCCESS:int = 5;
                         if ((byte)response[0] == 5)
-                            Logger.Log("领取道行奖励成功");
+                            Logger.Log("【魔王试炼】领取道行奖励成功");
                     } //if (functionIds.Contains(68)) // 68:["BeelzebubTrials","85","魔王试炼"],
 
                     if (functionIds.Contains(60)) // 60:["PetAnimal","325","叶公好龙"],
@@ -487,9 +487,9 @@ namespace 神仙道
                             var _eventText = (string)response[1];
                             var _answers = (JArray)response[2];
                             var _answerFirst = _answers[0];
-                            Logger.Log(_eventText.Trim());
-                            Logger.Log(string.Format("{0}. {1}", _answerFirst[1], ((string)_answerFirst[2]).Trim()));
-                            Logger.Log((string)clientTown.AnswerTravelEvent(_eventId, (int)_answerFirst[0])[0]);
+                            Logger.Log(string.Format("【仙旅奇缘】{0}", _eventText.Trim()));
+                            Logger.Log(string.Format("【仙旅奇缘】{0}. {1}", _answerFirst[1], ((string)_answerFirst[2]).Trim()));
+                            Logger.Log(string.Format("【仙旅奇缘】{0}", (string)clientTown.AnswerTravelEvent(_eventId, (int)_answerFirst[0])[0]));
                         }
 
                     } //if (functionIds.Contains(34)) // 34:["TravelEvent","240","仙旅奇缘"],
@@ -514,22 +514,22 @@ namespace 神仙道
                             {
                                 case 10:
                                     // FINISH:int = 10;
-                                    Logger.Log(string.Format("扫荡英雄副本[{0}]完成", Protocols.GetTownName(_townId)));
+                                    Logger.Log(string.Format("【英雄扫荡】扫荡英雄副本[{0}]完成", Protocols.GetTownName(_townId)));
                                     break;
                                 case 6:
                                     // BAG_FULL:int = 6;
-                                    Logger.Log(string.Format("扫荡英雄副本[{0}]未完成，背包已满", Protocols.GetTownName(_townId)), ConsoleColor.Red);
+                                    Logger.Log(string.Format("【英雄扫荡】扫荡英雄副本[{0}]未完成，背包已满", Protocols.GetTownName(_townId)), ConsoleColor.Red);
                                     break;
                                 case 7:
                                     // NOT_ENOUGH_POWER:int = 7;
-                                    Logger.Log(string.Format("扫荡英雄副本[{0}]未完成，体力已用光", Protocols.GetTownName(_townId)));
+                                    Logger.Log(string.Format("【英雄扫荡】扫荡英雄副本[{0}]未完成，体力已用光", Protocols.GetTownName(_townId)));
                                     break;
                                 case 8:
                                     // NO_MISSION:int = 8;
-                                    Logger.Log(string.Format("扫荡英雄副本[{0}]未完成，没有副本任务", Protocols.GetTownName(_townId)), ConsoleColor.Red);
+                                    Logger.Log(string.Format("【英雄扫荡】扫荡英雄副本[{0}]未完成，没有副本任务", Protocols.GetTownName(_townId)), ConsoleColor.Red);
                                     break;
                                 default:
-                                    Logger.Log("Unknown Mod_HeroMission_Base.notify: " + response[0], ConsoleColor.Red);
+                                    Logger.Log("【英雄扫荡】Unknown Mod_HeroMission_Base.notify: " + response[0], ConsoleColor.Red);
                                     break;
                             }
                             if ((byte)response[0] != 10)
@@ -543,7 +543,7 @@ namespace 神仙道
                         {
                             response = clientTown.OpenSuperSport();
                             var _remain = (short)response[4];
-                            Logger.Log(string.Format("剩余[{0}]次竞技挑战", _remain));
+                            Logger.Log(string.Format("【竞技场】剩余[{0}]次竞技挑战", _remain));
                             if (_remain <= 0)
                                 break;
                             var _cdTimer = (int)response[11];
@@ -553,7 +553,7 @@ namespace 神仙道
 
                             if (_cdTimer > 0)
                             {
-                                Logger.Log(string.Format("等待[{0}]秒", _cdTimer), writeLine: false);
+                                Logger.Log(string.Format("【竞技场】等待[{0}]秒", _cdTimer), writeLine: false);
                                 for (var t = 0; t < _cdTimer; t++)
                                 {
                                     Logger.Log(".", writeLine: false, showTime: false, file: false);
@@ -566,10 +566,10 @@ namespace 神仙道
                             response = clientTown.StartChallenge((int)_challengePersonFirst[0]);
                             // SUCCESS:int = 0;
                             if ((byte)response[0] == 0)
-                                Logger.Log(string.Format("挑战[{0}][排名{1}]{2}", _challengePersonFirst[4], _challengePersonFirst[0], (int)response[2] == 0 ? "成功" : "失败"));
+                                Logger.Log(string.Format("【竞技场】挑战[{0}][排名{1}]{2}", _challengePersonFirst[4], _challengePersonFirst[0], (int)response[2] == 0 ? "成功" : "失败"));
                             else
                             {
-                                Logger.Log(string.Format("挑战异常，result：{0}", response[0]), ConsoleColor.Red);
+                                Logger.Log(string.Format("【竞技场】挑战异常，result：{0}", response[0]), ConsoleColor.Red);
                                 break;
                             }
                         } //while(true)
@@ -583,7 +583,7 @@ namespace 神仙道
                             if ((int)response[_sn] != 0)
                                 continue;
                             if ((byte)clientTown.AssistantGetAward(_sn)[0] == 0)
-                                Logger.Log(string.Format("领取第[{0}]个今日活跃奖励", _sn));
+                                Logger.Log(string.Format("【活跃度】领取第[{0}]个今日活跃奖励", _sn));
                             else
                                 break;
                         } //sn
@@ -592,14 +592,14 @@ namespace 神仙道
                     if (functionIds.Contains(134)) // 134:["Fishing","243","钓鱼"],
                     {
                         response = clientTown.GetPlayerFishhook();
-                        Logger.Log(string.Format("剩余[{0}]个鱼钩", response[0]));
+                        Logger.Log(string.Format("【钓鱼】剩余[{0}]个鱼钩", response[0]));
                         for (var _sn = 0; _sn < (int)response[0]; _sn++)
                         {
                             // SUCCESS:int = 0;
                             if ((byte)clientTown.DoFishing()[0] == 0)
-                                Logger.Log("钓鱼成功");
+                                Logger.Log("【钓鱼】钓鱼成功");
                             else
-                                Logger.Log("钓鱼错误", ConsoleColor.Red);
+                                Logger.Log("【钓鱼】钓鱼错误", ConsoleColor.Red);
                         }
                     } //if (functionIds.Contains(134)) // 134:["Fishing","243","钓鱼"],
 
