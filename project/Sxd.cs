@@ -83,7 +83,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/仙旅奇缘-宝箱.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/猎妖OpenDo2.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
                 client.Analyze(bytes.ToArray(), isReceive);
@@ -493,6 +493,35 @@ namespace 神仙道
                         }
 
                     } //if (functionIds.Contains(34)) // 34:["TravelEvent","240","仙旅奇缘"],
+
+                    if (functionIds.Contains(86)) // 86:["HuntDemon","375","猎妖"],
+                    {
+                        response = clientTown.OpenHuntDemon();
+                        var _free_times = (byte)response[0];
+                        var _coin_times = (byte)response[1];
+                        var _ingot_times = (byte)response[2];
+                        Logger.Log(string.Format("【猎妖】今日可免费猎妖[{0}]次，铜钱猎妖[{1}]次，元宝猎妖[{2}]次", _free_times, _coin_times, _ingot_times));
+
+                        while (_free_times > 0 || _coin_times > 0)
+                        {
+                            if (_free_times > 0)
+                            {
+                                response = clientTown.HuntDemon(0);
+                                // SUCCESS:int = 5;
+                                if((byte)response[0]==5)
+                                    Logger.Log("【猎妖】免费猎妖");
+                            }
+                            else if (_coin_times > 0)
+                            {
+                                response = clientTown.HuntDemon(1);
+                                // SUCCESS:int = 5;
+                                if ((byte)response[0] == 5)
+                                    Logger.Log("【猎妖】铜钱猎妖");
+                            }
+                            _free_times = (byte)response[3];
+                            _coin_times = (byte)response[4];
+                        }
+                    } //if (functionIds.Contains(86)) // 86:["HuntDemon","375","猎妖"],
 
 
                     if (functionIds.Contains(51)) // 51:["HeroMissionPractice","238","英雄扫荡"],

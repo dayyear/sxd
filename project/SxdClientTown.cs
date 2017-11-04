@@ -1177,6 +1177,67 @@ namespace 神仙道
             return response;
         }//FeedPetAnimal
 
+        // -------------------------------------------------------------------------------------------
+        // 猎妖
+        // -------------------------------------------------------------------------------------------
+        /// <summary>
+        /// 打开猎妖
+        /// Mod_HuntDemon_Base.open_hunt_demon(105,1)
+        /// module:105, action:1
+        /// request:[Utils.ByteUtil]
+        /// Line 83 in HuntDemonView.as
+        ///     _data.call(Mod_HuntDemon_Base.open_hunt_demon, this.loadAsset, [1]);
+        /// response:[Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, [Utils.ByteUtil, Utils.IntUtil]]
+        /// Line 47-63 in HuntDemonData.as
+        ///     this._free_times = uint(param1[0]);
+        ///     this._coin_times = uint(param1[1]);
+        ///     this._ingot_times = uint(param1[2]);
+        ///     this._need_ingot = uint(param1[3]);
+        /// </summary>
+        public JArray OpenHuntDemon()
+        {
+            done.Reset();
+            Send(new JArray { 1 }, 105, 1);
+            done.WaitOne();
+            return response;
+        }//OpenHuntDemon
+
+        /// <summary>
+        /// 猎妖
+        /// Mod_HuntDemon_Base.hunt_demon(105,2)
+        /// module:105, action:2
+        /// request:[Utils.ByteUtil, Utils.ByteUtil]
+        /// Line 212 in HuntDemonView.as
+        ///     // sendFreeFun
+        ///     _data.call(Mod_HuntDemon_Base.hunt_demon, this.huntCallBack, [0, param1]);
+        /// Line 196 in HuntDemonView.as
+        ///     // sendCommonFun
+        ///     _data.call(Mod_HuntDemon_Base.hunt_demon, this.huntCallBack, [1, param1]);
+        /// Line 261 in HuntDemonView.as
+        ///     // sendIngotFun
+        ///     _data.call(Mod_HuntDemon_Base.hunt_demon, huntCallBack, [2, itemType]);
+        /// response:[Utils.UByteUtil, [Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil], Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, [Utils.ByteUtil, Utils.IntUtil]]
+        /// Line 84-93 in HuntDemonData.as
+        ///     this._hunt_demon_result = param1[0];
+        ///     if (this._hunt_demon_result != Mod_HuntDemon_Base.SUCCESS)
+        ///     {
+        ///         return;
+        ///     }
+        ///     this._hunt_demon_is_lucky = param1[2];
+        ///     this._free_times = param1[3];
+        ///     this._coin_times = param1[4];
+        ///     this._ingot_times = param1[5];
+        ///     this._need_ingot = param1[6];
+        /// Line 12 in Mod_HuntDemon_Base.as
+        ///     public static const SUCCESS:int = 5;
+        /// </summary>
+        public JArray HuntDemon(byte type)
+        {
+            done.Reset();
+            Send(new JArray { type, 0 }, 105, 2);
+            done.WaitOne();
+            return response;
+        }//HuntDemon
 
 
 

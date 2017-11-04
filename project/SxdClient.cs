@@ -84,6 +84,8 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_BeelzebubTrials_Base.get_moral_award", "Callback");
             classDotMethodDictionary.Add("Mod_PetAnimal_Base.pet_animal_info", "Callback");
             classDotMethodDictionary.Add("Mod_PetAnimal_Base.feed_pet_animal", "Callback");
+            classDotMethodDictionary.Add("Mod_HuntDemon_Base.open_hunt_demon", "Callback");
+            classDotMethodDictionary.Add("Mod_HuntDemon_Base.hunt_demon", "Callback");
             //ST
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "Callback");
