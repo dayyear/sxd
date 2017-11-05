@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
@@ -83,7 +84,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/猎妖OpenDo2.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/觉醒.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
                 client.Analyze(bytes.ToArray(), isReceive);
@@ -508,7 +509,7 @@ namespace 神仙道
                             {
                                 response = clientTown.HuntDemon(0);
                                 // SUCCESS:int = 5;
-                                if((byte)response[0]==5)
+                                if ((byte)response[0] == 5)
                                     Logger.Log("【猎妖】免费猎妖");
                             }
                             else if (_coin_times > 0)
@@ -523,6 +524,28 @@ namespace 神仙道
                         }
                     } //if (functionIds.Contains(86)) // 86:["HuntDemon","375","猎妖"],
 
+                    if (functionIds.Contains(126)) // 126:["Awake","460","觉醒"],
+                    {
+                        response = clientTown.PlayerForbiddenBookInfo();
+                        var _items = (JArray)response[0];
+                        foreach (var item in _items)
+                        {
+                            var _forbidden_type = (byte)item[0];
+                            var _explore_type = (byte)item[1];
+                            var _cost_coin = (int)item[2];
+                            var _cost_ingot = (int)item[3];
+                            if (_explore_type == 19 && _cost_coin == 0 && _cost_ingot == 0)
+                            {
+                                var _forbidden_dictionary = new Dictionary<byte, string> { { 16, "人间" }, { 17, "轩辕" }, { 18, "上古" } };
+                                response = clientTown.ExploreForbiddenBook(_forbidden_type);
+                                // SUCCESS:int = 5;
+                                if ((byte)response[0] == 5)
+                                    Logger.Log(string.Format("【觉醒】探索[{0}]禁地之书", _forbidden_dictionary[_forbidden_type]));
+                                else
+                                    Logger.Log(string.Format("【觉醒】探索禁地之书错误，result: {0}", response[0]), ConsoleColor.Red);
+                            }
+                        }
+                    } //if (functionIds.Contains(126)) // 126:["Awake","460","觉醒"],
 
                     if (functionIds.Contains(51)) // 51:["HeroMissionPractice","238","英雄扫荡"],
                     {

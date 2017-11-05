@@ -1072,7 +1072,9 @@ namespace 神仙道
             return response;
         }//AnswerTravelEvent
 
+        // -------------------------------------------------------------------------------------------
         // 魔王试炼
+        // -------------------------------------------------------------------------------------------
         /// <summary>
         /// 领取道行奖励
         /// Mod_BeelzebubTrials_Base.get_moral_award(57,24)
@@ -1238,6 +1240,69 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//HuntDemon
+
+        // -------------------------------------------------------------------------------------------
+        // 觉醒
+        // -------------------------------------------------------------------------------------------
+        /// <summary>
+        /// 打开禁地之书
+        /// Mod_Awake_Base.player_forbidden_book_info(199,11)
+        /// module:199, action:11
+        /// request:[]
+        /// response:[[Utils.UByteUtil, Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.IntUtil], Utils.IntUtil]
+        /// Line 123 in AwakeData.as
+        ///     oObject.list(_loc_4, _loc_3, ["forbidden_type", "explore_type", "cost_coin", "cost_ingot", "cur_number", "total_number", "next_free_time"]);
+        /// Line 23-27 in Mod_Awake_Base.as
+        ///     public static const MORTAL:int = 16;  // 人间
+        ///     public static const REGULUS:int = 17; // 轩辕
+        ///     public static const ANCIENT:int = 18; // 上古
+        ///     public static const ONCE:int = 19;
+        ///     public static const MULTI:int = 20;
+        /// Example: [[[17,19,0,0,0,21,1509897600],[16,19,0,0,0,21,1509897600],[16,20,0,100,0,20,0],[18,19,0,0,0,21,1509897600],[18,20,0,300,0,20,0],[17,20,0,200,0,20,0]],0]
+        ///          [[[17,19,0,0,0,21,1509897600],[16,19,500000,0,0,20,1509897600],[16,20,0,100,0,20,0],[18,19,0,0,0,21,1509897600],[18,20,0,300,0,20,0],[17,20,0,200,0,20,0]],0]
+        ///          [[[17,19,0,0,0,21,1509897600],[16,19,500000,0,0,20,1509897600],[16,20,0,100,0,20,0],[18,19,0,30,0,20,1509897600],[18,20,0,300,0,20,0],[17,20,0,200,0,20,0]],0]
+        ///          [[[17,19,0,20,0,20,1509897600],[16,19,500000,0,0,20,1509897600],[16,20,0,100,0,20,0],[18,19,0,30,0,20,1509897600],[18,20,0,300,0,20,0],[17,20,0,200,0,20,0]],0]
+        /// </summary>
+        public JArray PlayerForbiddenBookInfo()
+        {
+            done.Reset();
+            Send(null, 199, 11);
+            done.WaitOne();
+            return response;
+        }//PlayerForbiddenBookInfo
+
+        /// <summary>
+        /// 探索禁地之书
+        /// Mod_Awake_Base.explore_forbidden_book(199,12)
+        /// module:199, action:12
+        /// request:[Utils.UByteUtil, Utils.UByteUtil]
+        /// Line 224 in AwakeForbiddenBookView.as
+        ///     this.explore_forbidden_book(forbiddenType, timesType, this.exploreForbiddenBookCallBack);
+        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.IntUtil, Utils.ShortUtil]]
+        /// Line 143,150 in AwakeData.as
+        ///     this._exploreForbiddenBookObj.result = param1[0];
+        ///     oObject.list(_loc_4, _loc_3, ["player_awake_id", "item_id", "grid_id", "level", "resolve_price", "number"]);
+        /// Line 12,23-27 in Mod_Awake_Base.as
+        ///     public static const SUCCESS:int = 5;
+        ///     public static const MORTAL:int = 16;  // 人间
+        ///     public static const REGULUS:int = 17; // 轩辕
+        ///     public static const ANCIENT:int = 18; // 上古
+        ///     public static const ONCE:int = 19;
+        ///     public static const MULTI:int = 20;
+        /// Example: Send data: [16,19]
+        ///          Receive data: [5,[[0,2924,0,0,0,1]]]
+        ///          Send data: [18,19]
+        ///          Receive data: [5,[[0,2909,0,0,0,1]]]
+        ///          Send data: [17,19]
+        ///          Receive data: [5,[[0,2912,0,0,0,1]]]
+        /// </summary>
+        public JArray ExploreForbiddenBook(byte forbiddenType)
+        {
+            done.Reset();
+            Send(new JArray { forbiddenType, 19 }, 199, 12);
+            done.WaitOne();
+            return response;
+        }//ExploreForbiddenBook
 
 
 
