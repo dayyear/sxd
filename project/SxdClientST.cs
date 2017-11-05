@@ -222,6 +222,26 @@ namespace 神仙道
             return response;
         }//StartTakeBible
 
+        // -------------------------------------------------------------------------------------------
+        // 家园
+        // -------------------------------------------------------------------------------------------
+        /// <summary>
+        /// 每日领取家园奖励
+        /// Mod_MarryHome_Base.batch_get_furniture_effect(210,18)
+        /// module:210, action:18
+        /// request:[]
+        /// response:[[Utils.IntUtil, Utils.IntUtil]]
+        /// Line 310 in MarryHomeData.as
+        ///     oObject.list(_loc_2, _loc_3, ["item_id", "effect"]);
+        /// Example: [[[1747,200000],[3418,5]]]
+        /// </summary>
+        public JArray BatchGetFurnitureEffect()
+        {
+            done.Reset();
+            Send(null, 210, 18);
+            done.WaitOne();
+            return response;
+        }//BatchGetFurnitureEffect
 
 
         private void Callback(JArray data)

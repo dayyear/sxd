@@ -84,7 +84,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/觉醒.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/帮派祭神.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
                 client.Analyze(bytes.ToArray(), isReceive);
@@ -417,6 +417,13 @@ namespace 神仙道
                                 break;
                             } //while(true)
                         } //if (functionIds.Contains(90)) // 90:["ServerTakeBible","247","跨服取经"],
+
+                        if (functionIds.Contains(131)) // 131:["MarryHome","242","家园"],
+                        {
+                            response = clientST.BatchGetFurnitureEffect();
+                            if (response[0].Any())
+                                Logger.Log("【家园】每日领取家园奖励");
+                        } //if (functionIds.Contains(131)) // 131:["MarryHome","242","家园"],
 
                         if (functionIds.Contains(132)) // 132:["StArena","300","仙界竞技场"],
                         {
