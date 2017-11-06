@@ -1307,6 +1307,7 @@ namespace 神仙道
         // -------------------------------------------------------------------------------------------
         // 帮派
         // -------------------------------------------------------------------------------------------
+        // 打开帮派祭神
         /// <summary>
         /// 打开帮派祭神
         /// Mod_Faction_Base.faction_god_info(10,22)
@@ -1327,6 +1328,7 @@ namespace 神仙道
             return response;
         }//FactionGodInfo
 
+        // 帮派上香
         /// <summary>
         /// 帮派上香
         /// Mod_Faction_Base.incense(10,23)
@@ -1343,6 +1345,25 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//Incense
+
+        // 加入七星封魔
+        /// <summary>
+        /// 加入七星封魔
+        /// Mod_Faction_Base.join_seal_satan(10,28)
+        /// module:10, action:28
+        /// request:[]
+        /// response:[Utils.UByteUtil]
+        /// Line 61-62 in Mod_Faction_Base.as
+        ///     public static const JOIN_SUCCESS:int = 54;
+        ///     public static const IS_JOIN:int = 55;
+        /// </summary>
+        public JArray JoinSealSatan()
+        {
+            done.Reset();
+            Send(null, 10, 28);
+            done.WaitOne();
+            return response;
+        }//JoinSealSatan
 
 
 

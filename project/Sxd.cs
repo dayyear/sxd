@@ -84,7 +84,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/帮派祭神.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/七星封魔.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
                 client.Analyze(bytes.ToArray(), isReceive);
@@ -574,6 +574,12 @@ namespace 神仙道
                             else
                                 Logger.Log("【帮派】上香错误", ConsoleColor.Red);
                         }
+
+                        // 七星封魔
+                        response = clientTown.JoinSealSatan();
+                        // JOIN_SUCCESS:int = 54;
+                        if ((byte)response[0] == 54)
+                            Logger.Log("【帮派】加入七星封魔");
                     } //if (functionIds.Contains(13)) // 13:["Faction","165","帮派"],
 
                     if (functionIds.Contains(51)) // 51:["HeroMissionPractice","238","英雄扫荡"],

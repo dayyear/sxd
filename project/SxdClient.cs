@@ -91,6 +91,7 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_MarryHome_Base.batch_get_furniture_effect", "Callback");
             classDotMethodDictionary.Add("Mod_Faction_Base.faction_god_info", "Callback");
             classDotMethodDictionary.Add("Mod_Faction_Base.incense", "Callback");
+            classDotMethodDictionary.Add("Mod_Faction_Base.join_seal_satan", "Callback");
             //ST
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "Callback");
