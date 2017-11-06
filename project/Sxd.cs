@@ -148,6 +148,7 @@ namespace 神仙道
 
                     // 获取玩家对比信息
                     response = clientTown.PlayerInfoContrast(playerId);
+                    var factionName = (string)response[0][0][2];
                     Logger.Log(string.Format("[排名{0}]，[帮派{1}]，[战力{2}]，[声望{3}]，[阅历{4}]，[成就{5}]，[先攻{6}]，[境界{7}]，[鲜花{8}]，[仙令{9}]", response[0][0][1], response[0][0][2], response[0][0][3], response[0][0][4], response[0][0][5], response[0][0][6], response[0][0][7], response[0][0][8], response[0][0][9], response[0][0][10]));
 
                     // 进入城镇
@@ -553,6 +554,27 @@ namespace 神仙道
                             }
                         }
                     } //if (functionIds.Contains(126)) // 126:["Awake","460","觉醒"],
+
+                    if (functionIds.Contains(13) && !string.IsNullOrWhiteSpace(factionName)) // 13:["Faction","165","帮派"],
+                    {
+                        // 帮派祭神
+                        while (true)
+                        {
+                            response = clientTown.FactionGodInfo();
+                            var _incense_count = (int)response[3];
+                            var _total_count = (int)response[4];
+
+                            if (_incense_count >= _total_count)
+                                break;
+
+                            response = clientTown.Incense();
+                            // SUCCESS:int = 32;
+                            if ((byte)response[0] == 32)
+                                Logger.Log("【帮派】给帮派神像上[白檀香]");
+                            else
+                                Logger.Log("【帮派】上香错误", ConsoleColor.Red);
+                        }
+                    } //if (functionIds.Contains(13)) // 13:["Faction","165","帮派"],
 
                     if (functionIds.Contains(51)) // 51:["HeroMissionPractice","238","英雄扫荡"],
                     {

@@ -89,6 +89,8 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_Awake_Base.player_forbidden_book_info", "Callback");
             classDotMethodDictionary.Add("Mod_Awake_Base.explore_forbidden_book", "Callback");
             classDotMethodDictionary.Add("Mod_MarryHome_Base.batch_get_furniture_effect", "Callback");
+            classDotMethodDictionary.Add("Mod_Faction_Base.faction_god_info", "Callback");
+            classDotMethodDictionary.Add("Mod_Faction_Base.incense", "Callback");
             //ST
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "Callback");

@@ -1304,6 +1304,46 @@ namespace 神仙道
             return response;
         }//ExploreForbiddenBook
 
+        // -------------------------------------------------------------------------------------------
+        // 帮派
+        // -------------------------------------------------------------------------------------------
+        /// <summary>
+        /// 打开帮派祭神
+        /// Mod_Faction_Base.faction_god_info(10,22)
+        /// module:10, action:22
+        /// request:[]
+        /// response:[Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, [Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]]
+        /// Line 448,461 in FactionController.as
+        ///     oObject.list(this._data.faction.godInfo, _loc_1, ["faction_god_level", "faction_god_exp", "require_exp", "incense_count", "total_count", "is_cover"]);
+        ///     oObject.list(_loc_3, _loc_1, ["player_id", "player_name", "incense_id", "exp", "time"]);
+        /// Example: [3,2225,8000,0,1,0,[[355527,"庄恭春.s1",1,5,1503230585],[355527,"庄恭春.s1",1,5,1502965267],[355549,"董乘六.s1",1,5,1501820321],[355527,"庄恭春.s1",1,5,1503462256],[355527,"庄恭春.s1",1,5,1502541780],[355527,"庄恭春.s1",1,5,1503032889],[355553,"甄斐斐.s1",1,5,1501820337],[355527,"庄恭春.s1",1,5,1503315329]]]
+        ///          [3,2230,8000,1,1,0,[[355527,"庄恭春.s1",1,5,1503230585],[355527,"庄恭春.s1",1,5,1509889809],[355527,"庄恭春.s1",1,5,1502965267],[355527,"庄恭春.s1",1,5,1503462256],[355527,"庄恭春.s1",1,5,1502541780],[355527,"庄恭春.s1",1,5,1503032889],[355553,"甄斐斐.s1",1,5,1501820337],[355527,"庄恭春.s1",1,5,1503315329]]]
+        /// </summary>
+        public JArray FactionGodInfo()
+        {
+            done.Reset();
+            Send(null, 10, 22);
+            done.WaitOne();
+            return response;
+        }//FactionGodInfo
+
+        /// <summary>
+        /// 帮派上香
+        /// Mod_Faction_Base.incense(10,23)
+        /// module:10, action:23
+        /// request:[Utils.IntUtil]
+        /// response:[Utils.UByteUtil]
+        /// Line 39 in .as
+        ///     public static const SUCCESS:int = 32;
+        /// </summary>
+        public JArray Incense()
+        {
+            done.Reset();
+            Send(new JArray { 1 }, 10, 23);
+            done.WaitOne();
+            return response;
+        }//Incense
+
 
 
 
