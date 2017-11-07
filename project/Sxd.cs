@@ -84,7 +84,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/七星封魔.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/帮派吉星高照.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
                 client.Analyze(bytes.ToArray(), isReceive);
@@ -580,6 +580,23 @@ namespace 神仙道
                         // JOIN_SUCCESS:int = 54;
                         if ((byte)response[0] == 54)
                             Logger.Log("【帮派】加入七星封魔");
+
+                        // 帮派吉星高照
+                        while (true)
+                        {
+                            response = clientTown.FactionRollCakeInfo();
+                            var _remainTimes = (byte)response[2];
+
+                            if (_remainTimes <= 0)
+                                break;
+
+                            response = clientTown.RollCake();
+                            // SUCCESS:int = 32;
+                            if ((byte)response[0] == 32)
+                                Logger.Log(string.Format("【帮派】吉星高照，获得[积分{0}]，今日[积分{1}]", response[2], response[3]));
+                            else
+                                Logger.Log("【帮派】吉星高照错误", ConsoleColor.Red);
+                        }
                     } //if (functionIds.Contains(13)) // 13:["Faction","165","帮派"],
 
                     if (functionIds.Contains(51)) // 51:["HeroMissionPractice","238","英雄扫荡"],

@@ -1365,6 +1365,56 @@ namespace 神仙道
             return response;
         }//JoinSealSatan
 
+        // 打开帮派吉星高照
+        /// <summary>
+        /// 打开帮派吉星高照
+        /// Mod_Faction_Base.faction_roll_cake_info(10,45)
+        /// module:10, action:45
+        /// request:[]
+        /// response:[Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.StringUtil, Utils.IntUtil]]
+        /// Line 698-702 in FactionController.as
+        ///     _loc_2.weekBestScore = _loc_1[0];
+        ///     _loc_2.todayBestScore = _loc_1[1];
+        ///     _loc_2.remainTimes = _loc_1[2];
+        ///     _loc_2.factionScore = _loc_1[3];
+        ///     _loc_2.factionRCInfo = this.renderFactionRollCakeInfo(_loc_1[4]);
+        /// </summary>
+        public JArray FactionRollCakeInfo()
+        {
+            done.Reset();
+            Send(null, 10, 45);
+            done.WaitOne();
+            return response;
+        }//FactionRollCakeInfo
+
+        // 帮派吉星高照-掷骰子
+        /// <summary>
+        /// 帮派吉星高照-掷骰子
+        /// Mod_Faction_Base.roll_cake(10,46)
+        /// module:10, action:46
+        /// request:[]
+        /// response:[Utils.UByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, [Utils.ByteUtil], Utils.ByteUtil]
+        /// Line 732-740 in FactionController.as
+        ///     _loc_2.msg = _loc_1[0];
+        ///     _loc_2.type = _loc_1[1];
+        ///     _loc_2.typeName = RollCakeType.getRollCakeNickName(_loc_2.type);
+        ///     _loc_2.coin = RollCakeType.getRollCakeCoin(_loc_2.type);
+        ///     _loc_2.score = _loc_1[2];
+        ///     _loc_2.todayScore = _loc_1[3];
+        ///     _loc_2.numList = [];
+        ///     var _loc_3:* = _loc_1[4];
+        ///     _loc_2.remainTimes = _loc_1[5];
+        /// Line 39 in Mod_Faction_Base.as
+        ///     public static const SUCCESS:int = 32;
+        /// </summary>
+        public JArray RollCake()
+        {
+            done.Reset();
+            Send(null, 10, 46);
+            done.WaitOne();
+            return response;
+        }//RollCake
+
 
 
 
