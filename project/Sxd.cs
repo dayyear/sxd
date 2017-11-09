@@ -84,7 +84,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/帮派转盘.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/混沌虚空.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
                 client.Analyze(bytes.ToArray(), isReceive);
@@ -587,6 +587,18 @@ namespace 神仙道
                         }//while
                     } //if (functionIds.Contains(54)) // 54:["RollCake","282","吉星高照"],
 
+                    if (functionIds.Contains(96)) // 96:["ChaosVoid","404","混沌虚空"],
+                    {
+                        response = clientTown.OpenSpaceFind();
+                        var _count = (short)response[0];
+                        Logger.Log(string.Format("【混沌虚空】今日可抓捕[{0}]次", _count));
+                        for (var _i = 0; _i < _count; _i++)
+                        {
+                            clientTown.DoSpaceFind();
+                            clientTown.GetSpaceFind();
+                        }
+                    } //if (functionIds.Contains(96)) // 96:["ChaosVoid","404","混沌虚空"],
+
                     if (functionIds.Contains(13) && !string.IsNullOrWhiteSpace(factionName)) // 13:["Faction","165","帮派"],
                     {
                         // 帮派祭神
@@ -637,6 +649,8 @@ namespace 神仙道
                         Logger.Log(string.Format("【帮派】[青龙令{0}]", _rosefinch_number));
                         for (var _i = 0; _i < _rosefinch_number; _i++)
                             clientTown.StartLuckyWheel();
+
+
                     } //if (functionIds.Contains(13)) // 13:["Faction","165","帮派"],
 
                     if (functionIds.Contains(51)) // 51:["HeroMissionPractice","238","英雄扫荡"],

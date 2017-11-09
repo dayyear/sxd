@@ -102,6 +102,9 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_RollCake_Base.get_award", "Callback");
             classDotMethodDictionary.Add("Mod_LuckyWheel_Base.open_lucky_wheel", "Callback");
             classDotMethodDictionary.Add("Mod_LuckyWheel_Base.start_lucky_wheel", "Callback");
+            classDotMethodDictionary.Add("Mod_SpaceFind_Base.open_space_find", "Callback");
+            classDotMethodDictionary.Add("Mod_SpaceFind_Base.do_space_find", "Callback");
+            classDotMethodDictionary.Add("Mod_SpaceFind_Base.get_space_find", "Callback");
             //ST
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "Callback");

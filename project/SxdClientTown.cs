@@ -1440,6 +1440,73 @@ namespace 神仙道
         }//RollCakeGetAward
 
         // -------------------------------------------------------------------------------------------
+        // 混沌虚空
+        // -------------------------------------------------------------------------------------------
+        // 打开混沌虚空
+        /// <summary>
+        /// 打开混沌虚空
+        /// Mod_SpaceFind_Base.open_space_find(123,0)
+        /// module:123, action:0
+        /// request:[]
+        /// response:[Utils.ShortUtil, Utils.IntUtil, Utils.ShortUtil, Utils.StringUtil, Utils.ShortUtil, Utils.IntUtil, Utils.UByteUtil]
+        /// Line 20 in SpaceFindController.as
+        ///     oObject.list(_loc_2, _loc_1, ["count", "item_id", "golden", "be_app_nickname", "can_buy_count", "integral", "useType"]);
+        /// Example
+        ///     [4,0,5,"",20,0,0]
+        /// </summary>
+        public JArray OpenSpaceFind()
+        {
+            done.Reset();
+            Send(null, 123, 0);
+            done.WaitOne();
+            return response;
+        }//OpenSpaceFind
+
+        // 寻找异兽
+        /// <summary>
+        /// 寻找异兽
+        /// Mod_SpaceFind_Base.do_space_find(123,1)
+        /// module:123, action:1
+        /// request:[Utils.UByteUtil]
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.ShortUtil, Utils.IntUtil, Utils.UByteUtil]
+        /// Line 34 in SpaceFindController.as
+        ///     oObject.list(_loc_2, _loc_1, ["result", "item_id", "golden", "integral", "useType"]);
+        /// Line 9 in Mod_SpaceFind_Base.as
+        ///     public static const SUCCESS:int = 2;
+        /// Example
+        ///     [2,1831,5,0,0]
+        /// </summary>
+        public JArray DoSpaceFind()
+        {
+            done.Reset();
+            Send(new JArray { 0 }, 123, 1);
+            done.WaitOne();
+            return response;
+        }//DoSpaceFind
+
+        // 抓捕异兽
+        /// <summary>
+        /// 抓捕异兽
+        /// Mod_SpaceFind_Base.get_space_find(123,2)
+        /// module:123, action:2
+        /// request:[]
+        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil]
+        /// Line 44 in SpaceFindController.as
+        ///     oObject.list(_loc_2, _loc_1, ["result", "find_goods", "count", "can_buy_count"]);
+        /// Line 9 in Mod_SpaceFind_Base.as
+        ///     public static const SUCCESS:int = 2;
+        /// Example
+        ///     [2,[[5117,1],[1845,4],[1861,1]],3,20]
+        /// </summary>
+        public JArray GetSpaceFind()
+        {
+            done.Reset();
+            Send(null, 123, 2);
+            done.WaitOne();
+            return response;
+        }//GetSpaceFind
+
+        // -------------------------------------------------------------------------------------------
         // 帮派
         // -------------------------------------------------------------------------------------------
         // 打开帮派祭神
