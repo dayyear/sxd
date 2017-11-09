@@ -84,7 +84,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/帮派吉星高照.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/七星封魔AM.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
                 client.Analyze(bytes.ToArray(), isReceive);
@@ -555,6 +555,8 @@ namespace 神仙道
                         }
                     } //if (functionIds.Contains(126)) // 126:["Awake","460","觉醒"],
 
+
+
                     if (functionIds.Contains(13) && !string.IsNullOrWhiteSpace(factionName)) // 13:["Faction","165","帮派"],
                     {
                         // 帮派祭神
@@ -576,6 +578,7 @@ namespace 神仙道
                         }
 
                         // 七星封魔
+                        response = clientTown.SealSatanMemberList();
                         response = clientTown.JoinSealSatan();
                         // JOIN_SUCCESS:int = 54;
                         if ((byte)response[0] == 54)

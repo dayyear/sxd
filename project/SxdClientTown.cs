@@ -1305,6 +1305,118 @@ namespace 神仙道
         }//ExploreForbiddenBook
 
         // -------------------------------------------------------------------------------------------
+        // 吉星高照
+        // -------------------------------------------------------------------------------------------
+        //吉星高照-获取状态
+        /// <summary>
+        /// 吉星高照-获取状态
+        /// Mod_RollCake_Base.get_state(38,5)
+        /// module:38, action:5
+        /// request:[]
+        /// response:[Utils.UByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil]
+        /// Line 146-147 in RollCakeController.as
+        ///     _loc_2.msg = param1[0];
+        ///     _loc_2.type = param1[1];
+        /// Line 11-12 in Mod_RollCake_Base.as
+        ///     public static const NO_RECORD:int = 4;
+        ///     public static const HAVE_RECORD:int = 5;
+        /// From roll_cake.txt
+        ///     [{"1":["空","平安","300","0","0"],"2":["一秀","一吉","500","0","0"],"3":["二举","二吉","1300","0","0"],"4":["四进","大运","0","0","50000"],"5":["三红","三吉","5000","3","0"],"6":["对堂","福禄寿","0","0","200000"],"7":["状元","大吉大利","17000","7","0"],"8":["五子","五子登科","0","0","300000"],"9":["五王","吉祥如意","50000","13","0"],"10":["六子","洪福齐天","0","0","500000"],"11":["六王","吉星高照","130000","19","0"],"12":["状元插金花","大吉大利","0","0","0"],"13":["四进1","寿比南山","0","0","50000"],"14":["四进2","财源滚滚","0","0","60000"],"15":["四进3","平步青云","0","0","70000"],"16":["四进4","万事如意","0","0","80000"],"17":["四进5","招财进宝","0","0","100000"]},
+        ///      {"1":["运","云"],"2":["财","元宝"],"3":["寿","蟠桃"],"4":["吉","文字吉"],"5":["福","如意"],"6":["禄","铜钱"]}]
+        /// Example
+        ///     [4,0,0,0,0,0,0,0,0]
+        ///     [5,2,10,1,4,5,6,6,5] // 一吉
+        ///     [5,2,10,5,4,6,5,1,5]
+        ///     [5,2,10,2,4,5,2,2,3]
+        ///     [5,2,10,3,4,3,5,6,5]
+        ///     [5,3,10,5,4,3,4,6,2] // 二吉
+        /// </summary>
+        public JArray RollCakeGetState()
+        {
+            done.Reset();
+            Send(null, 38, 5);
+            done.WaitOne();
+            return response;
+        }//RollCakeGetState
+
+        //吉星高照-获取数量
+        /// <summary>
+        /// 吉星高照-获取数量
+        /// Mod_RollCake_Base.get_count(38,2)
+        /// module:38, action:2
+        /// request:[]
+        /// response:[Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil]
+        /// Line 47-50 in .as
+        ///     _loc_2.count = _loc_1[0];
+        ///     _loc_2.freeRobeNum = _loc_1[1];
+        ///     _loc_2.robeMaxNum = _loc_1[2];
+        ///     _loc_2.rollCount = _loc_1[3];
+        /// Example
+        ///     [10,9,99,5686]
+        ///     [9,9,99,5690]
+        ///     [7,8,99,5697]
+        /// </summary>
+        public JArray RollCakeGetCount()
+        {
+            done.Reset();
+            Send(null, 38, 2);
+            done.WaitOne();
+            return response;
+        }//RollCakeGetCount
+
+        //吉星高照-掷骰子
+        /// <summary>
+        /// 吉星高照-掷骰子
+        /// Mod_RollCake_Base.roll(38,0)
+        /// module:38, action:0
+        /// request:[]
+        /// response:[Utils.UByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil]
+        /// Line 146-147,152 in RollCakeController.as
+        ///     _loc_2.msg = param1[0];
+        ///     _loc_2.type = param1[1];
+        ///     _loc_2.rerollIngot = param1[2];
+        /// Line 7 in Mod_RollCake_Base.as
+        ///     public static const SUCCESS:int = 0;
+        /// Example
+        ///     [0,2,10,6,4,1,1,1,5,5690]
+        ///     [0,2,10,1,3,6,4,2,6,5693]
+        ///     [0,2,10,1,4,5,6,6,5,5697]
+        /// </summary>
+        public JArray RollCakeRoll()
+        {
+            done.Reset();
+            Send(null, 38, 0);
+            done.WaitOne();
+            return response;
+        }//RollCakeRoll
+
+        //吉星高照-逆天改运
+        /// <summary>
+        /// 吉星高照-逆天改运
+        /// Mod_RollCake_Base.reroll(38,3)
+        /// module:38, action:3
+        /// request:[]
+        /// response:[Utils.UByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil]
+        /// Line 64,65,70,71 in .as
+        ///     _loc_2.msg = param1[0];
+        ///     _loc_2.type = param1[1];
+        ///     _loc_2.canFree = param1[2];
+        ///     _loc_2.rerollIngot = param1[3];
+        /// Example
+        ///     [0,2,8,10,5,4,6,5,1,5,5697]
+        ///     [0,2,7,10,2,4,5,2,2,3,5697]
+        ///     [0,2,6,10,3,4,3,5,6,5,5697]
+        ///     [0,3,5,10,5,4,3,4,6,2,5697]
+        /// </summary>
+        public JArray RollCakeReRoll()
+        {
+            done.Reset();
+            Send(null, 38, 3);
+            done.WaitOne();
+            return response;
+        }//RollCakeReRoll
+
+        // -------------------------------------------------------------------------------------------
         // 帮派
         // -------------------------------------------------------------------------------------------
         // 打开帮派祭神
@@ -1345,6 +1457,22 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//Incense
+
+        // 获取七星封魔成员
+        /// <summary>
+        /// 获取七星封魔成员
+        /// Mod_Faction_Base.seal_satan_member_list(10,34)
+        /// module:10, action:34
+        /// request:[]
+        /// response:[[Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil]]
+        /// </summary>
+        public JArray SealSatanMemberList()
+        {
+            done.Reset();
+            Send(null, 10, 34);
+            done.WaitOne();
+            return response;
+        }//SealSatanMemberList
 
         // 加入七星封魔
         /// <summary>
