@@ -1439,7 +1439,6 @@ namespace 神仙道
             return response;
         }//RollCakeGetAward
 
-
         // -------------------------------------------------------------------------------------------
         // 帮派
         // -------------------------------------------------------------------------------------------
@@ -1566,6 +1565,45 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//RollCake
+
+        // 打开帮派转盘
+        /// <summary>
+        /// 打开帮派转盘
+        /// Mod_LuckyWheel_Base.open_lucky_wheel(69,1)
+        /// module:69, action:1
+        /// request:[]
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil]
+        /// Line 23-24 in LuckyWheelData.as
+        ///     _loc_1.faction_today_con = this._openInfo[1];
+        ///     _loc_1.rosefinch_number = this._openInfo[2];
+        /// </summary>
+        public JArray OpenLuckyWheel()
+        {
+            done.Reset();
+            Send(null, 69, 1);
+            done.WaitOne();
+            return response;
+        }//OpenLuckyWheel
+
+        // 帮派转盘-抽奖
+        /// <summary>
+        /// 帮派转盘-抽奖
+        /// Mod_LuckyWheel_Base.start_lucky_wheel(69,2)
+        /// module:69, action:2
+        /// request:[]
+        /// response:[Utils.UByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil]
+        /// Line 36-38 in LuckyWheelData.as
+        ///     _loc_1.type = this._runInfo[1];
+        ///     _loc_1.rosefinch_number = this._runInfo[2];
+        ///     _loc_1.item_id = this._runInfo[3];
+        /// </summary>
+        public JArray StartLuckyWheel()
+        {
+            done.Reset();
+            Send(null, 69, 2);
+            done.WaitOne();
+            return response;
+        }//StartLuckyWheel
 
 
 

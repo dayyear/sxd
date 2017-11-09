@@ -84,7 +84,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/七星封魔AM.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/帮派转盘.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
                 client.Analyze(bytes.ToArray(), isReceive);
@@ -585,8 +585,6 @@ namespace 神仙道
                                 Logger.Log(string.Format("【吉星高照】逆天改运，[{0}]", Protocols.GetRollCakeName((byte)response[1])));
                             }
                         }//while
-
-
                     } //if (functionIds.Contains(54)) // 54:["RollCake","282","吉星高照"],
 
                     if (functionIds.Contains(13) && !string.IsNullOrWhiteSpace(factionName)) // 13:["Faction","165","帮派"],
@@ -632,6 +630,13 @@ namespace 神仙道
                             else
                                 Logger.Log("【帮派】吉星高照错误", ConsoleColor.Red);
                         }//while
+
+                        // 帮派转盘
+                        response = clientTown.OpenLuckyWheel();
+                        var _rosefinch_number = (int)response[2];
+                        Logger.Log(string.Format("【帮派】[青龙令{0}]", _rosefinch_number));
+                        for (var _i = 0; _i < _rosefinch_number; _i++)
+                            clientTown.StartLuckyWheel();
                     } //if (functionIds.Contains(13)) // 13:["Faction","165","帮派"],
 
                     if (functionIds.Contains(51)) // 51:["HeroMissionPractice","238","英雄扫荡"],
