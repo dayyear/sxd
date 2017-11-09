@@ -105,6 +105,8 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_SpaceFind_Base.open_space_find", "Callback");
             classDotMethodDictionary.Add("Mod_SpaceFind_Base.do_space_find", "Callback");
             classDotMethodDictionary.Add("Mod_SpaceFind_Base.get_space_find", "Callback");
+            classDotMethodDictionary.Add("Mod_Laba_Base.laba_info", "Callback");
+            classDotMethodDictionary.Add("Mod_Laba_Base.draw", "Callback");
             //ST
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "Callback");

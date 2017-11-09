@@ -1507,6 +1507,96 @@ namespace 神仙道
         }//GetSpaceFind
 
         // -------------------------------------------------------------------------------------------
+        // 五行天仪
+        // -------------------------------------------------------------------------------------------
+        // 打开五行天仪
+        /// <summary>
+        /// 打开五行天仪
+        /// Mod_Laba_Base.laba_info(172,0)
+        /// module:172, action:0
+        /// request:[]
+        /// response:[Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.ByteUtil, Utils.ByteUtil], Utils.IntUtil]
+        /// Line 29-46 in LabaData.as
+        ///     _loc_1.free_count = this._aryLabaInfo[0];
+        ///     _loc_1.coin_count = this._aryLabaInfo[1];
+        ///     _loc_1.ingot_count = this._aryLabaInfo[2];
+        ///     _loc_1.ten_ingot_count = this._aryLabaInfo[3];
+        ///     _loc_1.score = this._aryLabaInfo[4];
+        ///     if (this._aryLabaInfo.length > 5)
+        ///     {
+        ///         for each (_loc_3 in this._aryLabaInfo[5])
+        ///         {
+        ///             _loc_4 = {};
+        ///             _loc_4.scrap_id = _loc_3[0];
+        ///             _loc_4.number = _loc_3[1];
+        ///             _loc_2.push(_loc_4);
+        ///         }
+        ///     }
+        ///     _loc_1.scrapArr = _loc_2;
+        ///     _loc_1.proficiency = this._aryLabaInfo[6];
+        /// Example
+        ///     [1,9,0,0,380,[[10,2],[9,1],[7,1],[4,2],[5,2],[6,2],[2,2],[1,1],[8,4],[3,0]],410]
+        /// </summary>
+        public JArray LabaInfo()
+        {
+            done.Reset();
+            Send(null, 172, 0);
+            done.WaitOne();
+            return response;
+        }//LabaInfo
+
+        // 五行天仪-转一次
+        /// <summary>
+        /// 五行天仪-转一次
+        /// Mod_Laba_Base.draw(172,1)
+        /// module:172, action:1
+        /// request:[Utils.UByteUtil]
+        /// response:[Utils.UByteUtil, [[Utils.ByteUtil]], Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, [Utils.ByteUtil, Utils.ByteUtil], Utils.IntUtil]
+        /// Line 60-93 in LabaData.as
+        ///     _loc_1.result = this._aryDraw[0];
+        ///     if (this._aryDraw.length > 1)
+        ///     {
+        ///         for each (_loc_5 in this._aryDraw[1])
+        ///         {
+        ///             _loc_3 = [];
+        ///             for each (_loc_6 in _loc_5[0])
+        ///                 _loc_3.push(_loc_6[0]);
+        ///             _loc_2.push(_loc_3);
+        ///         }
+        ///     }
+        ///     _loc_1.newScrapArr = _loc_2;
+        ///     _loc_1.score = this._aryDraw[2];
+        ///     _loc_1.free_count = this._aryDraw[3];
+        ///     _loc_1.coin_count = this._aryDraw[4];
+        ///     _loc_1.ingot_count = this._aryDraw[5];
+        ///     _loc_1.ten_ingot_count = this._aryDraw[6];
+        ///     if (this._aryDraw.length > 7)
+        ///     {
+        ///         for each (_loc_7 in this._aryDraw[7])
+        ///         {
+        ///             _loc_8 = {};
+        ///             _loc_8.scrap_id = _loc_7[0];
+        ///             _loc_8.number = _loc_7[1];
+        ///             _loc_4.push(_loc_8);
+        ///         }
+        ///     }
+        ///     _loc_1.scrapArr = _loc_4;
+        ///     _loc_1.proficiency = this._aryDraw[8];
+        /// Line 9 in Mod_Laba_Base.as
+        ///     public static const SUCCESS:int = 2;
+        /// Example
+        ///     [2,[[[[9],[5],[9]]]],380,0,9,0,0,[[10,2],[9,2],[7,1],[4,2],[5,2],[6,2],[2,2],[1,1],[8,4],[3,0]],416]
+        /// </summary>
+        public JArray LabaDraw()
+        {
+            done.Reset();
+            Send(new JArray { 0 }, 172, 1);
+            done.WaitOne();
+            return response;
+        }//LabaDraw
+
+
+        // -------------------------------------------------------------------------------------------
         // 帮派
         // -------------------------------------------------------------------------------------------
         // 打开帮派祭神
