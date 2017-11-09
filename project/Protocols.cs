@@ -212,5 +212,16 @@ namespace 神仙道
             return protections[id];
         }
 
+        /// <summary>
+        /// 根据id获取吉星高照名称
+        /// </summary>
+        private static readonly Dictionary<byte, string> rollCakes =
+            new Dictionary<byte, string> { { 1, "平安" }, { 2, "一吉" }, { 3, "二吉" }, { 4, "大运" }, { 5, "三吉" }, { 6, "福禄寿" }, { 7, "大吉大利" }, { 8, "五子登科" }, { 9, "吉祥如意" }, { 10, "洪福齐天" }, { 11, "吉星高照" }, { 12, "大吉大利" }, { 13, "寿比南山" }, { 14, "财源滚滚" }, { 15, "平步青云" }, { 16, "万事如意" }, { 17, "招财进宝" } };
+
+        public static string GetRollCakeName(byte id)
+        {
+            return rollCakes[id];
+        }
+
     } //class
 } //namespace

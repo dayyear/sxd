@@ -99,6 +99,7 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_RollCake_Base.get_count", "Callback");
             classDotMethodDictionary.Add("Mod_RollCake_Base.roll", "Callback");
             classDotMethodDictionary.Add("Mod_RollCake_Base.reroll", "Callback");
+            classDotMethodDictionary.Add("Mod_RollCake_Base.get_award", "Callback");
             //ST
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "Callback");

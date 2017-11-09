@@ -555,7 +555,39 @@ namespace 神仙道
                         }
                     } //if (functionIds.Contains(126)) // 126:["Awake","460","觉醒"],
 
+                    if (functionIds.Contains(54)) // 54:["RollCake","282","吉星高照"],
+                    {
+                        while (true)
+                        {
+                            response = clientTown.RollCakeGetState();
+                            var _state = (byte)response[0];
+                            var _type = (byte)response[1];
+                            response = clientTown.RollCakeGetCount();
+                            var _count = (short)response[0];
+                            var _freeRobeNum = (byte)response[1];
+                            if (_type == 0)
+                            {
+                                // NO_RECORD
+                                if (_count == 0)
+                                    break;
+                                response = clientTown.RollCakeRoll();
+                                Logger.Log(string.Format("【吉星高照】掷骰子，[{0}]", Protocols.GetRollCakeName((byte)response[1])));
+                            }
+                            else if (_type == 11 || _freeRobeNum == 0)
+                            {
+                                response = clientTown.RollCakeGetAward();
+                                Logger.Log("【吉星高照】收获");
+                            }
+                            else
+                            {
+                                // HAVE_RECORD
+                                response = clientTown.RollCakeReRoll();
+                                Logger.Log(string.Format("【吉星高照】逆天改运，[{0}]", Protocols.GetRollCakeName((byte)response[1])));
+                            }
+                        }//while
 
+
+                    } //if (functionIds.Contains(54)) // 54:["RollCake","282","吉星高照"],
 
                     if (functionIds.Contains(13) && !string.IsNullOrWhiteSpace(factionName)) // 13:["Faction","165","帮派"],
                     {
@@ -575,7 +607,7 @@ namespace 神仙道
                                 Logger.Log("【帮派】给帮派神像上[白檀香]");
                             else
                                 Logger.Log("【帮派】上香错误", ConsoleColor.Red);
-                        }
+                        }//while
 
                         // 七星封魔
                         response = clientTown.SealSatanMemberList();
@@ -599,7 +631,7 @@ namespace 神仙道
                                 Logger.Log(string.Format("【帮派】吉星高照，获得[积分{0}]，今日[积分{1}]", response[2], response[3]));
                             else
                                 Logger.Log("【帮派】吉星高照错误", ConsoleColor.Red);
-                        }
+                        }//while
                     } //if (functionIds.Contains(13)) // 13:["Faction","165","帮派"],
 
                     if (functionIds.Contains(51)) // 51:["HeroMissionPractice","238","英雄扫荡"],

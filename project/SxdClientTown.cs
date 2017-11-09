@@ -1314,9 +1314,10 @@ namespace 神仙道
         /// module:38, action:5
         /// request:[]
         /// response:[Utils.UByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil]
-        /// Line 146-147 in RollCakeController.as
+        /// Line 146-147,152 in RollCakeController.as
         ///     _loc_2.msg = param1[0];
         ///     _loc_2.type = param1[1];
+        ///     _loc_2.rerollIngot = param1[2];
         /// Line 11-12 in Mod_RollCake_Base.as
         ///     public static const NO_RECORD:int = 4;
         ///     public static const HAVE_RECORD:int = 5;
@@ -1326,9 +1327,9 @@ namespace 神仙道
         /// Example
         ///     [4,0,0,0,0,0,0,0,0]
         ///     [5,2,10,1,4,5,6,6,5] // 一吉
-        ///     [5,2,10,5,4,6,5,1,5]
-        ///     [5,2,10,2,4,5,2,2,3]
-        ///     [5,2,10,3,4,3,5,6,5]
+        ///     [5,2,10,5,4,6,5,1,5] // 一吉
+        ///     [5,2,10,2,4,5,2,2,3] // 一吉
+        ///     [5,2,10,3,4,3,5,6,5] // 一吉
         ///     [5,3,10,5,4,3,4,6,2] // 二吉
         /// </summary>
         public JArray RollCakeGetState()
@@ -1347,8 +1348,8 @@ namespace 神仙道
         /// request:[]
         /// response:[Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil]
         /// Line 47-50 in .as
-        ///     _loc_2.count = _loc_1[0];
-        ///     _loc_2.freeRobeNum = _loc_1[1];
+        ///     _loc_2.count = _loc_1[0];       // 今日可投掷次数
+        ///     _loc_2.freeRobeNum = _loc_1[1]; // 免费改运次数
         ///     _loc_2.robeMaxNum = _loc_1[2];
         ///     _loc_2.rollCount = _loc_1[3];
         /// Example
@@ -1402,6 +1403,8 @@ namespace 神仙道
         ///     _loc_2.type = param1[1];
         ///     _loc_2.canFree = param1[2];
         ///     _loc_2.rerollIngot = param1[3];
+        /// Line 7 in Mod_RollCake_Base.as
+        ///     public static const SUCCESS:int = 0;
         /// Example
         ///     [0,2,8,10,5,4,6,5,1,5,5697]
         ///     [0,2,7,10,2,4,5,2,2,3,5697]
@@ -1415,6 +1418,27 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//RollCakeReRoll
+
+        //吉星高照-收获
+        /// <summary>
+        /// 吉星高照-收获
+        /// Mod_RollCake_Base.get_award(38,4)
+        /// module:38, action:4
+        /// request:[]
+        /// response:[Utils.UByteUtil]
+        /// Line 199 in RollCakeController.as
+        ///     _loc_2.msg = _loc_1[0];
+        /// Line 7 in Mod_RollCake_Base.as
+        ///     public static const SUCCESS:int = 0;
+        /// </summary>
+        public JArray RollCakeGetAward()
+        {
+            done.Reset();
+            Send(null, 38, 4);
+            done.WaitOne();
+            return response;
+        }//RollCakeGetAward
+
 
         // -------------------------------------------------------------------------------------------
         // 帮派
