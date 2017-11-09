@@ -84,7 +84,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/混沌虚空.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/五行天仪.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
                 client.Analyze(bytes.ToArray(), isReceive);
@@ -598,6 +598,16 @@ namespace 神仙道
                             clientTown.GetSpaceFind();
                         }
                     } //if (functionIds.Contains(96)) // 96:["ChaosVoid","404","混沌虚空"],
+
+                    if (functionIds.Contains(117)) // 117:["FiveElementsLaBa","449","五行天仪"],
+                    {
+                        response = clientTown.LabaInfo();
+                        var _free_count = (byte)response[0];
+                        var _coin_count = (byte)response[1];
+                        Logger.Log(string.Format("【五行天仪】今日可免费转动[{0}]次，铜钱转动[{1}]次", _free_count, _coin_count));
+                        for (var _i = 0; _i < _free_count + _coin_count; _i++)
+                            clientTown.LabaDraw();
+                    } //if (functionIds.Contains(117)) // 117:["FiveElementsLaBa","449","五行天仪"],
 
                     if (functionIds.Contains(13) && !string.IsNullOrWhiteSpace(factionName)) // 13:["Faction","165","帮派"],
                     {
