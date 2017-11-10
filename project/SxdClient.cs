@@ -135,11 +135,10 @@ namespace 神仙道
 
                 if (isReceive)
                 {
-                    //if (!methodDictionary.ContainsKey(className_method))
-                    //    return;
                     if (classDotMethodDictionary.ContainsKey(classNameDotMethod))
                         GetType().GetMethod(classDotMethodDictionary[classNameDotMethod], BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, new object[] { data });
-
+                    else
+                        return;
                     //Logger.Log(string.Format("package: {0}", Common.BytesToString(package)), ConsoleColor.Yellow, console: false);
                     Logger.Log(string.Format("Receive method: {0}({1},{2})", classNameDotMethod, module, action), ConsoleColor.Cyan, console: false);
                     Logger.Log(string.Format("Receive data: {0}", data.ToString(Formatting.None)), ConsoleColor.Cyan, console: false);

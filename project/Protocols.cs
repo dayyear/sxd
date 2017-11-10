@@ -133,7 +133,7 @@ namespace 神仙道
         /// </summary>
         public static Tuple<string, string, JArray, JArray> GetPattern(short module, short action)
         {
-            var protocols = XElement.Load("protocols/protocolsR162.xml");
+            var protocols = XElement.Load("protocols/protocolsR164.xml");
             var actions = (from _action in protocols.Elements("module").Elements("action")
                            let _module = _action.Parent
                            where _module.Attribute("id").Value == module.ToString() && _action.Attribute("id").Value == action.ToString()
@@ -155,7 +155,7 @@ namespace 神仙道
         /// </summary>
         public static string GetTownName(int id)
         {
-            var match = Regex.Match(File.ReadAllText("protocols/DramaXMLLang.as"), string.Format("town{0}:String = \"(.*?)\";", id));
+            var match = Regex.Match(File.ReadAllText("protocols/DramaXMLLang_R164.as"), string.Format("town{0}:String = \"(.*?)\";", id));
             if (!match.Success)
                 throw new Exception(string.Format("Not find town with id: {0}", id));
             return match.Groups[1].Value;
@@ -166,7 +166,7 @@ namespace 神仙道
         /// </summary>
         public static IEnumerable<int> GetTownIds()
         {
-            return Regex.Matches(File.ReadAllText("protocols/DramaXMLLang.as"), @"town(\d*):String").Cast<Match>()
+            return Regex.Matches(File.ReadAllText("protocols/DramaXMLLang_R164.as"), @"town(\d*):String").Cast<Match>()
                 .Select(match => int.Parse(match.Groups[1].Value)).ToList();
         } //GetTownIds
 
@@ -175,7 +175,7 @@ namespace 神仙道
         /// </summary>
         public static string GetFunctionName(int id)
         {
-            var match = Regex.Match(File.ReadAllText("protocols/FunctionTypeData_R162.as"), string.Format(@"{0}:\[""(.*?)"",""(.*?)"",""(.*?)""\]", id));
+            var match = Regex.Match(File.ReadAllText("protocols/FunctionTypeData_R164.as"), string.Format(@"{0}:\[""(.*?)"",""(.*?)"",""(.*?)""\]", id));
             if (!match.Success)
                 throw new Exception(string.Format("Not find function with id: {0}", id));
             return match.Groups[3].Value;

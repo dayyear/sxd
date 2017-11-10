@@ -65,9 +65,15 @@
     <Compile Include="SxdClientST.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="protocols\FunctionTypeData_R164.as">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="protocols\protocolsR162.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
+    </None>
+    <None Include="protocols\protocolsR164.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="replacement.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -81,7 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="protocols\DramaXMLLang.as">
+    <None Include="protocols\DramaXMLLang_R164.as">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="protocols\FunctionTypeData_R162.as">

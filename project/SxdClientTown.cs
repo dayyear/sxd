@@ -647,7 +647,13 @@ namespace 神仙道
         /// <summary>
         /// Mod_Farm_Base.harvest(13,6)
         /// module:13, action:6
-        /// request:[Utils.IntUtil]
+        /// /*R162: request:[Utils.IntUtil]*/
+        /// request:[Utils.IntUtil, Utils.UByteUtil]
+        /// Line 883 in FarmNewView.as
+        ///     this._data.call(Mod_Farm_Base.harvest, callBack, [intfarmlandId, isDouble ? (Mod_Farm_Base.IS_DOUBLE) : (Mod_Farm_Base.NO_DOUBLE)]);
+        /// Line 21-22 in Mod_Farm_Base.as
+        ///     public static const IS_DOUBLE:int = 14;
+        ///     public static const NO_DOUBLE:int = 15;
         /// response:[Utils.UByteUtil, Utils.StringUtil, Utils.StringUtil, Utils.LongUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil]
         /// Line 463 in FarmData.as:
         ///     oObject.list(param1, this._objHarvest, [0."result", 1."role_name", 2."herbs_name", 3."experience", 4."level", 5."coin", 6."xianling", 7."farmland_time", 8."herbs_type"]);
@@ -658,7 +664,7 @@ namespace 神仙道
         public JArray Harvest(int fieldId)
         {
             done.Reset();
-            Send(new JArray { fieldId }, 13, 6);
+            Send(new JArray { fieldId, 15 }, 13, 6);
             done.WaitOne();
             return response;
         }//Harvest
@@ -840,7 +846,9 @@ namespace 神仙道
             }
         }//NotifyCallback
 
+        // -------------------------------------------------------------------------------------------
         // 竞技场
+        // -------------------------------------------------------------------------------------------
         /// <summary>
         /// 打开竞技场
         /// Mod_SuperSport_Base.open_super_sport(28,0)
@@ -926,7 +934,9 @@ namespace 神仙道
             return response;
         }//StartChallenge
 
+        // -------------------------------------------------------------------------------------------
         // 小助手
+        // -------------------------------------------------------------------------------------------
         /// <summary>
         /// Mod_Assistant_Base.info(52,0)
         /// module:52, action:0
@@ -967,7 +977,9 @@ namespace 神仙道
             return response;
         }//AssistantGetAward
 
+        // -------------------------------------------------------------------------------------------
         // 钓鱼
+        // -------------------------------------------------------------------------------------------
         /// <summary>
         /// Mod_Fish_Base.get_player_fishhook(217,0)
         /// module:217, action:0
@@ -1002,7 +1014,9 @@ namespace 神仙道
             return response;
         }//DoFishing
 
+        // -------------------------------------------------------------------------------------------
         // 仙旅奇缘
+        // -------------------------------------------------------------------------------------------
         /// <summary>
         /// Mod_TravelEvent_Base.get_event_and_answer(21,1)
         /// module:21, action:1
@@ -1594,7 +1608,6 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//LabaDraw
-
 
         // -------------------------------------------------------------------------------------------
         // 帮派
