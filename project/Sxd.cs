@@ -84,7 +84,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/farm.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/好友送花.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
                 client.Analyze(bytes.ToArray(), isReceive);
@@ -116,9 +116,11 @@ namespace 神仙道
                     {
                         case "LOGIN":
                             GenerateUserIni(false);
+                            Environment.Exit(0);
                             continue;
                         case "RELOGIN":
                             GenerateUserIni(true);
+                            Environment.Exit(0);
                             continue;
                         case "PROTOCOL":
                             CollectProtocols();
@@ -611,6 +613,22 @@ namespace 神仙道
                         for (var _i = 0; _i < _free_count + _coin_count; _i++)
                             clientTown.LabaDraw();
                     } //if (functionIds.Contains(117)) // 117:["FiveElementsLaBa","449","五行天仪"],
+
+                    if (functionIds.Contains(11) && functionIds.Contains(45)) // 11:["Friend","155","好友"],45:["SendFlower","235","送花"],
+                    {
+                        response = clientTown.GetFriendList();
+                        foreach (var item in (JArray)response[0])
+                        {
+                            var _id = (int)item[0];
+                            var _name = (string)item[1];
+                            // is_can_send, YES:int = 3;
+                            if ((byte)clientTown.PlayerSendFlowerInfo(_id)[8] == 3)
+                                // SUCCESS:int = 0;
+                                if ((byte)clientTown.SendPlayerFlower(_id)[0] == 0)
+                                    Logger.Log(string.Format("【送花】给好友[{0}]赠送一朵鲜花", _name));
+                            break;
+                        }
+                    } //if (functionIds.Contains(11) && functionIds.Contains(45)) // 11:["Friend","155","好友"],45:["SendFlower","235","送花"],
 
                     if (functionIds.Contains(13) && !string.IsNullOrWhiteSpace(factionName)) // 13:["Faction","165","帮派"],
                     {

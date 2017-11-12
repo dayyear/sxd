@@ -1610,6 +1610,94 @@ namespace 神仙道
         }//LabaDraw
 
         // -------------------------------------------------------------------------------------------
+        // 好友
+        // -------------------------------------------------------------------------------------------
+        // 好友列表
+        /// <summary>
+        /// 好友列表
+        /// Mod_Friend_Base.get_friend_list(9,5)
+        /// module:9, action:5
+        /// request:[Utils.UByteUtil]
+        /// Line 21 in Mod_Friend_Base.as
+        ///     public static const FRIEND:int = 14;
+        /// Example
+        ///     [14]
+        /// response:[[Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.UByteUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil]]
+        /// Line 194,195,201,203,220,228,229,231,254-256 in FriendController.as
+        ///     _loc_4.id = param1[_loc_3][0];
+        ///     _loc_4.msgNum = param1[_loc_3][2];
+        ///     _loc_4.name = param1[_loc_3][1];
+        ///     if (param1[_loc_3][3] == Mod_Friend_Base.ONLINE)
+        ///     _loc_4.missionId = param1[_loc_3][4];
+        ///     _loc_4.isGm = param1[5] == 3;
+        ///     _loc_4.isStart = param1[6] == 1;
+        ///     _loc_4.isMate = param1[_loc_3][10] == 1;
+        ///     _loc_4.vipLevel = param1[_loc_3][7];
+        ///     _loc_4.sex = RoleType.getRoleGender(param1[_loc_3][8]);
+        ///     _loc_4.isFavourite = param1[_loc_3][9] == 1;
+        /// Example
+        ///     [[[288299,"度日如年.s1",0,18,1585,0,0,0,104,0,0],[355527,"庄恭春.s1",0,18,959,0,0,0,5,1,0],[355553,"甄斐斐.s1",0,18,843,0,0,0,104,0,0],[355546,"郎森三.s1",0,18,790,0,0,0,104,0,0],[355548,"和謇暴.s1",0,18,779,0,0,0,3,0,0],[355549,"董乘六.s1",0,18,832,0,0,0,107,0,0],[355547,"高千字.s1",0,18,784,0,0,0,104,0,0]]]
+        /// </summary>
+        public JArray GetFriendList()
+        {
+            done.Reset();
+            Send(new JArray { 14 }, 9, 5);
+            done.WaitOne();
+            return response;
+        }//GetFriendList
+
+        // -------------------------------------------------------------------------------------------
+        // 送花
+        // -------------------------------------------------------------------------------------------
+        // 打开送花界面
+        /// <summary>
+        /// 打开送花界面
+        /// Mod_SendFlower_Base.player_send_flower_info(31,0)
+        /// module:31, action:0
+        /// request:[Utils.IntUtil]
+        /// Example
+        ///     [288299]
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil, [Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]]
+        /// Line 86 in SendFlowerData.as
+        ///     oObject.list(param1, this._objSendFlowerInfo, [0."result", 1."player_id", 2."nickname", 3."role_id", 4."max_player_id", 5."max_nickname", 6."max_flower_count", 7."total_flower_count", 8."is_can_send"]);
+        /// Line 7,10 in Mod_SendFlower_Base.as
+        ///     public static const SUCCESS:int = 0;
+        ///     public static const YES:int = 3;
+        /// Example
+        ///     [0,288299,"度日如年.s1",104,355527,"庄恭春.s1",185,1537,3,[[355368,"绝色倾城.s1",102,1,1508580324],[302649,"Nina.s1",102,1,1507288193],[302649,"Nina.s1",102,1,1507898289],[302649,"Nina.s1",102,1,1504796445],[302649,"Nina.s1",102,1,1510238398],[302649,"Nina.s1",102,1,1509709692],[302649,"Nina.s1",102,1,1507134640],[302649,"Nina.s1",102,1,1504266634],[302649,"Nina.s1",102,1,1510456629],[302649,"Nina.s1",102,1,1508941521],[302649,"Nina.s1",102,1,1508767889],[302649,"Nina.s1",102,1,1503588659],[302649,"Nina.s1",102,1,1509623913],[302649,"Nina.s1",102,1,1509893209],[302649,"Nina.s1",102,1,1508857031],[302649,"Nina.s1",102,1,1510066521],[302649,"Nina.s1",102,1,1503764593],[302649,"Nina.s1",102,1,1503924178],[302649,"Nina.s1",102,1,1505658803],[302649,"Nina.s1",102,1,1508683191]]]
+        /// </summary>
+        public JArray PlayerSendFlowerInfo(int playerId)
+        {
+            done.Reset();
+            Send(new JArray { playerId }, 31, 0);
+            done.WaitOne();
+            return response;
+        }//PlayerSendFlowerInfo
+
+
+        // 送花
+        /// <summary>
+        /// 送花
+        /// Mod_SendFlower_Base.send_player_flower(31,1)
+        /// module:31, action:1
+        /// request:[Utils.IntUtil, Utils.IntUtil]
+        /// Example
+        ///     [288299,1]
+        /// response:[Utils.UByteUtil]
+        /// Line 7 Mod_SendFlower_Base.as
+        ///     public static const SUCCESS:int = 0;
+        /// Example
+        ///     [0]
+        /// </summary>
+        public JArray SendPlayerFlower(int playerId)
+        {
+            done.Reset();
+            Send(new JArray { playerId, 1 }, 31, 1);
+            done.WaitOne();
+            return response;
+        }//SendPlayerFlower
+
+        // -------------------------------------------------------------------------------------------
         // 帮派
         // -------------------------------------------------------------------------------------------
         // 打开帮派祭神

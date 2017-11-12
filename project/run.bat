@@ -1,3 +1,4 @@
+神仙道 login
 start 神仙道 0
 ping 1.1.1.1 -n 1 -w 3000 > nul
 start 神仙道 1
