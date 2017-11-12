@@ -36,6 +36,7 @@ namespace anla
             comboBox1.ValueMember = "Key";
 
             richTextBox1.SelectionHangingIndent = 90;
+            //richTextBox1.SelectionIndent = 90;
         }
 
         private void buttonLogin_Click(object sender, EventArgs e)

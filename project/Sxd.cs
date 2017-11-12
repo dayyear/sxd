@@ -45,11 +45,10 @@ namespace 神仙道
             protocols.Save("protocols/protocolsR164.xml");
         } //CollectProtocols
 
-        private static void GenerateUserIni()
+        private static void GenerateUserIni(bool reLogin)
         {
             Directory.GetFiles("./", "0*.jpg").ToList().ForEach(File.Delete);
 
-            var web = new SxdWeb();
             var user1 = File.ReadAllText(ConfigurationManager.AppSettings["userPath"], Encoding.GetEncoding("GBK"));
             var pattern1 = string.Format(File.ReadAllText("pattern.txt"), "(.*)", "username=(.*)\r\npassword=(.*)\r\n");
             var matches = Regex.Matches(user1, pattern1);
@@ -62,7 +61,8 @@ namespace 神仙道
                 var username = match.Groups[9].Value;
                 var password = match.Groups[10].Value;
                 var server = url.Substring(7, url.IndexOf('.') - 7);
-                var tuple = web.LoginService(username, password, server);
+                var web = new SxdWeb(string.Format("cookies/{0}.{1}", username, server));
+                var tuple = web.LoginService(username, password, server, reLogin);
                 var code = tuple.Item1;
                 var time = tuple.Item2;
                 var hash = tuple.Item3;
@@ -114,8 +114,11 @@ namespace 神仙道
                     Logger.Log(readLine, showTime: false);
                     switch (readLine.ToUpper())
                     {
-                        case "USER":
-                            GenerateUserIni();
+                        case "LOGIN":
+                            GenerateUserIni(false);
+                            continue;
+                        case "RELOGIN":
+                            GenerateUserIni(true);
                             continue;
                         case "PROTOCOL":
                             CollectProtocols();

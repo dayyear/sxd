@@ -647,8 +647,8 @@ namespace 神仙道
         /// <summary>
         /// Mod_Farm_Base.harvest(13,6)
         /// module:13, action:6
-        /// /*R162: request:[Utils.IntUtil]*/
-        /// request:[Utils.IntUtil, Utils.UByteUtil]
+        /// R162: request:[Utils.IntUtil]
+        /// R164: request:[Utils.IntUtil, Utils.UByteUtil]
         /// Line 883 in FarmNewView.as
         ///     this._data.call(Mod_Farm_Base.harvest, callBack, [intfarmlandId, isDouble ? (Mod_Farm_Base.IS_DOUBLE) : (Mod_Farm_Base.NO_DOUBLE)]);
         /// Line 21-22 in Mod_Farm_Base.as

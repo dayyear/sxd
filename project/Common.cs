@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
 namespace 神仙道
@@ -49,6 +50,43 @@ namespace 神仙道
         {
             return Convert.ToInt32((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds);
         }//Stamp32
+
+        public static void WriteCookiesToDisk(string file, CookieContainer cookieJar)
+        {
+            using (var stream = File.Create(file))
+            {
+                try
+                {
+                    //Console.Out.Write("Writing cookies to disk... ");
+                    var formatter = new BinaryFormatter();
+                    formatter.Serialize(stream, cookieJar);
+                    //Console.Out.WriteLine("Done.");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Problem writing cookies to disk: " + e.GetType());
+                }
+            }
+        }//WriteCookiesToDisk
+
+        public static CookieContainer ReadCookiesFromDisk(string file)
+        {
+            try
+            {
+                using (Stream stream = File.Open(file, FileMode.Open))
+                {
+                    //Console.Out.Write("Reading cookies from disk... ");
+                    var formatter = new BinaryFormatter();
+                    //Console.Out.WriteLine("Done.");
+                    return (CookieContainer)formatter.Deserialize(stream);
+                }
+            }
+            catch (Exception e)
+            {
+                //Console.WriteLine("Problem reading cookies from disk: " + e.GetType());
+                return new CookieContainer();
+            }
+        }//ReadCookiesFromDisk
 
     }
 }
