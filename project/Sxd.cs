@@ -84,7 +84,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/好友送花.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/已猎命.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var bytes = from Match match in Regex.Matches(item, "([0-9A-F]{2}) ") select Convert.ToByte(match.Groups[1].Value, 16);
                 client.Analyze(bytes.ToArray(), isReceive);
@@ -365,82 +365,83 @@ namespace 神仙道
                     {
                         // 获取仙界状态
                         response = clientTown.GetStatus();
-                        Logger.Log(string.Format("【仙界】入口状态：{0}", (int)response[0] == 0 ? "开启" : response[0]));
-
-                        // 获取仙界登录信息
-                        response = clientTown.GetLoginInfo();
-                        var serverHostST = (string)response[0];
-                        var portST = (int)response[1];
-                        var serverNameST = (string)response[2];
-                        var serverTimeST = (int)response[3];
-                        var passCodeST = (string)response[4];
-                        Logger.Log(string.Format("【仙界】服务器地址：{0}:{1}，仙界服务器名称：{2}，仙界服务器时间：{3}，passCode：{4}", serverHostST, portST, serverNameST, TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds(serverTimeST).ToString("yyyy-MM-dd HH:mm:ss"), passCodeST));
-
-                        // 仙界登录
-                        var playerIdST = clientST.Login(serverHostST, portST, serverNameST, playerId, nickName, serverTimeST, passCodeST);
-                        Logger.Log(string.Format("【仙界】登录成功, 仙界玩家[ID{0}]", playerIdST), ConsoleColor.Green);
-
-                        if (functionIds.Contains(90)) // 90:["ServerTakeBible","247","跨服取经"],
+                        Logger.Log(string.Format("【仙界】入口状态：{0}，代码{1}", (int)response[0] == 0 ? "开启" : "关闭", response[0]));
+                        if ((int)response[0] == 0)
                         {
-                            // 仇人
-                            response = clientST.GetRecentRobPlayer();
-                            var _enemyIds = response[0].Select(x => (int)x[0]).ToList();
-                            //Logger.Log(string.Format("获取仇人：{0}", string.Join(",", _enemyIds)));
+                            // 获取仙界登录信息
+                            response = clientTown.GetLoginInfo();
+                            var serverHostST = (string)response[0];
+                            var portST = (int)response[1];
+                            var serverNameST = (string)response[2];
+                            var serverTimeST = (int)response[3];
+                            var passCodeST = (string)response[4];
+                            Logger.Log(string.Format("【仙界】服务器地址：{0}:{1}，仙界服务器名称：{2}，仙界服务器时间：{3}，passCode：{4}", serverHostST, portST, serverNameST, TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)).AddSeconds(serverTimeST).ToString("yyyy-MM-dd HH:mm:ss"), passCodeST));
 
-                            // 打开护送取经总界面
-                            response = clientST.OpenTakeBible();
-                            var _players = (JArray)response[0];
-                            Logger.Log(string.Format("【跨服取经】打开护送取经界面，获取[{0}]个取经玩家，其中有[{1}]个仇人", _players.Count, string.Join(",", _players
-                                .Where(x => _enemyIds.Contains((int)x[0]))
-                                .Count() //.Select(x => string.Format("{0}({1})", Protocols.GetProtectionName((byte)x[1]), x[0]))
-                                )));
-                            Logger.Log(string.Format("【跨服取经】今日还可拦截[{0}]次，可取经[{1}]次，帮助好友护送[{2}]次", response[2], response[4], response[3]));
+                            // 仙界登录
+                            var playerIdST = clientST.Login(serverHostST, portST, serverNameST, playerId, nickName, serverTimeST, passCodeST);
+                            Logger.Log(string.Format("【仙界】登录成功, 仙界玩家[ID{0}]", playerIdST), ConsoleColor.Green);
 
-                            // 打开护送取经面板，刷新使者，开始护送
-                            while (true)
+                            if (functionIds.Contains(90)) // 90:["ServerTakeBible","247","跨服取经"],
                             {
-                                response = clientST.GetTakeBibleInfo();
-                                var _takeBibleTimes = (byte)response[2];
-                                var _totalTakeBibleTimes = (byte)response[3];
-                                var _takeBibleStatus = (byte)response[5];
-                                var _canProtection = (byte)response[6];
-                                Logger.Log(string.Format("【跨服取经】今日可取经共[{0}]次，已经取经[{1}]次，当前取经使者：[{2},{3}]", _totalTakeBibleTimes, _takeBibleTimes, Protocols.GetProtectionName(_canProtection), _takeBibleStatus == 0 ? "未开始" : "已开始"));
+                                // 仇人
+                                response = clientST.GetRecentRobPlayer();
+                                var _enemyIds = response[0].Select(x => (int)x[0]).ToList();
+                                //Logger.Log(string.Format("获取仇人：{0}", string.Join(",", _enemyIds)));
 
-                                if (_takeBibleTimes >= _totalTakeBibleTimes)
+                                // 打开护送取经总界面
+                                response = clientST.OpenTakeBible();
+                                var _players = (JArray)response[0];
+                                Logger.Log(string.Format("【跨服取经】打开护送取经界面，获取[{0}]个取经玩家，其中有[{1}]个仇人", _players.Count, string.Join(",", _players
+                                    .Where(x => _enemyIds.Contains((int)x[0]))
+                                    .Count() //.Select(x => string.Format("{0}({1})", Protocols.GetProtectionName((byte)x[1]), x[0]))
+                                    )));
+                                Logger.Log(string.Format("【跨服取经】今日还可拦截[{0}]次，可取经[{1}]次，帮助好友护送[{2}]次", response[2], response[4], response[3]));
+
+                                // 打开护送取经面板，刷新使者，开始护送
+                                while (true)
+                                {
+                                    response = clientST.GetTakeBibleInfo();
+                                    var _takeBibleTimes = (byte)response[2];
+                                    var _totalTakeBibleTimes = (byte)response[3];
+                                    var _takeBibleStatus = (byte)response[5];
+                                    var _canProtection = (byte)response[6];
+                                    Logger.Log(string.Format("【跨服取经】今日可取经共[{0}]次，已经取经[{1}]次，当前取经使者：[{2},{3}]", _totalTakeBibleTimes, _takeBibleTimes, Protocols.GetProtectionName(_canProtection), _takeBibleStatus == 0 ? "未开始" : "已开始"));
+
+                                    if (_takeBibleTimes >= _totalTakeBibleTimes)
+                                        break;
+                                    if (_canProtection == 0)
+                                    {
+                                        Logger.Log("【跨服取经】刷新使者");
+                                        clientST.Refresh();
+                                        continue;
+                                    }
+                                    if (_takeBibleStatus == 0)
+                                    {
+                                        Logger.Log("【跨服取经】开始取经");
+                                        clientST.StartTakeBible();
+                                        continue;
+                                    }
                                     break;
-                                if (_canProtection == 0)
-                                {
-                                    Logger.Log("【跨服取经】刷新使者");
-                                    clientST.Refresh();
-                                    continue;
-                                }
-                                if (_takeBibleStatus == 0)
-                                {
-                                    Logger.Log("【跨服取经】开始取经");
-                                    clientST.StartTakeBible();
-                                    continue;
-                                }
-                                break;
-                            } //while(true)
-                        } //if (functionIds.Contains(90)) // 90:["ServerTakeBible","247","跨服取经"],
+                                } //while(true)
+                            } //if (functionIds.Contains(90)) // 90:["ServerTakeBible","247","跨服取经"],
 
-                        if (functionIds.Contains(131)) // 131:["MarryHome","242","家园"],
-                        {
-                            response = clientST.BatchGetFurnitureEffect();
-                            if (response[0].Any())
-                                Logger.Log("【家园】每日领取家园奖励");
-                        } //if (functionIds.Contains(131)) // 131:["MarryHome","242","家园"],
+                            if (functionIds.Contains(131)) // 131:["MarryHome","242","家园"],
+                            {
+                                response = clientST.BatchGetFurnitureEffect();
+                                if (response[0].Any())
+                                    Logger.Log("【家园】每日领取家园奖励");
+                            } //if (functionIds.Contains(131)) // 131:["MarryHome","242","家园"],
 
-                        if (functionIds.Contains(132)) // 132:["StArena","300","仙界竞技场"],
-                        {
+                            if (functionIds.Contains(132)) // 132:["StArena","300","仙界竞技场"],
+                            {
 
-                        } //if (functionIds.Contains(132)) // 132:["StArena","300","仙界竞技场"],
+                            } //if (functionIds.Contains(132)) // 132:["StArena","300","仙界竞技场"],
 
-                        if (functionIds.Contains(93)) // 93:["st_super_sport","206","仙界竞技场"]，实际上是神魔竞技
-                        {
+                            if (functionIds.Contains(93)) // 93:["st_super_sport","206","仙界竞技场"]，实际上是神魔竞技
+                            {
 
-                        } //if (functionIds.Contains(93)) // 93:["st_super_sport","206","仙界竞技场"],，实际上是神魔竞技
-
+                            } //if (functionIds.Contains(93)) // 93:["st_super_sport","206","仙界竞技场"],，实际上是神魔竞技
+                        }//if ((int)response[0] == 0)
                     } //if (functionIds.Contains(91)) // 91:["SuperTown","205","仙界"],
 
                     if (functionIds.Contains(68)) // 68:["BeelzebubTrials","85","魔王试炼"],
@@ -629,6 +630,27 @@ namespace 神仙道
                             break;
                         }
                     } //if (functionIds.Contains(11) && functionIds.Contains(45)) // 11:["Friend","155","好友"],45:["SendFlower","235","送花"],
+
+                    if (functionIds.Contains(24)) // 24:["Fate","180","猎命"],
+                    {
+                        while (true)
+                        {
+                            response = clientTown.GetFateNpc();
+                            var _freeAppointTimes = (byte)response[0];
+                            Logger.Log(string.Format("【猎命】今日可免费[{0}]次猎命", _freeAppointTimes));
+
+                            if (_freeAppointTimes <= 0)
+                                break;
+
+                            // [[3,0,0,0,0],[1,1,0,0,0],[2,1,0,0,0],[5,0,0,0,0],[4,0,0,0,0]]
+                            var _fateNpcs = (JArray)response[1];
+                            var _fateNpcIdOptimization = _fateNpcs.Where(x => (byte)x[1] == 1).Select(x => (byte)x[0]).Max();
+                            response = clientTown.AppointFateNpc(_fateNpcIdOptimization);
+                            // SUCCESS:int = 0;
+                            if ((byte)response[0] == 0)
+                                Logger.Log(string.Format("【猎命】猎命[{0}]成功，获得命格[{1}]，遇见[{2}]", Protocols.GetFateNPCName(_fateNpcIdOptimization), response[1], Protocols.GetFateNPCName((byte)response[2])));
+                        }
+                    } //if (functionIds.Contains(24)) // 24:["Fate","180","猎命"],
 
                     if (functionIds.Contains(13) && !string.IsNullOrWhiteSpace(factionName)) // 13:["Faction","165","帮派"],
                     {

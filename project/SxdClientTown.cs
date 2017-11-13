@@ -1674,7 +1674,6 @@ namespace 神仙道
             return response;
         }//PlayerSendFlowerInfo
 
-
         // 送花
         /// <summary>
         /// 送花
@@ -1696,6 +1695,108 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//SendPlayerFlower
+
+        // -------------------------------------------------------------------------------------------
+        // 猎命
+        // -------------------------------------------------------------------------------------------
+        // 猎命NPC
+        /// <summary>
+        /// 猎命NPC
+        /// Mod_Fate_Base.get_fate_npc(22,0)
+        /// module:22, action:0
+        /// request:[]
+        /// response:[Utils.ByteUtil, [Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.IntUtil]
+        /// Line 33,34,40-86 in FateController.as
+        ///     _loc_2.freeAppointTimes = _loc_1[0];
+        ///     var _loc_3:* = this.renderFateNpc(_loc_1[1], _loc_1[2]);
+        ///     private function renderFateNpc(param1:Array, param2:int) : Array
+        ///     {
+        ///         var _loc_8:* = null;
+        ///         var _loc_3:* = [];
+        ///         var _loc_4:* = 0;
+        ///         var _loc_5:* = 0;
+        ///         var _loc_6:* = param1.length;
+        ///         var _loc_7:* = 0;
+        ///         while (_loc_7 《 _loc_6)
+        ///         {
+        ///             _loc_8 = {};
+        ///             _loc_8.fateNpcId = param1[_loc_7][0];
+        ///             _loc_8.status = param1[_loc_7][1];
+        ///             _loc_8.url = URI.getRoleIconUrl("Npc" + _loc_8.fateNpcId);
+        ///             _loc_8.canBuyTimer = param1[_loc_7][2];
+        ///             _loc_8.maxBuyTimes = param1[_loc_7][3];
+        ///             _loc_8.buyPrice = param1[_loc_7][4];
+        ///             if (_loc_8.status == 1)
+        ///             {
+        ///                 if (_loc_4 《= _loc_8.fateNpcId)
+        ///                 {
+        ///                     _loc_4 = _loc_8.fateNpcId;
+        ///                     if (_loc_3.length > 0)
+        ///                     {
+        ///                         _loc_3[_loc_5].isShowChat = false;
+        ///                     }
+        ///                     _loc_5 = _loc_7;
+        ///                     _loc_8.isShowChat = true;
+        ///                 }
+        ///             }
+        ///             if (_loc_8.fateNpcId == 4)
+        ///             {
+        ///                 _loc_8.isBuy = true;
+        ///             }
+        ///             else
+        ///             {
+        ///                 _loc_8.isBuy = false;
+        ///             }
+        ///             _loc_8.isVip5 = VIPType.check(VIPType.Level1);
+        ///             _loc_8.npcName = FateType.getNPCName(_loc_8.fateNpcId);
+        ///             _loc_8.coins = int(FateType.getNPCFee(_loc_8.fateNpcId) * param2 / 100);
+        ///             _loc_3.push(_loc_8);
+        ///             _loc_7++;
+        ///         }
+        ///         return _loc_3;
+        ///     }// end function
+        /// Example
+        ///     [0,[[3,0,0,0,0],[1,1,0,0,0],[2,1,0,0,0],[5,0,0,0,0],[4,0,0,0,0]],100] // 0:免费猎命次数, 周一仙和小仙女亮灯
+        /// </summary>
+        public JArray GetFateNpc()
+        {
+            done.Reset();
+            Send(null, 22, 0);
+            done.WaitOne();
+            return response;
+        }//GetFateNpc
+
+        // 猎命
+        /// <summary>
+        /// 猎命
+        /// Mod_Fate_Base.appoint_fate_npc(22,9)
+        /// module:22, action:9
+        /// request:[Utils.ByteUtil]
+        /// Line 317 in LodgeView.as
+        ///     this.appoint_fate_npc(_loc_1.fateNpcId);
+        /// Line 9 in FateType.as
+        ///     private static const FateNPCs:Object = {1:["周一仙", 8000, 100, "升级周一仙后，命格等级上限提升至14级。"], 2:["小仙女", 10000, 300, "升级小仙女后，命格等级上限提升至16级。"], 3:["左慈", 20000, 500, "升级左慈后，命格等级上限提升至18级。"], 4:["张道陵", 40000, 800, "升级张道陵后，命格等级上限提升至20级。"], 5:["姜子牙", 60000, 1000, "升级姜子牙后，增加2个命格槽数，可通过姜子牙
+        /// Example
+        ///     [1] // 周一仙
+        /// response:[Utils.UByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil]
+        /// Line 473-476 in 
+        ///     _loc_2.msg = _loc_1[0];
+        ///     _loc_2.fateId = _loc_1[1];
+        ///     _loc_2.fateNpcId = _loc_1[2];
+        ///     _loc_2.tempFateId = _loc_1[3];
+        /// Line 7 in 
+        ///     public static const SUCCESS:int = 0;
+        /// Example
+        ///     [0,9,2,179443692] // 0:SUCCESS, 9:千年未竟, 2:小仙女, 179443692:tempFateId
+        /// </summary>
+        public JArray AppointFateNpc(byte fateNpcId)
+        {
+            done.Reset();
+            Send(new JArray { fateNpcId }, 22, 9);
+            done.WaitOne();
+            return response;
+        }//AppointFateNpc
+
 
         // -------------------------------------------------------------------------------------------
         // 帮派

@@ -223,5 +223,18 @@ namespace 神仙道
             return rollCakes[id];
         }
 
+        /// <summary>
+        /// 根据id获取猎命NPC名称
+        /// </summary>
+        private static readonly Dictionary<byte, string> fateNPCs =
+            new Dictionary<byte, string> { { 1, "周一仙" }, { 2, "小仙女" }, { 3, "左慈" }, { 4, "张道陵" }, { 5, "姜子牙" } };
+
+        public static string GetFateNPCName(byte id)
+        {
+            return fateNPCs[id];
+        }
+
+
+
     } //class
 } //namespace

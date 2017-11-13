@@ -110,6 +110,8 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_Friend_Base.get_friend_list", "Callback");
             classDotMethodDictionary.Add("Mod_SendFlower_Base.player_send_flower_info", "Callback");
             classDotMethodDictionary.Add("Mod_SendFlower_Base.send_player_flower", "Callback");
+            classDotMethodDictionary.Add("Mod_Fate_Base.get_fate_npc", "Callback");
+            classDotMethodDictionary.Add("Mod_Fate_Base.appoint_fate_npc", "Callback");
             //ST
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "Callback");
@@ -140,8 +142,8 @@ namespace 神仙道
                 {
                     if (classDotMethodDictionary.ContainsKey(classNameDotMethod))
                         GetType().GetMethod(classDotMethodDictionary[classNameDotMethod], BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, new object[] { data });
-                    else
-                        return;
+                    //else
+                    //    return;
                     //Logger.Log(string.Format("package: {0}", Common.BytesToString(package)), ConsoleColor.Yellow, console: false);
                     Logger.Log(string.Format("Receive method: {0}({1},{2})", classNameDotMethod, module, action), ConsoleColor.Cyan, console: false);
                     Logger.Log(string.Format("Receive data: {0}", data.ToString(Formatting.None)), ConsoleColor.Cyan, console: false);
