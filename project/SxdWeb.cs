@@ -11,53 +11,37 @@ namespace 神仙道
 {
     public class SxdWeb
     {
-        private readonly CookieContainer cookieContainer;
-        private readonly string cookieFile;
+        private readonly CookieContainer cookieContainer = new CookieContainer();
 
-        public SxdWeb(string cookieFile)
+        public void LoginService(string username, string password, string cookieFile)
         {
-            this.cookieFile = cookieFile;
-            cookieContainer = Common.ReadCookiesFromDisk(cookieFile);
-        }//SxdWeb
+            var rnd = new Random();
+            var captcha_identifier = string.Empty;
+            var captcha = string.Empty;
 
-        public Tuple<string, string, string, string, string> LoginService(string username, string password, string server, bool reLogin)
-        {
-            if (reLogin)
+            while (true)
             {
-                var rnd = new Random();
-                var captcha_identifier = string.Empty;
-                var captcha = string.Empty;
+                var stamp = Convert.ToInt64((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalMilliseconds);
+                var uri = string.Format(@"https://ssl.xd.com/users/loginService?callback=jQuery1102{0}_{1}&data%5BUser%5D%5Busername%5D={3}&data%5BUser%5D%5Bpassword%5D={4}&data%5BUser%5D%5Bremember_me%5D=true&data%5BUser%5D%5Bsite%5D=xd&app=sxd&captcha={6}&captcha_identifier={5}&need_detail=true&history_amount=0&rqst_sgntr={2}&_={1}",
+                    rnd.NextDouble().ToString(CultureInfo.CurrentCulture).Replace(".", ""),
+                    stamp, rnd.NextDouble(), username, password, captcha_identifier, captcha);
+                var responseString = Get(uri);
 
-                while (true)
+                if (!responseString.Contains("needCaptcha"))
                 {
-                    var stamp = Convert.ToInt64((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalMilliseconds);
-                    var uri = string.Format(@"https://ssl.xd.com/users/loginService?callback=jQuery1102{0}_{1}&data%5BUser%5D%5Busername%5D={3}&data%5BUser%5D%5Bpassword%5D={4}&data%5BUser%5D%5Bremember_me%5D=true&data%5BUser%5D%5Bsite%5D=xd&app=sxd&captcha={6}&captcha_identifier={5}&need_detail=true&history_amount=0&rqst_sgntr={2}&_={1}",
-                        rnd.NextDouble().ToString(CultureInfo.CurrentCulture).Replace(".", ""),
-                        stamp, rnd.NextDouble(), username, password, captcha_identifier, captcha);
-                    var responseString = Get(uri);
+                    Common.WriteCookiesToDisk(cookieFile, cookieContainer);
+                    return;
+                }
 
-                    if (!responseString.Contains("needCaptcha"))
-                    {
-                        Common.WriteCookiesToDisk(cookieFile, cookieContainer);
-                        break;
-                    }
-
-                    captcha_identifier = rnd.NextDouble().ToString(CultureInfo.CurrentCulture);
-                    var bytes = GetBytes(string.Format("http://www.xd.com/security/captcha/{0}", captcha_identifier));
-                    var file = captcha_identifier + ".jpg";
-                    File.WriteAllBytes(file, bytes);
-                    System.Diagnostics.Process.Start(file);
-                    Logger.Log("输入验证码: ", showTime: false, writeLine: false);
-                    captcha = Console.ReadLine();
-                    Logger.Log(captcha, console: false, showTime: false);
-                }//while(true) 
-            }
-
-
-            Get(string.Format("http://www.xd.com/games/play?app=sxd&server={0}", server));
-
-            var cookies = cookieContainer.GetCookies(new Uri(string.Format("http://{0}.sxd.xd.com/", server)));
-            return Tuple.Create(cookies["user"].Value, cookies["_time"].Value, cookies["_hash"].Value, cookies["login_time_sxd_xxxxxxxx"].Value, cookies["login_hash_sxd_xxxxxxxx"].Value);
+                captcha_identifier = rnd.NextDouble().ToString(CultureInfo.CurrentCulture);
+                var bytes = GetBytes(string.Format("http://www.xd.com/security/captcha/{0}", captcha_identifier));
+                var file = captcha_identifier + ".jpg";
+                File.WriteAllBytes(file, bytes);
+                System.Diagnostics.Process.Start(file);
+                Logger.Log("输入验证码: ", showTime: false, writeLine: false);
+                captcha = Console.ReadLine();
+                Logger.Log(captcha, console: false, showTime: false);
+            }//while(true) 
         }//LoginService
 
         /// <summary>

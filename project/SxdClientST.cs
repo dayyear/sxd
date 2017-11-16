@@ -243,6 +243,100 @@ namespace 神仙道
             return response;
         }//BatchGetFurnitureEffect
 
+        // -------------------------------------------------------------------------------------------
+        // 神魔竞技
+        // -------------------------------------------------------------------------------------------
+        // 神魔竞技-状态
+        /// <summary>
+        /// 神魔竞技-状态
+        /// Mod_StSuperSport_Base.get_st_super_sport_status(115,0)
+        /// request:[]
+        /// response:[Utils.UByteUtil]
+        /// Line 28-32 in Mod_StSuperSport_Base.as
+        ///     public static const POINT_RACE_FIRST_DAY:int = 21;
+        ///     public static const POINT_RACE_SECOND_DAY:int = 22;
+        ///     public static const POINT_RACE_THIRD_DAY:int = 23;
+        ///     public static const POINT_RACE_FOUR_DAY:int = 24;
+        ///     public static const WAR_RACE:int = 25;
+        /// Example
+        ///     [21]
+        /// </summary>
+        public JArray GetStSuperSportStatus()
+        {
+            done.Reset();
+            Send(null, 115, 0);
+            done.WaitOne();
+            return response;
+        }//GetStSuperSportStatus
+
+        // 神魔竞技-玩家信息
+        /// <summary>
+        /// 神魔竞技-玩家信息
+        /// Mod_StSuperSport_Base.get_player_st_super_sport(115,1)
+        /// module:115, action:1
+        /// request:[]
+        /// response:[Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.UByteUtil, Utils.ShortUtil]
+        /// Line 81 in StSuperSportData.as
+        ///     oObject.list(param1, this._getPlayerStSuperSport, ["st_super_sport_rank", "continue_win_times", "remain_challenge_times", "cd_time", "clear_cd_ingot", "is_get_award", "today_buy_times"]);
+        /// Line 34 in Mod_StSuperSport_Base.as
+        ///     public static const NO:int = 27;
+        /// Example
+        ///     [2227,0,5,0,0,27,0] // 2227:排名, 0:continue_win_times, 5:今日还可挑战次数, 0:cd_time, 0:clear_cd_ingot, 27:is_get_award(NO), 0:today_buy_times
+        /// </summary>
+        public JArray GetPlayerStSuperSport()
+        {
+            done.Reset();
+            Send(null, 115, 1);
+            done.WaitOne();
+            return response;
+        }//GetPlayerStSuperSport
+
+        // 神魔竞技-挑战列表
+        /// <summary>
+        /// 神魔竞技-挑战列表
+        /// Mod_StSuperSport_Base.challenge_list(115,2)
+        /// module:115, action:2
+        /// request:[]
+        /// response:[[Utils.ByteUtil, Utils.IntUtil, Utils.StringUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.IntUtil, Utils.UByteUtil, Utils.StringUtil, Utils.StringUtil, Utils.ShortUtil], Utils.IntUtil]
+        /// Line 110,116 in StSuperSportData.as
+        ///     oObject.list(param1, this._challengeList, ["challenge_players", "next_refresh_time"]);
+        ///     oObject.list(_loc_3, _loc_4, ["sequence_id", "st_player_id", "nickname", "role_id", "player_level", "attack_power", "is_challenge", "stage_name", "server_name", "equip_item_id"]);
+        /// Example
+        ///     [[[4,25783,"伊人★物语.s8",4,84,264760,27,"37wan","37wan_s0273",837],[3,15156,"樊硕暴.s1",100,158,913882,27,"37wan","37wan_s0273",1440],[5,204896,"听风吹◆.s1",1,66,265007,27,"7k7k","yx567_s0125",841],[1,200672,"彡森.s1",99,132,913264,27,"心动","s04",1308],[2,56495,"冷秋秋.s7",1,152,914442,27,"心动","s04",1457]],1510891200]
+        /// </summary>
+        public JArray ChallengeList()
+        {
+            done.Reset();
+            Send(null, 115, 2);
+            done.WaitOne();
+            return response;
+        }//ChallengeList
+
+        // 神魔竞技领取排名奖励
+        /// <summary>
+        /// 神魔竞技领取排名奖励
+        /// Mod_StSuperSport_Base.get_rank_award(115,9)
+        /// request:[Utils.ShortUtil]
+        /// Line 930 in StSuperSportInfoView.as
+        ///     data.call(Mod_StSuperSport_Base.get_rank_award, this.onGetAwardCallBack, [_ctrl.player.level], true, 1);
+        /// Example
+        ///     [155]
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ShortUtil]
+        /// Line 727 in StSuperSportData.as
+        ///     oObject.list(param1, this._rankAward, ["result", "award_coin", "award_fame", "award_blood"]);
+        /// Line 35 in Mod_StSuperSport_Base.as
+        ///     public static const SUCCESS:int = 28;
+        /// Example
+        ///     [28,50000,50,0] 28:SUCCESS, 50000:铜钱, 50:声望, 0:血脉精华
+        /// </summary>
+        public JArray GetRankAward(short level)
+        {
+            done.Reset();
+            Send(new JArray { level }, 115, 9);
+            done.WaitOne();
+            return response;
+        }//GetRankAward
+
 
         private void Callback(JArray data)
         {

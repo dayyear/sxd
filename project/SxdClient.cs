@@ -119,9 +119,13 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.get_recent_rob_player", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.refresh", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.start_take_bible", "Callback");
+            classDotMethodDictionary.Add("Mod_StSuperSport_Base.get_st_super_sport_status", "Callback");
+            classDotMethodDictionary.Add("Mod_StSuperSport_Base.get_player_st_super_sport", "Callback");
+            classDotMethodDictionary.Add("Mod_StSuperSport_Base.challenge_list", "Callback");
+            classDotMethodDictionary.Add("Mod_StSuperSport_Base.get_rank_award", "Callback");
         }
 
-        private void ProcessPackage(byte[] package, bool isReceive = true)
+        private void ProcessPackage(byte[] package, bool isReceive = true, bool isLogAllProtocols = false)
         {
             using (var ms = new MemoryStream(package, false))
             using (var br = new BinaryReader(ms))
@@ -130,7 +134,7 @@ namespace 神仙道
                 if (module == 0x789C)
                 {
                     Logger.Log("  uncompress...", console: false);
-                    ProcessPackage(Ionic.Zlib.ZlibStream.UncompressBuffer(package.ToArray()));
+                    ProcessPackage(Ionic.Zlib.ZlibStream.UncompressBuffer(package.ToArray()), isReceive, isLogAllProtocols);
                     return;
                 }
                 var action = IPAddress.NetworkToHostOrder(br.ReadInt16());
@@ -142,8 +146,8 @@ namespace 神仙道
                 {
                     if (classDotMethodDictionary.ContainsKey(classNameDotMethod))
                         GetType().GetMethod(classDotMethodDictionary[classNameDotMethod], BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, new object[] { data });
-                    //else
-                    //    return;
+                    else if (!isLogAllProtocols)
+                        return;
                     //Logger.Log(string.Format("package: {0}", Common.BytesToString(package)), ConsoleColor.Yellow, console: false);
                     Logger.Log(string.Format("Receive method: {0}({1},{2})", classNameDotMethod, module, action), ConsoleColor.Cyan, console: false);
                     Logger.Log(string.Format("Receive data: {0}", data.ToString(Formatting.None)), ConsoleColor.Cyan, console: false);
@@ -301,7 +305,7 @@ namespace 神仙道
                     throw new Exception("数据不完整");
                 var package = byteList.GetRange(4, length);
                 byteList.RemoveRange(0, 4 + length);
-                ProcessPackage(package.ToArray(), isReceive);
+                ProcessPackage(package.ToArray(), isReceive, true);
             }
             if (byteList.Count != 0)
                 throw new Exception("数据有冗余");

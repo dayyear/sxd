@@ -22,18 +22,31 @@ namespace 神仙道
         }//BytesToString
 
         /// <summary>
-        /// Http Get with cookie
+        /// Http Get with cookie string
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="cookie"></param>
         /// <returns></returns>
-        public static string Get(string url, string cookie)
+        public static string Get(string url, string cookieString)
         {
             string responseString;
             var request = (HttpWebRequest)WebRequest.Create(url);
-            request.Headers.Add("Cookie", cookie);
+            request.Headers.Add("Cookie", cookieString);
             request.UserAgent = "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.43 Safari/537.31";
+            using (var response = (HttpWebResponse)request.GetResponse())
+            using (var stream = response.GetResponseStream())
+            using (var sr = new StreamReader(stream, Encoding.UTF8))
+                responseString = sr.ReadToEnd();
+            return responseString;
+        }//Get
 
+        /// <summary>
+        /// Http Get with cookie container
+        /// </summary>
+        public static string Get(string url, CookieContainer cookieContainer)
+        {
+            string responseString;
+            var request = (HttpWebRequest)WebRequest.Create(url);
+            request.CookieContainer = cookieContainer;
+            request.UserAgent = "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.43 Safari/537.31";
             using (var response = (HttpWebResponse)request.GetResponse())
             using (var stream = response.GetResponseStream())
             using (var sr = new StreamReader(stream, Encoding.UTF8))

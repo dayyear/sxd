@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using Newtonsoft.Json.Linq;
@@ -41,14 +43,9 @@ namespace 神仙道
         ///         return;
         ///     }// end function
         /// </summary>
-        public int Login(string url, string code, string time, string hash, string time1, string hash1)
+        public int Login(string playPage)
         {
-            // -----------------------------------------------------------------------------
-            // 1. 通过HTTP获取参数
-            // -----------------------------------------------------------------------------
-            var cookie = string.Format("user={0};_time={1};_hash={2};login_time_sxd_xxxxxxxx={3};login_hash_sxd_xxxxxxxx={4}", code, time, hash, time1, hash1);
-            var responseString = Common.Get(url, cookie);
-            var match1 = Regex.Match(responseString, @"""&player_name=(.*)""[\s\S]*""&hash_code=(.*)""[\s\S]*""&time=(.*)""[\s\S]*""&ip=(.*)""[\s\S]*""&port=(.*)""[\s\S]*""&server_id=(.*)""[\s\S]*""&source=(.*)""[\s\S]*""&regdate=(.*)""[\s\S]*""&id_card=(.*)""[\s\S]*""&open_time=(.*)""[\s\S]*""&is_newst=(.*)""[\s\S]*""&stage=(.*)""[\s\S]*""&client=(.*)""");
+            var match1 = Regex.Match(playPage, @"""&player_name=(.*)""[\s\S]*""&hash_code=(.*)""[\s\S]*""&time=(.*)""[\s\S]*""&ip=(.*)""[\s\S]*""&port=(.*)""[\s\S]*""&server_id=(.*)""[\s\S]*""&source=(.*)""[\s\S]*""&regdate=(.*)""[\s\S]*""&id_card=(.*)""[\s\S]*""&open_time=(.*)""[\s\S]*""&is_newst=(.*)""[\s\S]*""&stage=(.*)""[\s\S]*""&client=(.*)""");
             if (!match1.Success)
                 throw new Exception("登录失败，请使用登录器重新登录");
             var player_name = match1.Groups[1].Value;   // 用于login(0,0) 
