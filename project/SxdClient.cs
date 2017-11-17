@@ -123,6 +123,7 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_StSuperSport_Base.get_player_st_super_sport", "Callback");
             classDotMethodDictionary.Add("Mod_StSuperSport_Base.challenge_list", "Callback");
             classDotMethodDictionary.Add("Mod_StSuperSport_Base.get_rank_award", "Callback");
+            classDotMethodDictionary.Add("Mod_StSuperSport_Base.challenge", "Callback");
         }
 
         private void ProcessPackage(byte[] package, bool isReceive = true, bool isLogAllProtocols = false)

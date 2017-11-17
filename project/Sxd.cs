@@ -65,7 +65,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/神魔竞技领取奖励.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/神魔竞技-挑战失败.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 if (item.StartsWith("=================================================="))
                     continue;
@@ -376,14 +376,60 @@ namespace 神仙道
 
                     if (functionIds.Contains(93)) // 93:["st_super_sport","206","仙界竞技场"]，实际上是神魔竞技
                     {
+                        // 状态
+                        response = clientST.GetStSuperSportStatus();
+                        // WAR_RACE:int = 25;
+                        if ((byte)response[0] == 25)
+                        {
+                            Logger.Log("【神魔竞技】今日[神魔大战]");
+                        }//神魔大战
+                        else
+                        {
+                            Logger.Log("【神魔竞技】今日[积分赛]");
+
+                            while (true)
+                            {
+                                // 玩家信息
+                                response = clientST.GetPlayerStSuperSport();
+                                var _st_super_sport_rank = (short)response[0];
+                                var _remain_challenge_times = (short)response[2];
+                                var _cd_time = (short)response[3];
+                                Logger.Log(string.Format("【神魔竞技】排名[{0}]，今日还可挑战[{1}]次", _st_super_sport_rank, _remain_challenge_times));
+                                if (_remain_challenge_times <= 0)
+                                    break;
+
+                                // 可挑战对手
+                                response = clientST.ChallengeList();
+                                var _challengeList = ((JArray)response[0]).ToList();
+                                // is_challenge, NO:int = 27;  .Where(x=>(byte)x[6]==27)
+                                _challengeList.Sort((x, y) => ((int)x[5]).CompareTo((int)y[5]));
+                                _challengeList.RemoveRange(2, 3);
+                                _challengeList = _challengeList.Where(x => (byte)x[6] == 27).ToList();
+                                if (_challengeList.Count <= 0)
+                                    break;
+
+                                if (_cd_time > 0)
+                                {
+                                    Logger.Log(string.Format("【神魔竞技】等待[{0}]秒", _cd_time), writeLine: false);
+                                    for (var t = 0; t < _cd_time; t++)
+                                    {
+                                        Logger.Log(".", writeLine: false, showTime: false, file: false);
+                                        Thread.Sleep(1000);
+                                    }
+                                    Logger.Log(string.Empty, showTime: false);
+                                }
+
+                                // 开始挑战
+                                response = clientST.Challenge((byte)_challengeList[0][0]);
+                                Logger.Log(string.Format("【神魔竞技】挑战[{0}]{1}", _challengeList[0][2], (short)response[8] == 0 ? "胜利" : "失败"));
+                            }//while
+                        }//积分赛
+
+
+                        // 领取排名奖励
                         response = clientST.GetPlayerStSuperSport();
-                        var _st_super_sport_rank = (short)response[0];
-                        var _remain_challenge_times = (short)response[2];
-                        var _cd_time = (short)response[3];
-                        var _is_get_award = (byte)response[5];
-                        Logger.Log(string.Format("【神魔竞技】排名[{0}]，今日还可挑战[{1}]次，CD时间[{2}]，排名奖励状态[{3}]", _st_super_sport_rank, _remain_challenge_times, _cd_time, _is_get_award));
-                        // NO:int = 27;
-                        if (_is_get_award == 27)
+                        // _is_get_award, NO:int = 27;
+                        if ((byte)response[5] == 27)
                         {
                             var _level = (short)clientTown.GetPlayerInfo()[1];
                             response = clientST.GetRankAward(_level);
@@ -392,20 +438,7 @@ namespace 神仙道
                                 Logger.Log(string.Format("【神魔竞技】领取排名奖励铜钱[{0}]，声望[{1}]，血脉精华[{2}]", response[1], response[2], response[3]));
                         }
 
-                        response = clientST.GetStSuperSportStatus();
-                        // WAR_RACE:int = 25;
-                        if ((byte)response[0] == 25)
-                            Logger.Log("【神魔竞技】今日[神魔大战]");
-                        else
-                        {
-                            Logger.Log("【神魔竞技】今日积分赛");
 
-                            response = clientST.ChallengeList();
-                            foreach (var item in response[0])
-                            {
-                                Logger.Log(string.Format("【神魔竞技】可挑战对手[{0}({1})]，[{3}]级，战力[{2}]", item[2], item[1], item[5], item[4]));
-                            }
-                        }
                     } //if (functionIds.Contains(93)) // 93:["st_super_sport","206","仙界竞技场"],，实际上是神魔竞技
                 }//if ((int)response[0] == 0)
             } //if (functionIds.Contains(91)) // 91:["SuperTown","205","仙界"],
@@ -720,7 +753,7 @@ namespace 神仙道
                 {
                     response = clientTown.OpenSuperSport();
                     var _remain = (short)response[4];
-                    Logger.Log(string.Format("【竞技场】剩余[{0}]次竞技挑战", _remain));
+                    Logger.Log(string.Format("【竞技场】今日还可挑战[{0}]次", _remain));
                     if (_remain <= 0)
                         break;
                     var _cdTimer = (int)response[11];
@@ -743,7 +776,7 @@ namespace 神仙道
                     response = clientTown.StartChallenge((int)_challengePersonFirst[0]);
                     // SUCCESS:int = 0;
                     if ((byte)response[0] == 0)
-                        Logger.Log(string.Format("【竞技场】挑战[{0}][排名{1}]{2}", _challengePersonFirst[4], _challengePersonFirst[0], (int)response[2] == 0 ? "成功" : "失败"));
+                        Logger.Log(string.Format("【竞技场】挑战[{0}][排名{1}]{2}", _challengePersonFirst[4], _challengePersonFirst[0], (int)response[2] == 0 ? "胜利" : "失败"));
                     else
                     {
                         Logger.Log(string.Format("【竞技场】挑战异常，result：{0}", response[0]), ConsoleColor.Red);

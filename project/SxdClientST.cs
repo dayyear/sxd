@@ -312,9 +312,9 @@ namespace 神仙道
             return response;
         }//ChallengeList
 
-        // 神魔竞技领取排名奖励
+        // 神魔竞技-领取排名奖励
         /// <summary>
-        /// 神魔竞技领取排名奖励
+        /// 神魔竞技-领取排名奖励
         /// Mod_StSuperSport_Base.get_rank_award(115,9)
         /// request:[Utils.ShortUtil]
         /// Line 930 in StSuperSportInfoView.as
@@ -336,6 +336,40 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//GetRankAward
+
+        // 神魔竞技-挑战
+        /// <summary>
+        /// 神魔竞技-挑战
+        /// Mod_StSuperSport_Base.challenge(115,3)
+        /// module:115, action:3
+        /// request:[Utils.ByteUtil]
+        /// Example
+        ///     [1]
+        /// response:[0.Utils.UByteUtil, 1.Utils.IntUtil, 2.Utils.ByteUtil, 3.Utils.ShortUtil, 4.[...], 
+        ///           5.Utils.ShortUtil, 6.Utils.ShortUtil, 7.Utils.ShortUtil, 8.Utils.ShortUtil, 9.Utils.ByteUtil, 
+        ///           10.Utils.ByteUtil, 11.Utils.StringUtil, 12.Utils.StringUtil, 13.Utils.ShortUtil, 14.Utils.IntUtil, 
+        ///           15.Utils.IntUtil, 16.Utils.IntUtil, 17.Utils.IntUtil, 18.Utils.IntUtil, 19.Utils.IntUtil, 
+        ///           20.Utils.IntUtil, 21.[Utils.IntUtil, Utils.IntUtil]]
+        /// Line 147 in StSuperSportData.as
+        ///     oObject.list(param1, this._challengeResult, 
+        ///     [0."result", 1."award_coin", 2."award_fame", 3."award_score", 4."war_result", 
+        ///      5."st_super_sport_rank", 6."cur_score", 7."remain_challenge_times", 8."cd_time", 9."clear_cd_ingot", 
+        ///      10."award_blood_essence", 11."stage_name", 12."server_name", 13."continue_win_times", 14."award_dao_yuan", 
+        ///      15."award_gun", 16."scrapId", 17."scrapNum", 18."awardItemId", 19."awardCount", 
+        ///      20."war_report_id", 21."award_item_list"]);
+        /// Line 35 in Mod_StSuperSport_Base.as
+        ///     public static const SUCCESS:int = 28;
+        /// Example
+        ///     胜利 [28,13200,20,36,[...],  19,1036,4,0,0,   4,"心动","s04",1,0,   0,0,0,0,0,   224854,[]] 28:SUCCESS, 13200:铜钱, 20:声望, 36:积分 
+        ///     失败 [28,3040,10,6,[...],    17,1042,3,30,1,  2,"心动","s04",0,0,   0,0,0,0,0,   224911,[]]   28:SUCCESS, 2040:铜钱,  10:声望, 6:积分
+        /// </summary>
+        public JArray Challenge(byte index)
+        {
+            done.Reset();
+            Send(new JArray { index }, 115, 3);
+            done.WaitOne();
+            return response;
+        }//Challenge
 
 
         private void Callback(JArray data)
