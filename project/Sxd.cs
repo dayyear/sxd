@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -50,13 +51,20 @@ namespace 神仙道
             Directory.GetFiles("./", "0*.jpg").ToList().ForEach(File.Delete);
             foreach (var user in JArray.Parse(File.ReadAllText("user.json")))
             {
-                if (user["login"] != null)
-                    continue;
-                var username = (string)user["username"];
-                var password = (string)user["password"];
-                Logger.Log(string.Format("{0}", user["name"]), showTime: false);
-                var web = new SxdWeb();
-                web.LoginService(username, password, string.Format("cookies/{0}.", user["name"]));
+                if ((string) user["name"] == "度日如年.s152")
+                {
+                    Logger.Log(string.Format("{0}", user["name"]), showTime: false);
+                    var web = new SxdWeb();
+                    web.LoginFromIE(string.Format("cookies/{0}.", user["name"]));
+                }
+                else
+                {
+                    var username = (string) user["username"];
+                    var password = (string) user["password"];
+                    Logger.Log(string.Format("{0}", user["name"]), showTime: false);
+                    var web = new SxdWeb();
+                    web.LoginService(username, password, string.Format("cookies/{0}.", user["name"]));
+                }
             }
             Directory.GetFiles("./", "0*.jpg").ToList().ForEach(File.Delete);
         } //GenerateCookies

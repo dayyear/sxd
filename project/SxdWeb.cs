@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace 神仙道
 {
@@ -43,6 +44,16 @@ namespace 神仙道
                 Logger.Log(captcha, console: false, showTime: false);
             }//while(true) 
         }//LoginService
+
+        public void LoginFromIE(string cookieFile)
+        {
+            var cookieString = Common.GetGlobalCookies("http://www.xd.com/");
+            var A1 = Regex.Match(cookieString, "A1=(.*?)($|;)").Groups[0].Value;
+            var A2 = Regex.Match(cookieString, "A2=(.*?)($|;)").Groups[0].Value;
+            var cookieContainerFromIE = new CookieContainer();
+            cookieContainerFromIE.SetCookies(new Uri("http://www.xd.com/"), string.Format("{0},{1}", A1, A2));
+            Common.WriteCookiesToDisk(cookieFile, cookieContainerFromIE);
+        }//LoginFromIE
 
         /// <summary>
         /// Http Get

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
@@ -100,6 +101,18 @@ namespace 神仙道
                 return new CookieContainer();
             }
         }//ReadCookiesFromDisk
+
+        [DllImport("wininet.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        static extern bool InternetGetCookieEx(string pchURL, string pchCookieName, StringBuilder pchCookieData, ref uint pcchCookieData, int dwFlags, IntPtr lpReserved);
+        const int INTERNET_COOKIE_HTTPONLY = 0x00002000;
+        public static string GetGlobalCookies(string uri)
+        {
+            uint datasize = 4096;
+            var cookieData = new StringBuilder((int)datasize);
+            if (InternetGetCookieEx(uri, null, cookieData, ref datasize, INTERNET_COOKIE_HTTPONLY, IntPtr.Zero) && cookieData.Length > 0)
+                return cookieData.ToString();
+            return null;
+        }//GetGlobalCookies
 
     }
 }
