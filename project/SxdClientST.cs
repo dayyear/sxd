@@ -371,6 +371,73 @@ namespace 神仙道
             return response;
         }//Challenge
 
+        // 神魔竞技-可以领取吗
+        /// <summary>
+        /// 神魔竞技-可以领取吗
+        /// Mod_StSuperSport_Base.can_get_score_award(115,11)
+        /// module:115, action:11
+        /// request:[]
+        /// response:[Utils.UByteUtil]
+        /// Line 33-34 in Mod_StSuperSport_Base.as
+        ///     public static const YES:int = 26;
+        ///     public static const NO:int = 27;
+        /// Example
+        ///     [27]
+        /// </summary>
+        public JArray CanGetScoreAward()
+        {
+            done.Reset();
+            Send(null, 115, 11);
+            done.WaitOne();
+            return response;
+        }//CanGetScoreAward
+
+        // 神魔竞技-打开神魔大礼
+        /// <summary>
+        /// 神魔竞技-打开神魔大礼
+        /// Mod_StSuperSport_Base.player_score_award_info(115,12)
+        /// module:115, action:12
+        /// request:[]
+        /// response:[Utils.ShortUtil, [Utils.ByteUtil, Utils.UByteUtil]]
+        /// Line 771,777 in StSuperSportData.as
+        ///     oObject.list(param1, this._playerScoreAwardInfo, ["self_score", "award_info"]);
+        ///     oObject.list(_loc_3, _loc_4, ["award_id", "is_get"]);
+        /// Line 33-34 in Mod_StSuperSport_Base.as
+        ///     public static const YES:int = 26;
+        ///     public static const NO:int = 27;
+        /// Example
+        ///     [1136,[[5,27],[4,27],[8,27],[2,27],[1,26],[6,27],[3,27],[7,27]]]
+        /// </summary>
+        public JArray PlayerScoreAwardInfo()
+        {
+            done.Reset();
+            Send(null, 115, 12);
+            done.WaitOne();
+            return response;
+        }//PlayerScoreAwardInfo
+
+        // 神魔竞技-领取神魔大礼
+        /// <summary>
+        /// 神魔竞技-领取神魔大礼
+        /// Mod_StSuperSport_Base.player_get_score_award(115,13)
+        /// module:115, action:13
+        /// request:[Utils.ByteUtil]
+        /// Example
+        ///     [1]
+        /// response:[Utils.UByteUtil]
+        /// Line 35 in Mod_StSuperSport_Base.as
+        ///     public static const SUCCESS:int = 28;
+        /// Example
+        ///     [28]
+        /// </summary>
+        public JArray PlayerGetScoreAward(byte index)
+        {
+            done.Reset();
+            Send(new JArray { index }, 115, 13);
+            done.WaitOne();
+            return response;
+        }//PlayerGetScoreAward
+
 
         private void Callback(JArray data)
         {

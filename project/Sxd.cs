@@ -51,7 +51,7 @@ namespace 神仙道
             Directory.GetFiles("./", "0*.jpg").ToList().ForEach(File.Delete);
             foreach (var user in JArray.Parse(File.ReadAllText("user.json")))
             {
-                if ((string) user["name"] == "度日如年.s152")
+                if ((string)user["name"] == "度日如年.s152")
                 {
                     Logger.Log(string.Format("{0}", user["name"]), showTime: false);
                     var web = new SxdWeb();
@@ -59,8 +59,8 @@ namespace 神仙道
                 }
                 else
                 {
-                    var username = (string) user["username"];
-                    var password = (string) user["password"];
+                    var username = (string)user["username"];
+                    var password = (string)user["password"];
                     Logger.Log(string.Format("{0}", user["name"]), showTime: false);
                     var web = new SxdWeb();
                     web.LoginService(username, password, string.Format("cookies/{0}.", user["name"]));
@@ -73,7 +73,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/神魔竞技-挑战失败.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/神魔大礼.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 if (item.StartsWith("=================================================="))
                     continue;
@@ -446,6 +446,41 @@ namespace 神仙道
                                 Logger.Log(string.Format("【神魔竞技】领取排名奖励铜钱[{0}]，声望[{1}]，血脉精华[{2}]", response[1], response[2], response[3]));
                         }
 
+                        // 神魔大礼
+                        // public static const StSuperSportScoreAward:Array = [[1, "普通宝箱", 1100, 5, 20, 300000, 500, 2], [2, "普通宝箱", 1300, 8, 50, 500000, 600, 2], [3, "普通宝箱", 1500, 10, 100, 1000000, 800, 2], [4, "普通宝箱", 1800, 20, 200, 1200000, 1000, 2], [5, "普通宝箱", 2000, 30, 300, 1500000, 1200, 2], [6, "青铜宝箱", 2200, 50, 500, 2000000, 1500, 3], [7, "白银宝箱", 2400, 80, 700, 3000000, 1600, 4], [8, "黄金宝箱", 2600, 100, 1000, 5000000, 1800, 5]];
+                        response = clientST.CanGetScoreAward();
+                        // YES:int = 26;
+                        if ((byte)response[0] == 26)
+                        {
+                            response = clientST.PlayerScoreAwardInfo();
+                            var _self_score = (short)response[0];  // 1136
+                            var _award_info = (JArray)response[1]; // [[5,27],[4,27],[8,27],[2,27],[1,26],[6,27],[3,27],[7,27]]
+                            //var _award_info_sorted = _award_info.ToList();
+                            //_award_info_sorted.Sort((x, y) => ((byte)x[0]).CompareTo((byte)y[0]));
+                            //var _award_info_can_get = _award_info.Where(x => (byte)x[1] == 27);
+                            var StSuperSportScoreAward = JArray.Parse("[[1, \"普通宝箱\", 1100, 5, 20, 300000, 500, 2], [2, \"普通宝箱\", 1300, 8, 50, 500000, 600, 2], [3, \"普通宝箱\", 1500, 10, 100, 1000000, 800, 2], [4, \"普通宝箱\", 1800, 20, 200, 1200000, 1000, 2], [5, \"普通宝箱\", 2000, 30, 300, 1500000, 1200, 2], [6, \"青铜宝箱\", 2200, 50, 500, 2000000, 1500, 3], [7, \"白银宝箱\", 2400, 80, 700, 3000000, 1600, 4], [8, \"黄金宝箱\", 2600, 100, 1000, 5000000, 1800, 5]]");
+                            //.Where(x => (short)x[2] <= _self_score);
+                            foreach (var item in StSuperSportScoreAward)
+                            {
+                                // 如遇到积分不够，则跳出
+                                if ((short)item[2] > _self_score)
+                                    break;
+
+                                var _index = (byte)item[0];
+                                var _is_get = (byte)_award_info.First(x => (byte)x[0] == _index)[1];
+
+                                // 如遇到已经领过，则continue
+                                //YES:int = 26;
+                                if (_is_get == 26)
+                                    continue;
+
+                                // SUCCESS:int = 28;
+                                if ((byte)clientST.PlayerGetScoreAward(_index)[0] == 28)
+                                    Logger.Log(string.Format("【神魔竞技】领取[神魔大礼][{3}]血脉精华[{0}]，声望[{1}]，铜钱[{2}]", item[3], item[6], item[5], item[1]));
+                                else
+                                    Logger.Log("【神魔竞技】[神魔大礼]领取错误", ConsoleColor.Red);
+                            }
+                        }
 
                     } //if (functionIds.Contains(93)) // 93:["st_super_sport","206","仙界竞技场"],，实际上是神魔竞技
                 }//if ((int)response[0] == 0)
