@@ -48,7 +48,7 @@ namespace 神仙道
             var cookieContainerFromIE = new CookieContainer();
             cookieContainerFromIE.SetCookies(new Uri("http://www.xd.com/"), Common.GetGlobalCookies("http://www.xd.com/").Replace("; ", ","));
             Common.WriteCookiesToDisk(cookieFile, cookieContainerFromIE);
-            foreach (var cookieFileFromIE in Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.Cookies)))
+            foreach (var cookieFileFromIE in Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.Cookies), "*.txt"))
                 if (File.ReadAllText(cookieFileFromIE).Contains("xd.com/"))
                     File.Delete(cookieFileFromIE);
         }//LoginFromIE
