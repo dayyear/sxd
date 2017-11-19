@@ -4,9 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace 神仙道
 {
@@ -47,12 +45,12 @@ namespace 神仙道
 
         public void LoginFromIE(string cookieFile)
         {
-            var cookieString = Common.GetGlobalCookies("http://www.xd.com/");
-            var A1 = Regex.Match(cookieString, "A1=(.*?)($|;)").Groups[0].Value;
-            var A2 = Regex.Match(cookieString, "A2=(.*?)($|;)").Groups[0].Value;
             var cookieContainerFromIE = new CookieContainer();
-            cookieContainerFromIE.SetCookies(new Uri("http://www.xd.com/"), string.Format("{0},{1}", A1, A2));
+            cookieContainerFromIE.SetCookies(new Uri("http://www.xd.com/"), Common.GetGlobalCookies("http://www.xd.com/").Replace("; ", ","));
             Common.WriteCookiesToDisk(cookieFile, cookieContainerFromIE);
+            foreach (var cookieFileFromIE in Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.Cookies)))
+                if (File.ReadAllText(cookieFileFromIE).Contains("xd.com/"))
+                    File.Delete(cookieFileFromIE);
         }//LoginFromIE
 
         /// <summary>

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml.Linq;
@@ -907,7 +904,7 @@ namespace 神仙道
                         var user = users[i];
 
                         // 获取游戏页面
-                        string playPage;
+                        /*string playPage;
                         var login = (string)user["login"];
                         if (login == null)
                         {
@@ -922,7 +919,8 @@ namespace 神仙道
                                 throw new Exception(string.Format("[user.ini]中未能找到用户[{0}]", user["id"]));
                             var cookieString = string.Format("user={0};_time={1};_hash={2};login_time_sxd_xxxxxxxx={3};login_hash_sxd_xxxxxxxx={4}", match.Groups[2].Value, match.Groups[3].Value, match.Groups[4].Value, match.Groups[5].Value, match.Groups[6].Value);
                             playPage = Common.Get(match.Groups[1].Value, cookieString);
-                        }
+                        }*/
+                        var playPage = Common.Get((string)user["url"], Common.ReadCookiesFromDisk(string.Format("cookies/{0}", user["name"])));
 
                         // 游戏开始
                         Play(playPage);
