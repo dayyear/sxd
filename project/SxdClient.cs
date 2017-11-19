@@ -112,6 +112,9 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_SendFlower_Base.send_player_flower", "Callback");
             classDotMethodDictionary.Add("Mod_Fate_Base.get_fate_npc", "Callback");
             classDotMethodDictionary.Add("Mod_Fate_Base.appoint_fate_npc", "Callback");
+            classDotMethodDictionary.Add("Mod_SundayFruit_Base.active_status", "Callback");
+            classDotMethodDictionary.Add("Mod_SundayFruit_Base.sunday_fruit_info", "Callback");
+            classDotMethodDictionary.Add("Mod_SundayFruit_Base.draw", "Callback");
             //ST
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "Callback");

@@ -1796,6 +1796,78 @@ namespace 神仙道
 
 
         // -------------------------------------------------------------------------------------------
+        // 周末水果机
+        // -------------------------------------------------------------------------------------------
+        // 周末水果机-活动状态
+        /// <summary>
+        /// 周末水果机-活动状态
+        /// Mod_SundayFruit_Base.active_status(242,0)
+        /// module:242, action:0
+        /// request:[]
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil]
+        /// Line 25-27 in SundayFruitData.as
+        ///     this.sundayFruitInfo.status = param1[0];
+        ///     this.sundayFruitInfo.start_time = param1[1];
+        ///     this.sundayFruitInfo.end_time = param1[2];
+        /// Line 7 in Mod_SundayFruit_Base.as
+        ///     public static const YES:int = 0;
+        /// Example
+        ///     [0,1510934400,1511107199]
+        /// </summary>
+        public JArray SundayFruitActiveStatus()
+        {
+            done.Reset();
+            Send(null, 242, 0);
+            done.WaitOne();
+            return response;
+        }//ActiveStatus
+
+        // 周末水果机-打开界面
+        /// <summary>
+        /// 周末水果机-打开界面
+        /// Mod_SundayFruit_Base.sunday_fruit_info(242,1)
+        /// module:242, action:1
+        /// request:[]
+        /// response:[Utils.IntUtil, [Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]]
+        /// Line 33-34 in SundayFruitData.as
+        ///     this.sundayFruitInfo.remain_draw_times = param1[0];
+        ///     this.sundayFruitInfo.award_list = this.parseAwardList(param1[1]);
+        /// Example
+        ///     [9,[[15,4,1],[1,0,800000],[16,13,1],[27,34,2],[1,0,600000],[1,0,1000000],[10,0,1],[15,3,1],[16,5,1],[1,0,1500000],[1,0,1200000],[27,55,2],[12,3399,2],[12,347,10],[7,0,5],[27,71,1],[7,0,3],[3,0,100],[5,0,60000],[12,1488,5],[27,7,2],[25,0,1],[12,1411,1],[12,347,5]]]
+        /// </summary>
+        public JArray SundayFruitInfo()
+        {
+            done.Reset();
+            Send(null, 242, 1);
+            done.WaitOne();
+            return response;
+        }//SundayFruitInfo
+
+        // 周末水果机-开始转
+        /// <summary>
+        /// 周末水果机-开始转
+        /// Mod_SundayFruit_Base.draw(242,2)
+        /// module:242, action:2
+        /// request:[]
+        /// response:[Utils.UByteUtil, [Utils.ByteUtil], [Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]]
+        /// Line 40-42 in SundayFruitData.as
+        ///     this.sundayFruitInfo.result = param1[0];
+        ///     this.sundayFruitInfo.draw_fruit_list = param1[1];
+        ///     this.sundayFruitInfo.draw_award_list = this.parseAwardList(param1[2]);
+        /// Line 9 in Mod_SundayFruit_Base.as
+        ///     public static const SUCCESS:int = 2;
+        /// Example
+        ///     [2,[[2],[4],[3]],[[1,0,1000000],[12,347,8],[5,0,30000]]]
+        /// </summary>
+        public JArray SundayFruitDraw()
+        {
+            done.Reset();
+            Send(null, 242, 2);
+            done.WaitOne();
+            return response;
+        }//SundayFruitDraw
+
+        // -------------------------------------------------------------------------------------------
         // 帮派
         // -------------------------------------------------------------------------------------------
         // 打开帮派祭神

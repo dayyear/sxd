@@ -73,7 +73,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/神魔大礼.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/周末水果机.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 if (item.StartsWith("=================================================="))
                     continue;
@@ -827,6 +827,25 @@ namespace 神仙道
                     }
                 } //while(true)
             } //if (functionIds.Contains(41)) // 41:["SuperSport","130","竞技场"],
+
+            if ((byte)clientTown.SundayFruitActiveStatus()[0] == 0) // 周末水果机，YES:int = 0;
+            {
+                while (true)
+                {
+                    response = clientTown.SundayFruitInfo();
+                    var _remain_draw_times = (int)response[0];
+                    if (_remain_draw_times <= 0)
+                        break;
+                    // SUCCESS:int = 2;
+                    if ((byte)clientTown.SundayFruitDraw()[0] == 2)
+                        Logger.Log("【周末水果机】转一次");
+                    else
+                    {
+                        Logger.Log("【周末水果机】错误", ConsoleColor.Red);
+                        break;
+                    }
+                }//while (true)
+            } //if ((byte)clientTown.SundayFruitActiveStatus()[0] == 0) // 周末水果机，YES:int = 0;
 
             if (functionIds.Contains(64)) // 64:["DailyBox","90","活跃度"],
             {
