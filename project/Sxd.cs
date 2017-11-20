@@ -70,7 +70,7 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/周末水果机.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var item in File.ReadAllText("Log/叶公好龙-进化.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 if (item.StartsWith("=================================================="))
                     continue;
@@ -512,8 +512,16 @@ namespace 神仙道
                     // SUCCESS:int = 0;
                     if ((byte)response[0] == 0)
                         Logger.Log(string.Format("【叶公好龙】普通培养，{1}获得[经验值{0}]", response[4], (byte)response[7] == 1 ? "暴击" : string.Empty));
+                    else if ((byte)response[0] == 2)
+                    {
+                        clientTown.UpPetAnimal();
+                        Logger.Log("【叶公好龙】进化", ConsoleColor.Green);
+                    }
                     else
+                    {
                         Logger.Log("【叶公好龙】普通培养错误", ConsoleColor.Red);
+                        break;
+                    }
                 }
             } //if (functionIds.Contains(60)) // 60:["PetAnimal","325","叶公好龙"],
 

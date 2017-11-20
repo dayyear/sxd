@@ -1122,6 +1122,7 @@ namespace 神仙道
         // -------------------------------------------------------------------------------------------
         // 叶公好龙
         // -------------------------------------------------------------------------------------------
+        // 打开叶公好龙
         /// <summary>
         /// 打开叶公好龙
         /// Mod_PetAnimal_Base.pet_animal_info(48,0)
@@ -1152,6 +1153,7 @@ namespace 神仙道
             return response;
         }//PetAnimalInfo
 
+        // 普通培养
         /// <summary>
         /// 普通培养
         /// Mod_PetAnimal_Base.feed_pet_animal(48,2)
@@ -1189,6 +1191,28 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//FeedPetAnimal
+
+        // 进化
+        /// <summary>
+        /// 普通培养
+        /// Mod_PetAnimal_Base.up_pet_animal(48,3)
+        /// module:48, action:3
+        /// request:[]
+        /// response:[Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil]
+        /// Line 74,75,78 in PetLongInfo
+        ///     this.lv = param1;
+        ///     this.star = param2;
+        ///     this.exp = param3;
+        /// Example
+        ///     [9,1,43402]
+        /// </summary>
+        public JArray UpPetAnimal()
+        {
+            done.Reset();
+            Send(null, 48, 3);
+            done.WaitOne();
+            return response;
+        }//UpPetAnimal
 
         // -------------------------------------------------------------------------------------------
         // 猎妖
