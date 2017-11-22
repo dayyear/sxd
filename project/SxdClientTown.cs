@@ -1818,7 +1818,6 @@ namespace 神仙道
             return response;
         }//AppointFateNpc
 
-
         // -------------------------------------------------------------------------------------------
         // 周末水果机
         // -------------------------------------------------------------------------------------------
@@ -1890,6 +1889,105 @@ namespace 神仙道
             done.WaitOne();
             return response;
         }//SundayFruitDraw
+
+        // -------------------------------------------------------------------------------------------
+        // 五福临门
+        // -------------------------------------------------------------------------------------------
+        // 五福临门-是否开通
+        /// <summary>
+        /// 五福临门-是否开通
+        /// Mod_FindImmortal_Base.is_five_blessings_open(68,14)
+        /// module:68, action:14, 
+        /// request:[], 
+        /// response:[Utils.UByteUtil]
+        /// Line 146 in FindImmortalData.as
+        ///     this.fiveBlessingInfo.isOpen = param1[0] == Mod_FindImmortal_Base.YES;
+        /// Line 18 in Mod_FindImmortal_Base.as
+        ///     public static const YES:int = 11;
+        /// </summary>
+        public JArray IsFiveBlessingsOpen()
+        {
+            done.Reset();
+            Send(null, 68, 14);
+            done.WaitOne();
+            return response;
+        }//IsFiveBlessingsOpen
+
+        // 五福临门-打开
+        /// <summary>
+        /// 五福临门-打开
+        /// Mod_FindImmortal_Base.open_five_blessings(68,10)
+        /// module:68, action:10
+        /// request:[]
+        /// response:[Utils.ShortUtil, Utils.ByteUtil, [Utils.ByteUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil], Utils.ByteUtil]
+        /// Line 152-156 in FindImmortalData.as
+        ///     this.fiveBlessingInfo.bless_number = param1[0];
+        ///     this.fiveBlessingInfo.stage = param1[1];
+        ///     this.fiveBlessingInfo.award = this.parseAward(param1[2]);
+        ///     this.fiveBlessingInfo.total_count = param1[3];
+        /// Example
+        ///     [8,0,[],20]
+        ///     [7,1,[[3,600,3,0,0],[4,1200,0,2,1],[3,600,3,0,0],[5,1200,0,3,2],[4,1200,0,2,1]],20]
+        ///     [7,0,[],20]
+        ///     [6,1,[[3,600,3,0,0],[4,1200,0,2,1],[2,600,2,0,0],[2,600,2,0,0],[5,1200,0,3,2]],20]
+        ///     [6,0,[],20]
+        /// </summary>
+        public JArray OpenFiveBlessings()
+        {
+            done.Reset();
+            Send(null, 68, 10);
+            done.WaitOne();
+            return response;
+        }//OpenFiveBlessings
+
+        // 五福临门-画龙鱼
+        /// <summary>
+        /// 五福临门-画龙鱼
+        /// Mod_FindImmortal_Base.start_bless(68,11)
+        /// module:68, action:11
+        /// request:[]
+        /// response:[Utils.UByteUtil, Utils.ByteUtil, [Utils.ByteUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil]]
+        /// Line 161-163 in FindImmortalData.as
+        ///     this.fiveBlessingInfo.result = param1[0];
+        ///     this.fiveBlessingInfo.stage = param1[1];
+        ///     this.fiveBlessingInfo.award = this.parseAward(param1[2]);
+        /// Line 7 in Mod_FindImmortal_Base.as
+        ///     public static const SUCCESS:int = 0;
+        /// Example
+        ///     [0,1,[[5,1200,0,3,2],[4,1200,0,2,1],[3,600,3,0,0],[3,600,3,0,0],[4,1200,0,2,1]]]
+        ///     [0,1,[[2,600,2,0,0],[4,1200,0,2,1],[3,600,3,0,0],[2,600,2,0,0],[5,1200,0,3,2]]]
+        /// </summary>
+        public JArray StartBless()
+        {
+            done.Reset();
+            Send(null, 68, 11);
+            done.WaitOne();
+            return response;
+        }//StartBless
+
+        // 五福临门-见好就收
+        /// <summary>
+        /// 五福临门-见好就收
+        /// Mod_FindImmortal_Base.end_bless(68,13)
+        /// module:68, action:13
+        /// request:[]
+        /// response:[Utils.UByteUtil, [Utils.ByteUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil]]
+        /// Line 177-178 in FindImmortalData.as
+        ///     this.fiveBlessingInfo.result = param1[0];
+        ///     this.fiveBlessingInfo.award = this.parseAward(param1[1]);
+        /// Line 7 in Mod_FindImmortal_Base.as
+        ///     public static const SUCCESS:int = 0;
+        /// Example
+        ///     [0,[[3,600,3,0,0],[4,1200,0,2,1],[3,600,3,0,0],[5,1200,0,3,2],[4,1200,0,2,1]]]
+        ///     [0,[[3,600,3,0,0],[4,1200,0,2,1],[2,600,2,0,0],[2,600,2,0,0],[5,1200,0,3,2]]]
+        /// </summary>
+        public JArray EndBless()
+        {
+            done.Reset();
+            Send(null, 68, 13);
+            done.WaitOne();
+            return response;
+        }//EndBless
 
         // -------------------------------------------------------------------------------------------
         // 帮派

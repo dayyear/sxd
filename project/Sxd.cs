@@ -70,7 +70,10 @@ namespace 神仙道
         {
             var client = new SxdClientTown();
             var isReceive = false;
-            foreach (var item in File.ReadAllText("Log/叶公好龙-进化.txt").Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+            Logger.Log("请输入抓包文件名: ", showTime: false, writeLine: false);
+            var readLine = Console.ReadLine();
+            Logger.Log(readLine, showTime: false);
+            foreach (var item in File.ReadAllText(string.Format("Log/{0}", readLine)).Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 if (item.StartsWith("=================================================="))
                     continue;
@@ -426,7 +429,14 @@ namespace 神仙道
 
                                 // 开始挑战
                                 response = clientST.Challenge((byte)_challengeList[0][0]);
-                                Logger.Log(string.Format("【神魔竞技】挑战[{0}]{1}", _challengeList[0][2], (short)response[8] == 0 ? "胜利" : "失败"));
+                                // SUCCESS:int = 28;
+                                if ((byte)response[0] == 28)
+                                    Logger.Log(string.Format("【神魔竞技】挑战[{0}]{1}", _challengeList[0][2], (short)response[8] == 0 ? "胜利" : "失败"));
+                                else
+                                {
+                                    Logger.Log(string.Format("【神魔竞技】挑战错误，result:{0}", response[0]), ConsoleColor.Red);
+                                    break;
+                                }
                             }//while
                         }//积分赛
 
@@ -698,6 +708,40 @@ namespace 神仙道
                         Logger.Log(string.Format("【猎命】猎命[{0}]成功，获得命格[{1}]，遇见[{2}]", Protocols.GetFateNPCName(_fateNpcIdOptimization), response[1], Protocols.GetFateNPCName((byte)response[2])));
                 }
             } //if (functionIds.Contains(24)) // 24:["Fate","180","猎命"],
+
+            if (functionIds.Contains(70)) // 70:["FindImmortal","286","喜从天降"],
+            {
+                // 五福临门
+                // YES:int = 11;
+                if ((byte)clientTown.IsFiveBlessingsOpen()[0] == 11)
+                {
+                    while (true)
+                    {
+                        response = clientTown.OpenFiveBlessings();
+                        var _bless_number = (short)response[0];
+                        var _stage = (byte)response[1];
+                        if (_stage != 0)
+                            // SUCCESS:int = 0;
+                            if ((byte)clientTown.EndBless()[0] == 0)
+                                Logger.Log("【五福临门】见好就收");
+                            else
+                            {
+                                Logger.Log("【五福临门】见好就收错误", ConsoleColor.Red);
+                                break;
+                            }
+                        if (_bless_number <= 0)
+                            break;
+                        // SUCCESS:int = 0;
+                        if ((byte)clientTown.StartBless()[0] == 0)
+                            Logger.Log("【五福临门】画龙鱼");
+                        else
+                        {
+                            Logger.Log("【五福临门】画龙鱼错误", ConsoleColor.Red);
+                            break;
+                        }
+                    }
+                } //if ((byte)clientTown.IsFiveBlessingsOpen()[0] == 11)
+            } //if (functionIds.Contains(70)) // 70:["FindImmortal","286","喜从天降"],
 
             if (functionIds.Contains(13) && !string.IsNullOrWhiteSpace(factionName)) // 13:["Faction","165","帮派"],
             {

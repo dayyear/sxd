@@ -371,9 +371,9 @@ namespace 神仙道
             return response;
         }//Challenge
 
-        // 神魔竞技-可以领取吗
+        // 神魔竞技-可以领取神魔大礼吗
         /// <summary>
-        /// 神魔竞技-可以领取吗
+        /// 神魔竞技-可以领取神魔大礼吗
         /// Mod_StSuperSport_Base.can_get_score_award(115,11)
         /// module:115, action:11
         /// request:[]
