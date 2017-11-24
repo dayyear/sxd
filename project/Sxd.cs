@@ -743,6 +743,28 @@ namespace 神仙道
                 } //if ((byte)clientTown.IsFiveBlessingsOpen()[0] == 11)
             } //if (functionIds.Contains(70)) // 70:["FindImmortal","286","喜从天降"],
 
+            if (functionIds.Contains(85)) // 85:["Nimbus","391","灵脉"],
+            {
+                response = clientTown.NimbusInfo();
+                var _commonTimes = (short)response[1];
+                var _ingotTimes = (short)response[2];
+                Logger.Log(string.Format("【灵脉】今日还有[木葫芦]×{0}，[金葫芦]×{1}", _commonTimes, _ingotTimes));
+                while (_commonTimes > 0)
+                {
+                    response = clientTown.GatherNimbus();
+                    var _result = (byte)response[0];
+                    var _getNimbus = (int)response[2];
+                    var _isLucky = (byte)response[3];
+                    var _crit = (short)response[4];
+                    _commonTimes = (short)response[5];
+                    // SUCCESS:int = 0;
+                    if (_result == 0)
+                        Logger.Log(_isLucky == 1 ? string.Format("【灵脉】发现[灵脉]，下次[灵气]×{0}", _crit) : string.Format("【灵脉】采集[灵气]×{0}", _getNimbus));
+                    else
+                        Logger.Log("【灵脉】采集灵气错误", ConsoleColor.Red);
+                }//while (_commonTimes > 0)
+            } //if (functionIds.Contains(85)) // 85:["Nimbus","391","灵脉"],
+
             if (functionIds.Contains(13) && !string.IsNullOrWhiteSpace(factionName)) // 13:["Faction","165","帮派"],
             {
                 // 帮派祭神

@@ -1996,15 +1996,63 @@ namespace 神仙道
         /// <summary>
         /// 灵脉-打开
         /// Mod_Nimbus_Base.nimbus_info(104,0)
-        /// 
+        /// module:104, action:0
+        /// request:[], 
+        /// response:[Utils.IntUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil]
+        /// Line 23-29 in NimbusData.as
+        ///     this.openInfo.nimbus = param1[_loc_2++];
+        ///     this.openInfo.commonTimes = param1[_loc_2++];
+        ///     this.openInfo.ingotTimes = param1[_loc_2++];
+        ///     this.openInfo.crit = param1[_loc_2++];
+        ///     this.openInfo.needIngot = param1[_loc_2++];
+        ///     this.openInfo.total_count = param1[_loc_2++];
+        ///     this.totalTimes = this.openInfo.commonTimes + this.openInfo.ingotTimes;
+        /// Example
+        ///     [3067,566,5,1,10,2657]
         /// </summary>
-        public JArray nimbus_info()
+        public JArray NimbusInfo()
         {
             done.Reset();
             Send(null, 104, 0);
             done.WaitOne();
             return response;
-        }//nimbus_info
+        }//NimbusInfo
+
+        // 灵脉-采集灵气
+        /// <summary>
+        /// 灵脉-采集灵气
+        /// Mod_Nimbus_Base.gather_nimbus(104,1)
+        /// module:104, action:1, 
+        /// request:[Utils.ByteUtil], 
+        /// Example
+        ///     [0]
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil]
+        /// Line 45-54 in NimbusData.as
+        ///     this.collectionObj.result = param1[_loc_2++];
+        ///     this.collectionObj.nimbus = param1[_loc_2++];
+        ///     this.collectionObj.getNimbus = param1[_loc_2++];
+        ///     this.collectionObj.isLucky = param1[_loc_2++] == 1;
+        ///     this.collectionObj.crit = param1[_loc_2++];
+        ///     this.collectionObj.commonTimes = param1[_loc_2++];
+        ///     this.collectionObj.ingotTimes = param1[_loc_2++];
+        ///     this.collectionObj.needIngot = param1[_loc_2++];
+        ///     this.collectionObj.total_count = param1[_loc_2++];
+        ///     this.totalTimes = this.collectionObj.commonTimes + this.collectionObj.ingotTimes;
+        /// Line 7 in Mod_Nimbus_Base.as
+        ///     public static const SUCCESS:int = 0;
+        /// Example
+        ///     [0,3067,0,1,2,565,5,10,2659]
+        ///     [0,3069,2,0,1,564,5,10,2663]
+        ///     [0,3069,0,1,2,563,5,10,2668]
+        ///     [0,3075,6,0,1,562,5,10,2670]
+        /// </summary>
+        public JArray GatherNimbus()
+        {
+            done.Reset();
+            Send(new JArray { 0 }, 104, 1);
+            done.WaitOne();
+            return response;
+        }//GatherNimbus
 
         // -------------------------------------------------------------------------------------------
         // 帮派

@@ -120,6 +120,8 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_FindImmortal_Base.open_five_blessings", "Callback");
             classDotMethodDictionary.Add("Mod_FindImmortal_Base.start_bless", "Callback");
             classDotMethodDictionary.Add("Mod_FindImmortal_Base.end_bless", "Callback");
+            classDotMethodDictionary.Add("Mod_Nimbus_Base.nimbus_info", "Callback");
+            classDotMethodDictionary.Add("Mod_Nimbus_Base.gather_nimbus", "Callback");
             //ST
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "Callback");
