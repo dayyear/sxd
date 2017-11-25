@@ -88,6 +88,30 @@ namespace 神仙道
             return _playerId;
         }//Login
 
+        // 进入仙界城镇
+        /// <summary>
+        /// 进入仙界城镇
+        /// Mod_StTown_Base.enter_town(95,0)
+        /// module:95, action:0, 
+        /// request:[Utils.IntUtil], 
+        /// Line 277 in TownTypeData.as
+        ///     41:["XianJie","仙界",{
+        /// Example
+        ///     [41]
+        /// response:[Utils.UByteUtil]
+        /// Line 9 in Mod_StTown_Base.as
+        ///     public static const SUCCESS:int = 2;
+        /// Example
+        ///     [2]
+        /// </summary>
+        public JArray EnterTown()
+        {
+            done.Reset();
+            Send(new JArray { 41 }, 95, 0);
+            done.WaitOne();
+            return response;
+        }//EnterTown
+
         // 仇人
         /// <summary>
         /// 获取最近打劫玩家，猜想可能用于仇人

@@ -326,6 +326,12 @@ namespace 神仙道
                     var playerIdST = clientST.Login(serverHostST, portST, serverNameST, playerId, nickName, serverTimeST, passCodeST);
                     Logger.Log(string.Format("【仙界】登录成功, 仙界玩家[ID{0}]", playerIdST), ConsoleColor.Green);
 
+                    // SUCCESS:int = 2;
+                    if ((byte)clientST.EnterTown()[0] == 2)
+                        Logger.Log("【仙界】进入仙界");
+                    else
+                        Logger.Log("【仙界】进入仙界错误", ConsoleColor.Red);
+
                     if (functionIds.Contains(90)) // 90:["ServerTakeBible","247","跨服取经"],
                     {
                         // 仇人

@@ -124,6 +124,7 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_Nimbus_Base.gather_nimbus", "Callback");
             //ST
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
+            classDotMethodDictionary.Add("Mod_StTown_Base.enter_town", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.get_take_bible_info", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.get_recent_rob_player", "Callback");
