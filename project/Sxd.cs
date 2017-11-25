@@ -420,28 +420,14 @@ namespace 神仙道
                                         Logger.Log(string.Format("【仙界竞技场】挑战[{0}级]对手胜利，获得积分[{1}]", _challengeList[0][3], _challengeAddIntegral));
                                     else
                                     {
-                                        Logger.Log(string.Format("【仙界竞技场】挑战[{0}级]对手失败", _challengeList[0][3]));
-
-                                        if (_reduceRefreshTime > 0)
-                                        {
-                                            /*_reduceRefreshTime = 60;
-                                            Logger.Log(string.Format("【仙界竞技场】等待[{0}]秒", _reduceRefreshTime), writeLine: false);
-                                            for (var t = 0; t < _reduceRefreshTime; t++)
-                                            {
-                                                Logger.Log(".", writeLine: false, showTime: false, file: false);
-                                                Thread.Sleep(1000);
-                                            }
-                                            Logger.Log(string.Empty, showTime: false);*/
-                                            break;
-                                        }
-
-                                        response = clientST.RefreshPlayerList();
+                                        Logger.Log(string.Format("【仙界竞技场】挑战[{0}级]对手失败，准备换一批挑战对手", _challengeList[0][3]));
+                                        // CD_TIME:int = 14;
+                                        while ((byte)(response = clientST.RefreshPlayerList())[0] == 14)
+                                            Thread.Sleep(2000);
                                         // SUCCESS:int = 13;
-                                        if ((byte)response[0] == 13)
-                                            Logger.Log("【仙界竞技场】换一批");
-                                        else
+                                        if ((byte) response[0] != 13)
                                         {
-                                            Logger.Log(string.Format("【仙界竞技场】换一批错误，result:{0}", response[0]), ConsoleColor.Red);
+                                            Logger.Log(string.Format("【仙界竞技场】换一批挑战对手错误，result:{0}", response[0]), ConsoleColor.Red);
                                             break;
                                         }
                                     }

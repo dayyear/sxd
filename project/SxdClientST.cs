@@ -553,8 +553,9 @@ namespace 神仙道
         /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil], Utils.IntUtil]
         /// Line 111 in StArenaData.as
         ///     oObject.list(param1, _loc_2, ["result", "challengeList", "reduceRefreshTime"]);
-        /// Line 20 in Mod_StArena_Base.as
+        /// Line 20,21 in Mod_StArena_Base.as
         ///     public static const SUCCESS:int = 13;
+        ///     public static const CD_TIME:int = 14;
         /// </summary>
         public JArray RefreshPlayerList()
         {
