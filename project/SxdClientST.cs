@@ -438,6 +438,108 @@ namespace 神仙道
             return response;
         }//PlayerGetScoreAward
 
+        // -------------------------------------------------------------------------------------------
+        // 仙界竞技场
+        // -------------------------------------------------------------------------------------------
+        // 仙界竞技场-比赛阶段
+        /// <summary>
+        /// 仙界竞技场-比赛阶段
+        /// Mod_StArena_Base.get_race_step(214,15)
+        /// module:214, action:15, 
+        /// request:[], 
+        /// response:[Utils.UByteUtil, [Utils.UByteUtil, Utils.IntUtil], Utils.IntUtil]
+        /// Line 247 in StArenaData.as
+        ///     oObject.list(param1, _loc_2, ["race_step", "time_list", "cup_race_time_step"]);
+        /// Line 7-8 in Mod_StArena_Base.as
+        ///     public static const SCORE_RACE:int = 0;
+        ///     public static const SCORE_RACE_COMPLETE:int = 1;
+        /// Example
+        ///     [0,[[3,1511082000],[5,1511085600],[7,1511089200],[9,1511092800],[11,1511096400]],600]
+        /// </summary>
+        public JArray GetRaceStep()
+        {
+            done.Reset();
+            Send(null, 214, 15);
+            done.WaitOne();
+            return response;
+        }//GetRaceStep
+
+        // 仙界竞技场-打开
+        /// <summary>
+        /// 仙界竞技场-打开
+        /// Mod_StArena_Base.open_st_arena(214,0)
+        /// module:214, action:0, 
+        /// request:[], 
+        /// response:[0.Utils.IntUtil, 1.Utils.ShortUtil, 2.Utils.IntUtil, 3.Utils.IntUtil, 4.Utils.IntUtil, 
+        ///           5.[Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil], 6.[Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.ByteUtil], 7.[Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil]]
+        /// Line 37 in StArenaData.as
+        ///     oObject.list(param1, _loc_2, [0."integral", 1."reduceChallengeCount", 2."awardFeats", 3."awardGetTime", 4."reduceRefreshTime", 
+        ///                                   5."challengeList", 6."reportList", 7."integralRankList"]);
+        /// Line 58 in StArenaData.as
+        ///     oObject.list(_loc_3, _loc_4, ["st_player_id", "integral", "role_id", "level"]);
+        /// Example
+        ///     [1220,5,52,1511625600,0,
+        ///     [[13924,1205,1,119],[17284,1127,6,121],[78944,1126,4,112],[137264,1128,3,120],[153604,1168,2,136]],[...],[...]]
+        /// </summary>
+        public JArray OpenStArena()
+        {
+            done.Reset();
+            Send(null, 214, 0);
+            done.WaitOne();
+            return response;
+        }//OpenStArena
+
+        // 仙界竞技场-挑战
+        /// <summary>
+        /// 仙界竞技场-挑战
+        /// Mod_StArena_Base.challenge(214,2)
+        /// module:214, action:2, 
+        /// request:[Utils.IntUtil, Utils.IntUtil], 
+        /// Example
+        ///     [17284,0]
+        /// response:[0.Utils.UByteUtil, 1.[Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.StringUtil, [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.LongUtil, Utils.LongUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil], Utils.ByteUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ShortUtil, Utils.ShortUtil, [Utils.ShortUtil], [Utils.ShortUtil], Utils.ShortUtil, Utils.ByteUtil, Utils.LongUtil, Utils.ByteUtil, Utils.IntUtil], [Utils.IntUtil], [Utils.IntUtil, Utils.IntUtil], Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil, [Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil], Utils.IntUtil, [Utils.IntUtil, Utils.ByteUtil], Utils.LongUtil, Utils.LongUtil, [Utils.IntUtil], Utils.ByteUtil, [Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, [Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil]]], [[Utils.ByteUtil, Utils.StringUtil, [Utils.UByteUtil, Utils.StringUtil], [Utils.StringUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil]], [Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, [Utils.StringUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil]], [Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.ByteUtil, [Utils.UByteUtil, Utils.ShortUtil, Utils.ByteUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], Utils.StringUtil, [Utils.IntUtil], [Utils.StringUtil], Utils.IntUtil, Utils.ShortUtil, Utils.LongUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.StringUtil, Utils.IntUtil, Utils.UByteUtil, [Utils.IntUtil, Utils.ShortUtil, [Utils.UByteUtil, Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], [Utils.StringUtil], [Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], Utils.StringUtil, [Utils.ShortUtil], Utils.StringUtil, [Utils.IntUtil], Utils.IntUtil, Utils.IntUtil, Utils.LongUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.IntUtil, Utils.ByteUtil], [Utils.IntUtil, Utils.StringUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil], [Utils.UByteUtil, Utils.StringUtil]], [Utils.IntUtil, Utils.IntUtil], [Utils.UByteUtil, Utils.StringUtil, [Utils.UByteUtil, Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil], [Utils.StringUtil]], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil], [Utils.IntUtil, Utils.LongUtil, Utils.IntUtil]], Utils.ShortUtil], 
+        ///           2.Utils.IntUtil, 3.Utils.IntUtil, 4.Utils.StringUtil, 
+        ///           5.Utils.StringUtil, 6.Utils.ShortUtil, 7.Utils.IntUtil, 8.Utils.IntUtil, 9.Utils.IntUtil, 
+        ///           10.Utils.IntUtil, 11.[Utils.IntUtil, Utils.IntUtil]]
+        /// Line 123 in StArenaData.as
+        ///     oObject.list(param1, _loc_2, [0."result", 1."warResult", 2."challengeAwardFeats", 3."challengeAddIntegral", 4."defenseStageName", 
+        ///                                   5."defenseServerName", 6."reduceChallengeCount", 7."item_id", 8."number", 9."award_st_snatch_treasure_scrap_id", 
+        ///                                   10."scrap_num", 11."award_item_list"]);
+        /// Line 20 in Mod_StArena_Base.as
+        ///     public static const SUCCESS:int = 13;
+        /// Example
+        ///     [13,[[...]],10,2,"7k7k",
+        ///     "yx567_s0125",4,0,0,0,
+        ///     0,[]]
+        /// </summary>
+        public JArray StArenaChallenge(int st_player_id)
+        {
+            done.Reset();
+            Send(new JArray { st_player_id, 0 }, 214, 2);
+            done.WaitOne();
+            return response;
+        }//StArenaChallenge
+
+        // 仙界竞技场-换一批
+        /// <summary>
+        /// 仙界竞技场-换一批
+        /// Mod_StArena_Base.refresh_player_list(214,1)
+        /// module:214, action:1, 
+        /// request:[], 
+        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil], Utils.IntUtil]
+        /// Line 111 in StArenaData.as
+        ///     oObject.list(param1, _loc_2, ["result", "challengeList", "reduceRefreshTime"]);
+        /// Line 20 in Mod_StArena_Base.as
+        ///     public static const SUCCESS:int = 13;
+        /// </summary>
+        public JArray RefreshPlayerList()
+        {
+            done.Reset();
+            Send(null, 214, 1);
+            done.WaitOne();
+            return response;
+        }//RefreshPlayerList
+
 
         private void Callback(JArray data)
         {

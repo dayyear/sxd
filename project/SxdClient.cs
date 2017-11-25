@@ -137,6 +137,10 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_StSuperSport_Base.player_score_award_info", "Callback");
             classDotMethodDictionary.Add("Mod_StSuperSport_Base.player_get_score_award", "Callback");
             classDotMethodDictionary.Add("Mod_StSuperSport_Base.can_get_score_award", "Callback");
+            classDotMethodDictionary.Add("Mod_StArena_Base.get_race_step", "Callback");
+            classDotMethodDictionary.Add("Mod_StArena_Base.open_st_arena", "Callback");
+            classDotMethodDictionary.Add("Mod_StArena_Base.challenge", "Callback");
+            classDotMethodDictionary.Add("Mod_StArena_Base.refresh_player_list", "Callback");
         }
 
         private void ProcessPackage(byte[] package, bool isReceive = true, bool isLogAllProtocols = false)

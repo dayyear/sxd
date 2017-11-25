@@ -379,7 +379,73 @@ namespace 神仙道
 
                     if (functionIds.Contains(132)) // 132:["StArena","300","仙界竞技场"],
                     {
+                        // 比赛阶段
+                        response = clientST.GetRaceStep();
+                        // SCORE_RACE:int = 0; SCORE_RACE_COMPLETE:int = 1;
+                        if ((byte)response[0] == 1)
+                        {
+                            Logger.Log("【仙界竞技场】今日[争霸赛]");
+                        } //争霸赛
+                        else
+                        {
+                            Logger.Log("【仙界竞技场】今日[积分赛]");
 
+                            while (true)
+                            {
+                                response = clientST.OpenStArena();
+                                var _integral = (int)response[0];
+                                var _reduceChallengeCount = (short)response[1];
+                                var _awardFeats = (int)response[2];
+                                var _reduceRefreshTime = (int)response[4];
+                                Logger.Log(string.Format("【仙界竞技场】我的积分[{0}]，积分奖励[{1}荣誉]，今日还可挑战[{2}]次", _integral, _awardFeats, _reduceChallengeCount));
+                                if (_reduceChallengeCount <= 0)
+                                    break;
+
+                                // 可挑战对手
+                                var _challengeList = ((JArray)response[5]).ToList();
+                                _challengeList.Sort((x, y) => ((int)x[1]).CompareTo((int)y[1]));
+
+                                // 开始挑战
+                                response = clientST.StArenaChallenge((int)_challengeList[0][0]);
+                                var _challengeAddIntegral = (int)response[3];
+                                // SUCCESS:int = 13;
+                                if ((byte)response[0] == 13)
+                                    if (_challengeAddIntegral > 0)
+                                        Logger.Log(string.Format("【仙界竞技场】挑战[{0}级]对手胜利，获得积分[{1}]", _challengeList[0][3], _challengeAddIntegral));
+                                    else
+                                    {
+                                        Logger.Log(string.Format("【仙界竞技场】挑战[{0}级]对手失败", _challengeList[0][3]));
+
+                                        if (_reduceRefreshTime > 0)
+                                        {
+                                            /*_reduceRefreshTime = 60;
+                                            Logger.Log(string.Format("【仙界竞技场】等待[{0}]秒", _reduceRefreshTime), writeLine: false);
+                                            for (var t = 0; t < _reduceRefreshTime; t++)
+                                            {
+                                                Logger.Log(".", writeLine: false, showTime: false, file: false);
+                                                Thread.Sleep(1000);
+                                            }
+                                            Logger.Log(string.Empty, showTime: false);*/
+                                            break;
+                                        }
+
+                                        response = clientST.RefreshPlayerList();
+                                        // SUCCESS:int = 13;
+                                        if ((byte)response[0] == 13)
+                                            Logger.Log("【仙界竞技场】换一批");
+                                        else
+                                        {
+                                            Logger.Log(string.Format("【仙界竞技场】换一批错误，result:{0}", response[0]), ConsoleColor.Red);
+                                            break;
+                                        }
+                                    }
+                                else
+                                {
+                                    Logger.Log(string.Format("【仙界竞技场】挑战错误，result:{0}", response[0]), ConsoleColor.Red);
+                                    break;
+                                }
+                            }//while
+                        } //积分赛
                     } //if (functionIds.Contains(132)) // 132:["StArena","300","仙界竞技场"],
 
                     if (functionIds.Contains(93)) // 93:["st_super_sport","206","仙界竞技场"]，实际上是神魔竞技
