@@ -122,6 +122,8 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_FindImmortal_Base.end_bless", "Callback");
             classDotMethodDictionary.Add("Mod_Nimbus_Base.nimbus_info", "Callback");
             classDotMethodDictionary.Add("Mod_Nimbus_Base.gather_nimbus", "Callback");
+            classDotMethodDictionary.Add("Mod_StArena_Base.exploit_shop_item_list", "Callback");
+            classDotMethodDictionary.Add("Mod_StArena_Base.buy_exploit_shop_item", "Callback");
             //ST
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
             classDotMethodDictionary.Add("Mod_StTown_Base.enter_town", "Callback");

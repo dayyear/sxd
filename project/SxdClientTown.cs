@@ -2055,6 +2055,51 @@ namespace 神仙道
         }//GatherNimbus
 
         // -------------------------------------------------------------------------------------------
+        // 荣誉商店
+        // -------------------------------------------------------------------------------------------
+        // 荣誉商店-打开
+        /// <summary>
+        /// 荣誉商店-打开
+        /// Mod_StArena_Base.exploit_shop_item_list(214,5)
+        /// module:214, action:5, 
+        /// request:[], 
+        /// response:[[Utils.ByteUtil, Utils.ShortUtil]]
+        /// Line 177 in StArenaData.as
+        ///     oObject.list(_loc_3, _loc_2, ["good_id", "good_count"]);
+        /// Example
+        ///     [[[4,50],[6,10],[5,10],[2,3],[1,10],[3,10],[7,50]]] // 2表示内丹
+        /// </summary>
+        public JArray ExploitShopItemList()
+        {
+            done.Reset();
+            Send(null, 214, 5);
+            done.WaitOne();
+            return response;
+        }//ExploitShopItemList
+
+        // 荣誉商店-买买买
+        /// <summary>
+        /// 荣誉商店-买买买
+        /// Mod_StArena_Base.buy_exploit_shop_item(214,6)
+        /// module:214, action:6, 
+        /// request:[Utils.ByteUtil, Utils.ShortUtil], 
+        /// Example
+        ///     [2,1]
+        /// response:[Utils.UByteUtil]
+        /// Line 20 in Mod_StArena_Base.as
+        ///     public static const SUCCESS:int = 13;
+        /// Example
+        ///     [13]
+        /// </summary>
+        public JArray BuyExploitShopItem(byte good_id, short good_count)
+        {
+            done.Reset();
+            Send(new JArray { good_id, good_count }, 214, 6);
+            done.WaitOne();
+            return response;
+        }//BuyExploitShopItem
+
+        // -------------------------------------------------------------------------------------------
         // 帮派
         // -------------------------------------------------------------------------------------------
         // 打开帮派祭神

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml.Linq;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace 神仙道
@@ -383,6 +384,7 @@ namespace 神仙道
                             Logger.Log("【家园】每日领取家园奖励");
                     } //if (functionIds.Contains(131)) // 131:["MarryHome","242","家园"],
 
+                    #region 仙界竞技场
                     if (functionIds.Contains(132)) // 132:["StArena","300","仙界竞技场"],
                     {
                         // 比赛阶段
@@ -447,8 +449,27 @@ namespace 神仙道
                                 }
                             }//while
                         } //积分赛
-                    } //if (functionIds.Contains(132)) // 132:["StArena","300","仙界竞技场"],
 
+                        // 荣誉商店买内丹
+                        response = clientTown.ExploitShopItemList();
+                        // 2表示内丹
+                        var _good_id = (byte)2;
+                        var _good_count = (short)((JArray)response[0]).ToList().First(x => (byte)x[0] == _good_id)[1];
+                        if (_good_count > 0)
+                        {
+                            response = clientTown.BuyExploitShopItem(_good_id, _good_count);
+                            // SUCCESS:int = 13;
+                            if ((byte)response[0] == 13)
+                                Logger.Log(string.Format("【仙界竞技场】荣誉商店买下[内丹]×{0}", _good_count));
+                            else
+                                Logger.Log(string.Format("【仙界竞技场】荣誉商店买[内丹]错误，result：{0}", response[0]));
+                        }
+                        else
+                            Logger.Log("【仙界竞技场】荣誉商店今日[内丹]已卖完");
+                    } //if (functionIds.Contains(132)) // 132:["StArena","300","仙界竞技场"],
+                    #endregion
+
+                    #region 神魔竞技
                     if (functionIds.Contains(93)) // 93:["st_super_sport","206","仙界竞技场"]，实际上是神魔竞技
                     {
                         // 状态
@@ -559,6 +580,7 @@ namespace 神仙道
                         }// 神魔大礼
 
                     } //if (functionIds.Contains(93)) // 93:["st_super_sport","206","仙界竞技场"],，实际上是神魔竞技
+                    #endregion
                 }//if ((int)response[0] == 0)
             } //if (functionIds.Contains(91)) // 91:["SuperTown","205","仙界"],
 
