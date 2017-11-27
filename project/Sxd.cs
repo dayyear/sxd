@@ -416,21 +416,30 @@ namespace 神仙道
                                 var _challengeAddIntegral = (int)response[3];
                                 // SUCCESS:int = 13;
                                 if ((byte)response[0] == 13)
+                                {
                                     if (_challengeAddIntegral > 0)
                                         Logger.Log(string.Format("【仙界竞技场】挑战[{0}级]对手胜利，获得积分[{1}]", _challengeList[0][3], _challengeAddIntegral));
                                     else
                                     {
-                                        Logger.Log(string.Format("【仙界竞技场】挑战[{0}级]对手失败，准备换一批挑战对手", _challengeList[0][3]));
-                                        // CD_TIME:int = 14;
-                                        while ((byte)(response = clientST.RefreshPlayerList())[0] == 14)
-                                            Thread.Sleep(2000);
+                                        Logger.Log(string.Format("【仙界竞技场】挑战[{0}级]对手失败", _challengeList[0][3]));
+
+                                        response = clientST.RefreshPlayerList();
                                         // SUCCESS:int = 13;
-                                        if ((byte) response[0] != 13)
+                                        if ((byte)response[0] == 13)
+                                            Logger.Log("【仙界竞技场】成功刷新挑战列表");
+                                        // CD_TIME:int = 14;
+                                        else if ((byte)response[0] == 14)
                                         {
-                                            Logger.Log(string.Format("【仙界竞技场】换一批挑战对手错误，result:{0}", response[0]), ConsoleColor.Red);
+                                            Logger.Log("【仙界竞技场】刷新挑战列表冷却时间");
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Logger.Log(string.Format("【仙界竞技场】刷新挑战列表错误，result:{0}", response[0]), ConsoleColor.Red);
                                             break;
                                         }
                                     }
+                                }
                                 else
                                 {
                                     Logger.Log(string.Format("【仙界竞技场】挑战错误，result:{0}", response[0]), ConsoleColor.Red);
