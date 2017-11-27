@@ -2100,6 +2100,79 @@ namespace 神仙道
         }//BuyExploitShopItem
 
         // -------------------------------------------------------------------------------------------
+        // 劫镖
+        // -------------------------------------------------------------------------------------------
+        // 劫镖-打开
+        /// <summary>
+        /// 劫镖-打开
+        /// Mod_RobMoney_Base.get_rob_money_info(314,0)
+        /// module:314, action:0, 
+        /// request:[], 
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, [Utils.IntUtil, Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil], Utils.StringUtil, Utils.IntUtil, Utils.IntUtil]
+        /// Line 37 in RobMoneyData.as
+        ///     oObject.list(param1, this.robMoneyObject, ["rob_status", "total_rob_times", "free_rob_times", "left_buy_times", "max_buy_times", "ship_list", "nickname", "had_rob_times", "max_rob_times"]);
+        /// Line 7-8 in Mod_RobMoney_Base.as
+        ///     public static const NOT_SEARCH:int = 0;
+        ///     public static const SEARCHED:int = 1;
+        /// Example
+        ///     [0,1,1,3,3,[[236608,2,95744,0],[236605,3,117100,0],[236780,2,59010,0],[236778,2,74448,0],[236603,2,136730,0],[238091,3,25645,0],[236609,4,83807,0],[236610,4,77020,0],[238093,4,11497,0],[236606,4,107130,0],[236779,4,63648,0],[238090,2,36639,0],[238092,2,20884,0],[236607,2,102858,0],[236781,4,47675,0],[236604,2,125749,0]],"",143,50]
+        ///     [1,1,1,3,3,[[236608,2,97744,0],[236605,3,119100,1],[236780,2,61010,0],[236778,2,76448,0],[236603,2,138730,0],[238091,3,27645,0],[236609,4,85807,0],[236610,4,79020,0],[238093,4,13497,0],[236606,4,109130,0],[236779,4,65648,0],[238090,2,38639,0],[238092,2,22884,0],[236607,2,104858,0],[236781,4,49675,0],[236604,2,127749,0]],"",143,50]
+        ///     [0,0,0,3,3,[[236608,2,97744,0],[238094,3,1116,0],[236780,2,61010,0],[236778,2,76448,0],[236603,2,138730,0],[238091,3,27645,0],[236609,4,85807,0],[236610,4,79020,0],[238093,4,13497,0],[236606,4,109130,0],[236779,4,65648,0],[238090,2,38639,0],[238092,2,22884,0],[236607,2,104858,0],[236781,4,49675,0],[236604,2,127749,0]],"",144,50]
+        /// </summary>
+        public JArray GetRobMoneyInfo()
+        {
+            done.Reset();
+            Send(null, 314, 0);
+            done.WaitOne();
+            return response;
+        }//GetRobMoneyInfo
+
+        // 劫镖-开始勘察
+        /// <summary>
+        /// 劫镖-开始勘察
+        /// Mod_RobMoney_Base.search(314,1)
+        /// module:314, action:1, 
+        /// request:[], 
+        /// response:[[Utils.IntUtil], Utils.UByteUtil]
+        /// Line 67 in RobMoneyData.as
+        ///     oObject.list(param1, this.searchObject, ["ship_id_list", "result"]);
+        /// Line 12 in Mod_RobMoney_Base.as
+        ///     public static const SUCCESS:int = 5;
+        /// Example
+        ///     [[[236605]],5]
+        /// </summary>
+        public JArray RobMoneySearch()
+        {
+            done.Reset();
+            Send(null, 314, 1);
+            done.WaitOne();
+            return response;
+        }//RobMoneySearch
+
+        // 劫镖-开始劫镖
+        /// <summary>
+        /// 劫镖-开始劫镖
+        /// Mod_RobMoney_Base.rob(314,2)
+        /// module:314, action:2, 
+        /// request:[], 
+        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.IntUtil]]
+        /// Line 76,84 in RobMoneyData.as
+        ///     this.result = param1[0];
+        ///     oObject.list(_loc_3, _loc_2, ["item_id", "item_count"]);
+        /// Line 12 in Mod_RobMoney_Base.as
+        ///     public static const SUCCESS:int = 5;
+        /// Example
+        ///     [5,[[1747,10000000]]]
+        /// </summary>
+        public JArray RobMoneyRob()
+        {
+            done.Reset();
+            Send(null, 314, 2);
+            done.WaitOne();
+            return response;
+        }//RobMoneyRob
+
+        // -------------------------------------------------------------------------------------------
         // 帮派
         // -------------------------------------------------------------------------------------------
         // 打开帮派祭神

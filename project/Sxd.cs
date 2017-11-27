@@ -377,12 +377,14 @@ namespace 神仙道
                         } //while(true)
                     } //if (functionIds.Contains(90)) // 90:["ServerTakeBible","247","跨服取经"],
 
+                    #region 家园
                     if (functionIds.Contains(131)) // 131:["MarryHome","242","家园"],
                     {
                         response = clientST.BatchGetFurnitureEffect();
                         if (response[0].Any())
                             Logger.Log("【家园】每日领取家园奖励");
                     } //if (functionIds.Contains(131)) // 131:["MarryHome","242","家园"],
+                    #endregion
 
                     #region 仙界竞技场
                     if (functionIds.Contains(132)) // 132:["StArena","300","仙界竞技场"],
@@ -855,6 +857,45 @@ namespace 神仙道
                         Logger.Log("【灵脉】采集灵气错误", ConsoleColor.Red);
                 }//while (_commonTimes > 0)
             } //if (functionIds.Contains(85)) // 85:["Nimbus","391","灵脉"],
+
+            if (functionIds.Contains(173)) // 173:["RobMoney","530","劫镖"],
+            {
+                while (true)
+                {
+                    response = clientTown.GetRobMoneyInfo();
+                    var _rob_status = (byte)response[0];
+                    var _free_rob_times = (int)response[2];
+                    // NOT_SEARCH:int = 0; SEARCHED:int = 1;
+                    if (_rob_status == 1)
+                    {
+                        response = clientTown.RobMoneyRob();
+                        // SUCCESS:int = 5;
+                        if ((byte)response[0] == 5)
+                            Logger.Log(string.Format("【劫镖】获得[铜钱]×{0}", response[1][0][1]));
+                        else
+                        {
+                            Logger.Log("【劫镖】错误", ConsoleColor.Red);
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (_free_rob_times <= 0)
+                            break;
+
+                        response = clientTown.RobMoneySearch();
+                        // SUCCESS:int = 5;
+                        if ((byte)response[1] == 5)
+                            Logger.Log("【劫镖】勘察成功");
+                        else
+                        {
+                            Logger.Log("【劫镖】勘察错误", ConsoleColor.Red);
+                            break;
+                        }
+                    }
+                }
+
+            } //if (functionIds.Contains(173)) // 173:["RobMoney","530","劫镖"],
 
             if (functionIds.Contains(13) && !string.IsNullOrWhiteSpace(factionName)) // 13:["Faction","165","帮派"],
             {
