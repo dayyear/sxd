@@ -462,6 +462,97 @@ namespace 神仙道
             return response;
         }//PlayerGetScoreAward
 
+        // 神魔竞技-
+        /// <summary>
+        /// 神魔竞技-
+        /// Mod_StSuperSport_Base.get_race_step(115,30)
+        /// module:115, action:30, 
+        /// request:[], 
+        /// response:[Utils.UByteUtil, Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, [Utils.UByteUtil, Utils.IntUtil], Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil, Utils.StringUtil, [Utils.StringUtil, Utils.StringUtil], Utils.IntUtil]
+        ///     
+        ///     oObject.list(param1, _loc_2, ["race_step", "player_step", "war_round", "player_number", "time_list", "cup_race_time_step", "apply_id", "group", "war_zone", "server_list", "bet_player_id"]);
+        /// 
+        ///     public static const ST_SUPER_SPORT_WAR_CLOSE:int = 4;
+        ///     public static const ST_SUPER_SPORT_WAR_PREPARE:int = 5;
+        ///     public static const ST_SUPER_SPORT_WAR_16:int = 6;
+        ///     public static const ST_SUPER_SPORT_WAR_16_COMPLETE:int = 7;
+        ///     public static const ST_SUPER_SPORT_WAR_8:int = 8;
+        ///     public static const ST_SUPER_SPORT_WAR_8_COMPLETE:int = 9;
+        ///     public static const ST_SUPER_SPORT_WAR_4:int = 10;
+        ///     public static const ST_SUPER_SPORT_WAR_4_COMPLETE:int = 11;
+        ///     public static const ST_SUPER_SPORT_WAR_2:int = 12;
+        ///     public static const ST_SUPER_SPORT_WAR_2_COMPLETE:int = 13;
+        ///     public static const ST_SUPER_SPORT_WAR_1:int = 14;
+        ///     public static const ST_SUPER_SPORT_WAR_1_COMPLETE:int = 15;
+        ///     public static const ST_SUPER_SPORT_WAR_0:int = 16;
+        ///     public static const ST_SUPER_SPORT_WAR_0_COMPLETE:int = 17;
+        ///     public static const ST_SUPER_SPORT_WAR_START:int = 18;
+        /// Example
+        ///     准备：[5,6,0,0,[[6,1511773200],[8,1511776800],[10,1511780400],[12,1511784000],[14,1511787600],[16,1511791200]],600,203957,1,"",[],0]
+        ///     16强：[6,6,0,64,[[6,1511773200],[8,1511776800],[10,1511780400],[12,1511784000],[14,1511787600],[16,1511791200]],600,203957,1,"",[],5417]
+        ///     16强完：[7,6,0,0,[[6,1511773200],[8,1511776800],[10,1511780400],[12,1511784000],[14,1511787600],[16,1511791200]],600,203957,1,"",[],5417]
+        /// </summary>
+        public JArray StSuperSportGetRaceStep()
+        {
+            done.Reset();
+            Send(null, 115, 30);
+            done.WaitOne();
+            return response;
+        }//StSuperSportGetRaceStep
+
+        // 神魔竞技-
+        /// <summary>
+        /// 神魔竞技-
+        /// Mod_StSuperSport_Base.get_race_list(115,32)
+        /// module:115, action:32, 
+        /// request:[Utils.UByteUtil], 
+        /// 
+        ///     public static const GROUP_TIAN_BANG:int = 1;
+        ///     public static const GROUP_DI_BANG:int = 2;
+        ///     public static const GROUP_FINALLY:int = 3;
+        /// Example
+        ///     [1], [2], [3]
+        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.StringUtil, Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.StringUtil, Utils.StringUtil, Utils.LongUtil, [Utils.ShortUtil, Utils.ShortUtil], Utils.StringUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.UByteUtil, Utils.IntUtil, Utils.StringUtil, Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.StringUtil, Utils.StringUtil, Utils.LongUtil, [Utils.ShortUtil, Utils.ShortUtil], Utils.StringUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.UByteUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil], [Utils.IntUtil], [Utils.IntUtil], [Utils.IntUtil], [Utils.IntUtil], Utils.IntUtil, [Utils.IntUtil]]
+        /// 
+        ///     oObject.list(param1, _loc_2, [0."group", 1."player_list", 2."current_war_result", 3."top_16", 4."top_8", 5."top_4", 6."top_2", 7."top_1", 8."can_bet_coin_list"]);
+        ///     _loc_7 = [0."player_id", 1."player_nickname", 2."role_id", 3."attack_power", 4."fame", 
+        ///               5."level", 6."stage_name", 7."view_server_name", 8."bet_coin", 9."role_list", 
+        ///               10."pet_name", 11."pet_level", 12."pet_step", 13."enemy"];
+        /// Example
+        ///     [1,[[24373,"度日如年.s1",104,7186843,0,250,"心动","s04",2000000,[],"",0,0,20,6395,"金麟龙.s8",100,3890726,0,217,"37wan","37wan_s0273",0,[],"",0,0,20],[4074,"问道.s1",104,3526116,0,250,"心动","s04",0,[],"",0,0,20,204132,"轩辕豹.s1",100,882214,0,149,"心动","s04",0,[],"",0,0,20],[197708,"蓝牙国家.s1",5,7010203,0,250,"心动","s04",0,[],"",0,0,20,4554,"让艳晨爱上我.s1",104,782668,0,125,"心动","s04",0,[],"",0,0,20],[205960,"唐蕊卉.s1",6,767188,0,126,"心动","s04",0,[],"",0,0,20,203964,"高千字.s1",104,478252,0,152,"心动","s04",0,[],"",0,0,20],[5417,"海欲.s6",104,8865013,0,210,"37wan","37wan_s0273",131500000,[],"",0,0,20,205955,"尹晴萱.s3",2,1301225,0,146,"心动","s02",0,[],"",0,0,20],[2917,"硅步万里.s10",100,3044919,0,250,"要玩","yaowan_s0152",0,[],"",0,0,20,14792,"候博.s4",1,1070376,0,142,"心动","s04",0,[],"",0,0,20],[201283,"闻人飞云.s1",2,5300471,0,246,"37wan","37wan_s0273",0,[],"",0,0,20,6508,"金麟龙.s7",5,3223408,0,217,"37wan","37wan_s0273",0,[],"",0,0,20],[203725,"绝色倾城.s1",102,3108479,0,204,"心动","s04",0,[],"",0,0,20,2874,"石红.s10",104,3125595,0,197,"要玩","yaowan_s0152",0,[],"",0,0,20],[8536,"☆弑神者☆.s1",102,5394715,0,250,"7k7k","yx567_s0125",0,[],"",0,0,20,26581,"无可奈何.s1",100,5061826,0,223,"心动","s04",0,[],"",0,0,20],[203966,"甄斐斐.s1",104,397770,0,154,"心动","s04",0,[],"",0,0,20,6511,"金麟龙.s6",1,3319714,0,217,"37wan","37wan_s0273",0,[],"",0,0,20],[7804,"万里挑一.s5",6,5821585,0,205,"7k7k","yx567_s0125",0,[],"",0,0,20,17756,"诸葛义锋.s1",100,1188761,0,162,"7k7k","yx567_s0125",0,[],"",0,0,20],[203962,"伍岚芷.s1",110,516879,0,156,"心动","s04",0,[],"",0,0,20,11083,"强大的蜗牛.s1",104,3392974,0,211,"心动","s04",0,[],"",0,0,20],[10243,"梦幻小紫晶.s1",102,5175558,0,236,"7k7k","yx567_s0125",0,[],"",0,0,20,203957,"庄恭春.s1",5,753066,0,167,"心动","s04",0,[],"",0,0,20],[2112,"牛牛.s3",106,4209741,0,250,"6711","6711_s0160",0,[],"",0,0,20,14969,"lx1026.s1",5,907332,0,134,"心动","s04",0,[],"",0,0,20],[200547,"哥玩地寂寞.s1",104,7018813,0,250,"心动","s04",0,[],"",0,0,20,206601,"白字钦.s1",3,1033570,0,146,"心动","s04",0,[],"",0,0,20],[2833,"春桃1.s4",100,4518472,0,232,"95k","95k_s081",0,[],"",0,0,20,203960,"和謇暴.s1",3,356303,0,151,"心动","s04",0,[],"",0,0,20]],[],[],[],[],[],0,[[2000000]]]
+        ///     [2,[[684,"超级邪剑仙.s4",100,5567983,0,237,"95k","95k_s081",0,[],"",0,0,20,206932,"袁载狱.s1",1,582194,0,110,"37wan","37wan_s0273",0,[],"",0,0,20],[9167,"骨灰玩家丶.s1",2,4571859,0,226,"心动","s04",0,[],"",0,0,20,3270,"奶油糖兔死妈.s4",1,1586823,0,149,"心动","s04",0,[],"",0,0,20],[8147,"李嘯龙.s5",106,7380024,0,250,"7k7k","yx567_s0125",0,[],"",0,0,20,2364,"好无聊.s10",104,5408628,0,220,"要玩","yaowan_s0152",0,[],"",0,0,20],[207059,"舒衣萦.s1",6,397035,0,89,"心动","s04",0,[],"",0,0,20,205754,"诸葛贤圣.s3",102,1169741,0,154,"心动","s02",0,[],"",0,0,20],[201992,"夜凉诚.s1",100,5817810,0,220,"心动","s04",0,[],"",0,0,20,2934,"司马婷娆.s10",106,2390827,0,192,"要玩","yaowan_s0152",0,[],"",0,0,20],[203965,"董乘六.s1",107,391110,0,153,"心动","s04",0,[],"",0,0,20,2224,"马妹汁.s8",102,4312194,0,246,"心动","s05",0,[],"",0,0,20],[200966,"姐玩的寂寞.s1",102,6079973,0,250,"心动","s04",0,[],"",0,0,20,206708,"王丘闪.s1",100,857972,0,130,"37wan","37wan_s0273",0,[],"",0,0,20],[1000,"徐御茂.s1",100,3854562,0,215,"心动","s04",0,[],"",0,0,20,206808,"纪衣妙.s2",109,549625,0,106,"37wan","37wan_s0273",0,[],"",0,0,20],[1237,"江门古天乐.s1",100,7209889,0,217,"心动","s04",5000000,[],"",0,0,20,206177,"欧阳柏岚.s4",6,1393017,0,159,"37wan","37wan_s0273",0,[],"",0,0,20],[22112,"凌风箭羽.s4",108,1221336,0,161,"7k7k","yx567_s0125",0,[],"",0,0,20,7975,"拳王1号.s5",104,4116792,0,250,"7k7k","yx567_s0125",0,[],"",0,0,20],[2187,"圣⊙何仙姑.s3",206,7817505,0,231,"56","56_s024",0,[],"",0,0,20,12618,"云渠青.s9",1,880587,0,142,"心动","s05",0,[],"",0,0,20],[204599,"吕悟茂.s4",104,2477404,0,195,"37wan","37wan_s0273",0,[],"",0,0,20,2821,"黄驹炼.s4",102,3964554,0,222,"95k","95k_s081",0,[],"",0,0,20],[3212,"毕柳薰.s1",106,6497897,0,249,"心动","s04",0,[],"",0,0,20,205700,"欧阳千伟.s1",5,1118576,0,153,"心动","s04",0,[],"",0,0,20],[10585,"苏苏.s3",6,4199984,0,209,"心动","s02",0,[],"",0,0,19,190989,"吕洞宾.s10",6,5313525,0,243,"95k","95k_s081",0,[],"",0,0,20],[8474,"无敌铁砂掌.s1",102,6885750,0,250,"7k7k","yx567_s0125",0,[],"",0,0,20,3426,"阿珂.s9",6,5119910,0,250,"心动","s05",0,[],"",0,0,20],[9890,"霸气剑皇.s2",5,1205008,0,158,"7k7k","yx567_s0125",0,[],"",0,0,20,203963,"郎森三.s1",104,475050,0,153,"心动","s04",0,[],"",0,0,20]],[],[],[],[],[],0,[[2000000]]]
+        ///     [3,[],[[2,243822,"2017112401"]],[],[],[],[],0,[]]
+        /// </summary>
+        public JArray StSuperSportGetRaceList(byte i)
+        {
+            done.Reset();
+            Send(new JArray { i }, 115, 32);
+            done.WaitOne();
+            return response;
+        }//StSuperSportGetRaceList
+
+        // 神魔竞技-
+        /// <summary>
+        /// 神魔竞技-
+        /// Send method: Mod_StSuperSport_Base.bet(115,37)
+        /// module:115, action:37, 
+        /// request:[Utils.IntUtil], 
+        /// Example
+        ///     [5417]
+        /// response:[Utils.UByteUtil, Utils.IntUtil]
+        /// 
+        ///     public static const SUCCESS:int = 28;
+        /// Example
+        ///     [28,5417]
+        /// </summary>
+        public JArray StSuperSportBet(int id)
+        {
+            done.Reset();
+            Send(new JArray { id }, 115, 37);
+            done.WaitOne();
+            return response;
+        }//StSuperSportBet
+
         // -------------------------------------------------------------------------------------------
         // 仙界竞技场
         // -------------------------------------------------------------------------------------------

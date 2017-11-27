@@ -480,6 +480,102 @@ namespace 神仙道
                         if ((byte)response[0] == 25)
                         {
                             Logger.Log("【神魔竞技】今日[神魔大战]");
+
+                            response = clientST.StSuperSportGetRaceStep();
+                            var _bet_player_id = (int)response[10];
+                            if (_bet_player_id > 0)
+                                Logger.Log("【神魔竞技】已投注");
+                            else
+                            {
+                                var _race_step = (byte)response[0];
+                                // ST_SUPER_SPORT_WAR_PREPARE:int = 5;     ST_SUPER_SPORT_WAR_16_COMPLETE:int = 7;
+                                // ST_SUPER_SPORT_WAR_8_COMPLETE:int = 9;  ST_SUPER_SPORT_WAR_4_COMPLETE:int = 11;
+                                // ST_SUPER_SPORT_WAR_2_COMPLETE:int = 13; ST_SUPER_SPORT_WAR_1_COMPLETE:int = 15;
+                                if (_race_step % 2 == 1 && _race_step >= 5 && _race_step <= 15)
+                                {
+                                    var _player_list = new List<List<JToken>>();
+                                    var _top16_list = new List<int>();
+                                    var _top8_list = new List<int>();
+                                    var _top4_list = new List<int>();
+                                    var _top2_list = new List<int>();
+                                    var _top1_list = new List<int>();
+
+                                    // 神族
+                                    response = clientST.StSuperSportGetRaceList(1);
+                                    var _player1_list = response[1].ToList();
+                                    foreach (var _player in _player1_list)
+                                    {
+                                        _player_list.Add(_player.ToList().GetRange(0, 14));
+                                        _player_list.Add(_player.ToList().GetRange(14, 14));
+                                    }
+                                    _top16_list.AddRange(response[3].Select(x=>(int)x[0]));
+                                    _top8_list.AddRange(response[4].Select(x=>(int)x[0]));
+                                    _top4_list.AddRange(response[5].Select(x=>(int)x[0]));
+                                    _top2_list.AddRange(response[6].Select(x=>(int)x[0]));
+                                    _top1_list.Add((int)response[7]);
+
+                                    // 魔族
+                                    response = clientST.StSuperSportGetRaceList(2);
+                                    var _player2_list = ((JArray)response[1]).ToList();
+                                    foreach (var _player in _player2_list)
+                                    {
+                                        _player_list.Add(_player.ToList().GetRange(0, 14));
+                                        _player_list.Add(_player.ToList().GetRange(14, 14));
+                                    }
+                                    _top16_list.AddRange(response[3].Select(x => (int)x[0]));
+                                    _top8_list.AddRange(response[4].Select(x => (int)x[0]));
+                                    _top4_list.AddRange(response[5].Select(x => (int)x[0]));
+                                    _top2_list.AddRange(response[6].Select(x => (int)x[0]));
+                                    _top1_list.Add((int)response[7]);
+
+                                    List<JToken> _playerOptimization;
+                                    switch (_race_step)
+                                    {
+                                        case 5:
+                                            _player_list.Sort((x, y) => ((int)x[3]).CompareTo((int)y[3]));
+                                            _playerOptimization = _player_list.Last();
+                                            break;
+                                        case 7:
+                                            _player_list = _player_list.Where(x => _top16_list.Contains((int)x[0])).ToList();
+                                            _player_list.Sort((x, y) => ((int)x[3]).CompareTo((int)y[3]));
+                                            _playerOptimization = _player_list.Last();
+                                            break;
+                                        case 9:
+                                            _player_list = _player_list.Where(x => _top8_list.Contains((int)x[0])).ToList();
+                                            _player_list.Sort((x, y) => ((int)x[3]).CompareTo((int)y[3]));
+                                            _playerOptimization = _player_list.Last();
+                                            break;
+                                        case 11:
+                                            _player_list = _player_list.Where(x => _top4_list.Contains((int)x[0])).ToList();
+                                            _player_list.Sort((x, y) => ((int)x[3]).CompareTo((int)y[3]));
+                                            _playerOptimization = _player_list.Last();
+                                            break;
+                                        case 13:
+                                            _player_list = _player_list.Where(x => _top2_list.Contains((int)x[0])).ToList();
+                                            _player_list.Sort((x, y) => ((int)x[3]).CompareTo((int)y[3]));
+                                            _playerOptimization = _player_list.Last();
+                                            break;
+                                        case 15:
+                                            _player_list = _player_list.Where(x => _top1_list.Contains((int)x[0])).ToList();
+                                            _player_list.Sort((x, y) => ((int)x[3]).CompareTo((int)y[3]));
+                                            _playerOptimization = _player_list.Last();
+                                            break;
+                                        default:
+                                            throw new Exception("不可能");
+                                    }
+                                    var _playId = (int)_playerOptimization[0];
+                                    var _playName = (string)_playerOptimization[1];
+                                    response = clientST.StSuperSportBet(_playId);
+                                    // SUCCESS:int = 28;
+                                    if ((byte)response[0] == 28)
+                                        Logger.Log(string.Format("【神魔竞技】投注战场最强玩家[{0}]", _playName));
+                                    else
+                                        Logger.Log("【神魔竞技】投注错误", ConsoleColor.Red);
+                                }
+                            }
+
+
+
                         }//神魔大战
                         else
                         {

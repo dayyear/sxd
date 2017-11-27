@@ -147,6 +147,9 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_StArena_Base.open_st_arena", "Callback");
             classDotMethodDictionary.Add("Mod_StArena_Base.challenge", "Callback");
             classDotMethodDictionary.Add("Mod_StArena_Base.refresh_player_list", "Callback");
+            classDotMethodDictionary.Add("Mod_StSuperSport_Base.get_race_step", "Callback");
+            classDotMethodDictionary.Add("Mod_StSuperSport_Base.get_race_list", "Callback");
+            classDotMethodDictionary.Add("Mod_StSuperSport_Base.bet", "Callback");
         }
 
         private void ProcessPackage(byte[] package, bool isReceive = true, bool isLogAllProtocols = false)
