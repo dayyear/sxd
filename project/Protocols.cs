@@ -13,6 +13,14 @@ namespace 神仙道
     public static class Protocols
     {
         /// <summary>
+        /// 静态构造函数
+        /// </summary>
+        static Protocols()
+        {
+            items = JObject.Parse(File.ReadAllText("protocols/ItemsR165.json"));
+        }//Protocols
+
+        /// <summary>
         /// 编码
         /// </summary>
         public static IEnumerable<byte> Encode(JArray data, JArray pattern)
@@ -234,7 +242,12 @@ namespace 神仙道
             return fateNPCs[id];
         }
 
+        private static readonly JObject items;
 
+        public static string GetItemName(int id)
+        {
+            return (string)items[id.ToString()][0];
+        }
 
     } //class
 } //namespace

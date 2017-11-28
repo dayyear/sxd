@@ -462,16 +462,16 @@ namespace 神仙道
             return response;
         }//PlayerGetScoreAward
 
-        // 神魔竞技-
+        // 神魔竞技-神魔大战比赛阶段
         /// <summary>
-        /// 神魔竞技-
+        /// 神魔竞技-神魔大战比赛阶段
         /// Mod_StSuperSport_Base.get_race_step(115,30)
         /// module:115, action:30, 
         /// request:[], 
         /// response:[Utils.UByteUtil, Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, [Utils.UByteUtil, Utils.IntUtil], Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil, Utils.StringUtil, [Utils.StringUtil, Utils.StringUtil], Utils.IntUtil]
-        ///     
+        /// Line 273 in StSuperSportData.as
         ///     oObject.list(param1, _loc_2, ["race_step", "player_step", "war_round", "player_number", "time_list", "cup_race_time_step", "apply_id", "group", "war_zone", "server_list", "bet_player_id"]);
-        /// 
+        /// Line 11-25 in Mod_StSuperSport_Base.as
         ///     public static const ST_SUPER_SPORT_WAR_CLOSE:int = 4;
         ///     public static const ST_SUPER_SPORT_WAR_PREPARE:int = 5;
         ///     public static const ST_SUPER_SPORT_WAR_16:int = 6;
@@ -500,20 +500,20 @@ namespace 神仙道
             return response;
         }//StSuperSportGetRaceStep
 
-        // 神魔竞技-
+        // 神魔竞技-神魔大战参赛选手
         /// <summary>
-        /// 神魔竞技-
+        /// 神魔竞技-神魔大战参赛选手
         /// Mod_StSuperSport_Base.get_race_list(115,32)
         /// module:115, action:32, 
         /// request:[Utils.UByteUtil], 
-        /// 
+        /// Line 8 in Mod_StSuperSport_Base.as
         ///     public static const GROUP_TIAN_BANG:int = 1;
         ///     public static const GROUP_DI_BANG:int = 2;
         ///     public static const GROUP_FINALLY:int = 3;
         /// Example
         ///     [1], [2], [3]
         /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.StringUtil, Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.StringUtil, Utils.StringUtil, Utils.LongUtil, [Utils.ShortUtil, Utils.ShortUtil], Utils.StringUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.UByteUtil, Utils.IntUtil, Utils.StringUtil, Utils.ShortUtil, Utils.IntUtil, Utils.IntUtil, Utils.ShortUtil, Utils.StringUtil, Utils.StringUtil, Utils.LongUtil, [Utils.ShortUtil, Utils.ShortUtil], Utils.StringUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.UByteUtil], [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil], [Utils.IntUtil], [Utils.IntUtil], [Utils.IntUtil], [Utils.IntUtil], Utils.IntUtil, [Utils.IntUtil]]
-        /// 
+        /// Line 390,399 in StSuperSportData.as.as
         ///     oObject.list(param1, _loc_2, [0."group", 1."player_list", 2."current_war_result", 3."top_16", 4."top_8", 5."top_4", 6."top_2", 7."top_1", 8."can_bet_coin_list"]);
         ///     _loc_7 = [0."player_id", 1."player_nickname", 2."role_id", 3."attack_power", 4."fame", 
         ///               5."level", 6."stage_name", 7."view_server_name", 8."bet_coin", 9."role_list", 
@@ -531,16 +531,16 @@ namespace 神仙道
             return response;
         }//StSuperSportGetRaceList
 
-        // 神魔竞技-
+        // 神魔竞技-下注
         /// <summary>
-        /// 神魔竞技-
+        /// 神魔竞技-下注
         /// Send method: Mod_StSuperSport_Base.bet(115,37)
         /// module:115, action:37, 
         /// request:[Utils.IntUtil], 
         /// Example
         ///     [5417]
         /// response:[Utils.UByteUtil, Utils.IntUtil]
-        /// 
+        /// Line 35 in Mod_StSuperSport_Base.as
         ///     public static const SUCCESS:int = 28;
         /// Example
         ///     [28,5417]

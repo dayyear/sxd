@@ -2173,6 +2173,186 @@ namespace 神仙道
         }//RobMoneyRob
 
         // -------------------------------------------------------------------------------------------
+        // 九空无界-聚灵
+        // -------------------------------------------------------------------------------------------
+        // 九空无界面板
+        /// <summary>
+        /// 九空无界面板
+        /// Mod_NineRegions_Base.open_panel(58,0)
+        /// module:58, action:0, 
+        /// request:[], 
+        /// response:[Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]
+        /// Line 58-61 in NineRegionsData.as
+        ///     this.nineRegionsInfo.isFrist = param1[0] == 1;
+        ///     this.nineRegionsInfo.curJie = param1[1];
+        ///     this.nineRegionsInfo.curLevel = param1[2];
+        ///     this.hiddenLevel = param1[3];
+        /// Example
+        ///     [0,11,9,0] 11: 玄木界
+        ///     [0,1,0,0]  1:  厚土界
+        ///     [1,0,0,0]  0:  没有开通九空无界
+        /// </summary>
+        public JArray NineRegionsOpenPanel()
+        {
+            done.Reset();
+            Send(null, 58, 0);
+            done.WaitOne();
+            return response;
+        }//NineRegionsOpenPanel
+
+        // 仙葫数量
+        /// <summary>
+        /// 仙葫数量
+        /// Mod_NineRegions_Base.get_calabash_count(58,29)
+        /// module:58, action:29, 
+        /// request:[], 
+        /// response:[Utils.ByteUtil, Utils.ByteUtil]
+        /// Line 509-510 in NineRegionsData.as
+        ///     this._calabashInfo.usable_count = param1[0];
+        ///     this._calabashInfo.total_count = param1[1];
+        /// Example
+        ///     [5,7]
+        ///     [0,0]
+        /// </summary>
+        public JArray GetCalabashCount()
+        {
+            done.Reset();
+            Send(null, 58, 29);
+            done.WaitOne();
+            return response;
+        }//GetCalabashCount
+
+        // 聚灵面板
+        /// <summary>
+        /// 聚灵面板
+        /// Mod_NineRegions_Base.get_calabash_info(58,25)
+        /// module:58, action:25, 
+        /// request:[Utils.ShortUtil], 
+        /// Example
+        ///     [11]
+        /// response:[Utils.UByteUtil, Utils.UByteUtil, [Utils.IntUtil, Utils.ShortUtil], Utils.IntUtil, Utils.ByteUtil]
+        /// Line 409-426 in NineRegionsData.as
+        ///     this._calabashInfo.state = param1[0];
+        ///     this._calabashInfo.calabash = param1[1];
+        /// 	this._calabashInfo.awardList = new Array();
+        /// 		_loc_3.item_id = _loc_2[0];
+        ///         _loc_3.item_count = _loc_2[1];
+        ///     this._calabashInfo.value = param1[3];
+        ///     this._calabashInfo.avaliable_times = param1[4];
+        /// Line 29-30 in Mod_NineRegions_Base.as
+        ///     public static const NEW_START:int = 22;
+        ///     public static const CONTINUE:int = 23;
+        /// Line 31-33 in Mod_NineRegions_Base.as
+        ///     public static const TONG:int = 24;
+        ///     public static const YIN:int = 25;
+        ///     public static const JIN:int = 26;
+        /// Example
+        ///     [22,24,[],0,7]
+        ///     [23,26,[[4033,16],[4034,12]],9,5]
+        ///     [22,24,[],0,0]
+        /// </summary>
+        public JArray GetCalabashInfo(short curJie)
+        {
+            done.Reset();
+            Send(new JArray { curJie }, 58, 25);
+            done.WaitOne();
+            return response;
+        }//GetCalabashInfo
+
+        // 召唤仙葫
+        /// <summary>
+        /// 召唤仙葫
+        /// Mod_NineRegions_Base.call(58,26)
+        /// module:58, action:26, 
+        /// request:[Utils.ShortUtil], 
+        /// Example
+        ///     [11]
+        /// response:[Utils.UByteUtil, Utils.UByteUtil, [Utils.IntUtil, Utils.ShortUtil], Utils.ByteUtil]
+        /// Line 437-453 in NineRegionsData.as
+        ///     this._calabashInfo.callResult = param1[0];
+        ///     this._calabashInfo.calabash = param1[1];
+        ///     this._calabashInfo.awardList = new Array();
+        ///         _loc_3.item_id = _loc_2[0];
+        ///         _loc_3.item_count = _loc_2[1];
+        ///     this._calabashInfo.value = param1[3];
+        /// Line 12 in Mod_NineRegions_Base.as
+        ///     public static const SUCCESS:int = 5;
+        /// Line 31-33 in Mod_NineRegions_Base.as
+        ///     public static const TONG:int = 24;
+        ///     public static const YIN:int = 25;
+        ///     public static const JIN:int = 26;
+        /// Example
+        ///     [5,25,[[4034,12],[4033,12]],16]
+        /// </summary>
+        public JArray NineRegionsCall(short curJie)
+        {
+            done.Reset();
+            Send(new JArray { curJie }, 58, 26);
+            done.WaitOne();
+            return response;
+        }//NineRegionsCall
+
+        // 聚气
+        /// <summary>
+        /// 聚气
+        /// Mod_NineRegions_Base.gathering(58,27)
+        /// module:58, action:27, 
+        /// request:[Utils.ShortUtil, Utils.UByteUtil], 
+        /// Example
+        ///     [11,33]
+        /// Line 37-40 in Mod_NineRegions_Base.as
+        ///     public static const BUFF_1:int = 30;
+        ///     public static const BUFF_2:int = 31;
+        ///     public static const BUFF_3:int = 32;
+        ///     public static const BUFF_0:int = 33;
+        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.ShortUtil], Utils.ByteUtil]
+        /// Line 463-478 in NineRegionsData.as
+        ///     this._calabashInfo.gatherResult = param1[0];
+        ///     this._calabashInfo.awardList = new Array();
+        ///         _loc_3.item_id = _loc_2[0];
+        ///         _loc_3.item_count = _loc_2[1];
+        ///     this._calabashInfo.value = param1[2];
+        /// Line 12 in Mod_NineRegions_Base.as
+        ///     public static const SUCCESS:int = 5;
+        /// Example
+        ///     [5,[[4034,24],[4033,24]],20]
+        /// </summary>
+        public JArray NineRegionsGathering(short curJie)
+        {
+            done.Reset();
+            Send(new JArray { curJie, 33 }, 58, 27);
+            done.WaitOne();
+            return response;
+        }//NineRegionsGathering
+
+        // 收取
+        /// <summary>
+        /// 收取
+        /// Mod_NineRegions_Base.collect(58,28)
+        /// module:58, action:28, 
+        /// request:[Utils.ShortUtil], 
+        /// Example
+        ///     [11]
+        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.ShortUtil]]
+        /// Line 488-503 in NineRegionsData.as
+        ///     this._calabashInfo.collectResult = param1[0];
+        ///     this._calabashInfo.awardList = new Array();
+        ///         _loc_3.item_id = _loc_2[0];
+        ///         _loc_3.item_count = _loc_2[1];
+        /// Line 12 in Mod_NineRegions_Base.as
+        ///     public static const SUCCESS:int = 5;
+        /// Example
+        ///     [5,[[4034,24],[4033,24]]]
+        /// </summary>
+        public JArray NineRegionsCollect(short curJie)
+        {
+            done.Reset();
+            Send(new JArray { curJie }, 58, 28);
+            done.WaitOne();
+            return response;
+        }//NineRegionsCollect
+
+        // -------------------------------------------------------------------------------------------
         // 帮派
         // -------------------------------------------------------------------------------------------
         // 打开帮派祭神

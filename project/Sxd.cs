@@ -508,10 +508,10 @@ namespace 神仙道
                                         _player_list.Add(_player.ToList().GetRange(0, 14));
                                         _player_list.Add(_player.ToList().GetRange(14, 14));
                                     }
-                                    _top16_list.AddRange(response[3].Select(x=>(int)x[0]));
-                                    _top8_list.AddRange(response[4].Select(x=>(int)x[0]));
-                                    _top4_list.AddRange(response[5].Select(x=>(int)x[0]));
-                                    _top2_list.AddRange(response[6].Select(x=>(int)x[0]));
+                                    _top16_list.AddRange(response[3].Select(x => (int)x[0]));
+                                    _top8_list.AddRange(response[4].Select(x => (int)x[0]));
+                                    _top4_list.AddRange(response[5].Select(x => (int)x[0]));
+                                    _top2_list.AddRange(response[6].Select(x => (int)x[0]));
                                     _top1_list.Add((int)response[7]);
 
                                     // 魔族
@@ -992,6 +992,91 @@ namespace 神仙道
                 }
 
             } //if (functionIds.Contains(173)) // 173:["RobMoney","530","劫镖"],
+
+            // 九空无界-聚灵
+            {
+                response = clientTown.NineRegionsOpenPanel();
+                var _curJie = (short)response[1];
+
+                while (true)
+                {
+                    response = clientTown.GetCalabashInfo(_curJie);
+                    var _state = (byte)response[0];
+                    //var _calabash = (byte)response[1];
+                    var _value = (int)response[3];
+                    var _avaliable_times = (byte)response[4];
+
+                    // NEW_START:int = 22;
+                    #region NEW_START
+                    if (_state == 22)
+                    {
+                        if (_avaliable_times <= 0)
+                            break;
+
+                        response = clientTown.NineRegionsCall(_curJie);
+                        var _callResult = (byte)response[0];
+                        var _calabash = (byte)response[1];
+                        // SUCCESS:int = 5;
+                        if (_callResult == 5)
+                            if (_calabash == 24)
+                                Logger.Log(string.Format("【九空无界】召唤仙葫，获得[铜仙葫]，[灵气]×{0}", response[3]));
+                            else if (_calabash == 25)
+                                Logger.Log(string.Format("【九空无界】召唤仙葫，获得[银仙葫]，[灵气]×{0}", response[3]));
+                            else if (_calabash == 26)
+                                Logger.Log(string.Format("【九空无界】召唤仙葫，获得[金仙葫]，[灵气]×{0}", response[3]));
+                            else
+                            {
+                                Logger.Log(string.Format("【九空无界】未知仙葫品质：{0}", _calabash), ConsoleColor.Red);
+                                break;
+                            }
+                        else
+                        {
+                            Logger.Log(string.Format("【九空无界】召唤仙葫错误，result：{0}", _callResult), ConsoleColor.Red);
+                            break;
+                        }
+                    }
+                    #endregion
+                    // CONTINUE:int = 23;
+                    #region CONTINUE
+                    else if (_state == 23)
+                    {
+                        if (_value >= 17)
+                        {
+                            // 收获
+                            response = clientTown.NineRegionsCollect(_curJie);
+                            var _collectResult = (byte)response[0];
+                            var _awardList = (JArray)response[1];
+                            // SUCCESS:int = 5;
+                            if (_collectResult == 5)
+                                Logger.Log(string.Format("【九空无界】收获{0}", string.Join("，", _awardList.Select(x => string.Format("[{0}]×{1}", Protocols.GetItemName((int)x[0]), x[1])))));
+                            else
+                            {
+                                Logger.Log(string.Format("【九空无界】收获出错，result：{0}", _collectResult), ConsoleColor.Red);
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            // 聚气
+                            response = clientTown.NineRegionsGathering(_curJie);
+                            var _gatherResult = (byte)response[0];
+                            if (_gatherResult == 5)
+                                Logger.Log(string.Format("【九空无界】聚气，当前[灵气]×{0}", response[2]));
+                            else
+                            {
+                                Logger.Log(string.Format("【九空无界】聚气出错，result：{0}", _gatherResult), ConsoleColor.Red);
+                                break;
+                            }
+                        }
+                    }
+                    #endregion
+                    else
+                    {
+                        Logger.Log(string.Format("【九空无界】未知状态：{0}", _state), ConsoleColor.Red);
+                        break;
+                    }
+                }//while
+            }// 九空无界-聚灵
 
             if (functionIds.Contains(13) && !string.IsNullOrWhiteSpace(factionName)) // 13:["Faction","165","帮派"],
             {

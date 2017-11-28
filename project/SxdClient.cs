@@ -127,6 +127,12 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_RobMoney_Base.get_rob_money_info", "Callback");
             classDotMethodDictionary.Add("Mod_RobMoney_Base.search", "Callback");
             classDotMethodDictionary.Add("Mod_RobMoney_Base.rob", "Callback");
+            classDotMethodDictionary.Add("Mod_NineRegions_Base.open_panel", "Callback");
+            classDotMethodDictionary.Add("Mod_NineRegions_Base.get_calabash_count", "Callback");
+            classDotMethodDictionary.Add("Mod_NineRegions_Base.get_calabash_info", "Callback");
+            classDotMethodDictionary.Add("Mod_NineRegions_Base.call", "Callback");
+            classDotMethodDictionary.Add("Mod_NineRegions_Base.gathering", "Callback");
+            classDotMethodDictionary.Add("Mod_NineRegions_Base.collect", "Callback");
             //ST
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
             classDotMethodDictionary.Add("Mod_StTown_Base.enter_town", "Callback");
