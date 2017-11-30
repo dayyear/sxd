@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml.Linq;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace 神仙道
@@ -336,17 +335,14 @@ namespace 神仙道
                     if (functionIds.Contains(90)) // 90:["ServerTakeBible","247","跨服取经"],
                     {
                         // 仇人
-                        response = clientST.GetRecentRobPlayer();
-                        var _enemyIds = response[0].Select(x => (int)x[0]).ToList();
+                        //response = clientST.GetRecentRobPlayer();
+                        //var _enemyIds = response[0].Select(x => (int)x[0]).ToList();
                         //Logger.Log(string.Format("获取仇人：{0}", string.Join(",", _enemyIds)));
 
                         // 打开护送取经总界面
                         response = clientST.OpenTakeBible();
                         var _players = (JArray)response[0];
-                        Logger.Log(string.Format("【跨服取经】打开护送取经界面，获取[{0}]个取经玩家，其中有[{1}]个仇人", _players.Count, string.Join(",", _players
-                            .Where(x => _enemyIds.Contains((int)x[0]))
-                            .Count() //.Select(x => string.Format("{0}({1})", Protocols.GetProtectionName((byte)x[1]), x[0]))
-                            )));
+                        Logger.Log(string.Format("【跨服取经】当前[{0}]个取经玩家", _players.Count));
                         Logger.Log(string.Format("【跨服取经】今日还可拦截[{0}]次，可取经[{1}]次，帮助好友护送[{2}]次", response[2], response[4], response[3]));
 
                         // 打开护送取经面板，刷新使者，开始护送
@@ -357,7 +353,7 @@ namespace 神仙道
                             var _totalTakeBibleTimes = (byte)response[3];
                             var _takeBibleStatus = (byte)response[5];
                             var _canProtection = (byte)response[6];
-                            Logger.Log(string.Format("【跨服取经】今日可取经共[{0}]次，已经取经[{1}]次，当前取经使者：[{2},{3}]", _totalTakeBibleTimes, _takeBibleTimes, Protocols.GetProtectionName(_canProtection), _takeBibleStatus == 0 ? "未开始" : "已开始"));
+                            Logger.Log(string.Format("【跨服取经】当前取经使者[{0}]，状态[{1}]", Protocols.GetProtectionName(_canProtection), _takeBibleStatus == 0 ? "未开始" : "已开始"));
 
                             if (_takeBibleTimes >= _totalTakeBibleTimes)
                                 break;
@@ -406,7 +402,6 @@ namespace 神仙道
                                 var _integral = (int)response[0];
                                 var _reduceChallengeCount = (short)response[1];
                                 var _awardFeats = (int)response[2];
-                                var _reduceRefreshTime = (int)response[4];
                                 Logger.Log(string.Format("【仙界竞技场】我的积分[{0}]，积分奖励[{1}荣誉]，今日还可挑战[{2}]次", _integral, _awardFeats, _reduceChallengeCount));
                                 if (_reduceChallengeCount <= 0)
                                     break;
@@ -812,7 +807,6 @@ namespace 神仙道
                 while (true)
                 {
                     response = clientTown.RollCakeGetState();
-                    var _state = (byte)response[0];
                     var _type = (byte)response[1];
                     response = clientTown.RollCakeGetCount();
                     var _count = (short)response[0];
@@ -828,7 +822,11 @@ namespace 神仙道
                     else if (_type == 11 || _freeRobeNum == 0)
                     {
                         response = clientTown.RollCakeGetAward();
-                        Logger.Log("【吉星高照】收获");
+                        // SUCCESS:int = 0;
+                        if ((byte)response[0] == 0)
+                            Logger.Log("【吉星高照】收获");
+                        else
+                            Logger.Log("【吉星高照】收获错误", ConsoleColor.Red);
                     }
                     else
                     {
@@ -1099,7 +1097,7 @@ namespace 神仙道
                 }//while
 
                 // 七星封魔
-                response = clientTown.SealSatanMemberList();
+                clientTown.SealSatanMemberList();
                 response = clientTown.JoinSealSatan();
                 // JOIN_SUCCESS:int = 54;
                 if ((byte)response[0] == 54)
@@ -1146,6 +1144,12 @@ namespace 神仙道
                     if (!_missionsReady.Any())
                         continue;
                     response = clientTown.StartPractice(_townId, 1, 0);
+                    // SUCCESS:int = 3;
+                    if ((byte)response[0] != 3)
+                    {
+                        Logger.Log(string.Format("【英雄扫荡】扫荡错误，result：{0}", response[0]));
+                        break;
+                    }
                     response = clientTown.Quickly();
                     switch ((byte)response[0])
                     {
@@ -1316,7 +1320,7 @@ namespace 神仙道
             } //try
             catch (Exception ex)
             {
-                Logger.Log(string.Format("发现错误：{0}", ex.ToString()), ConsoleColor.Red);
+                Logger.Log(string.Format("发现错误：{0}", ex), ConsoleColor.Red);
             }
         } //Run
 

@@ -775,9 +775,12 @@ namespace 神仙道
 
         // 开始扫荡
         /// <summary>
+        /// 开始扫荡
         /// Mod_HeroMission_Base.start_practice(35,2)
         /// module:35, action:2
         /// request:[Utils.ShortUtil, Utils.ByteUtil, Utils.ByteUtil]
+        /// Example
+        ///     [35,1,0]
         /// Line 50 in HeroPracticeView.as:
         ///     _data.call(Mod_HeroMission_Base.start_practice, this.startPracticeCallBack, [this.showTownId, this._autoNum(1:自动售出副本掉落物品;0:不售出), this.heroType]);
         /// response:[Utils.UByteUtil, Utils.IntUtil]
@@ -788,6 +791,8 @@ namespace 神仙道
         ///     _loc_2.practiceTime = _loc_1[1];
         /// Line 10 in Mod_HeroMission_Base.as
         ///     public static const SUCCESS:int = 3;
+        /// Example
+        ///     [3,1]
         /// </summary>
         public JArray StartPractice(int townId, byte autoNum, byte heroType)
         {
