@@ -1,9 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using Newtonsoft.Json.Linq;
@@ -70,7 +68,7 @@ namespace 神仙道
                 socket.Shutdown(SocketShutdown.Send);
                 // 等待Receive线程结束
                 //receiveThread.Join();
-                receiveDone.WaitOne();
+                receiveDone.WaitOne(timeout);
                 // 关闭socket并重新开
                 socket.Close();
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -95,7 +93,7 @@ namespace 神仙道
             // -----------------------------------------------------------------------------
             done.Reset();
             Send(new JArray { player_name, hash_code, time2, source, regdate, id_card, open_time, is_newst, HttpUtility.UrlDecode(stage), HttpUtility.UrlDecode(client) }, 0, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
 
             // -----------------------------------------------------------------------------
             // 5. 处理返回数据
@@ -130,7 +128,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 0, 2);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetPlayerInfo
 
@@ -169,7 +167,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { playerId }, 0, 48);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//PlayerInfoContrast
 
@@ -188,7 +186,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { townMapId }, 1, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//EnterTown
         private void EnterTownCallback(JArray data)
@@ -228,7 +226,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 0, 6);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetPlayerFunction
 
@@ -245,7 +243,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 0, 42);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetGameAssistantInfo
 
@@ -266,7 +264,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 0, 20);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetPlayerCampSalary
 
@@ -280,7 +278,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 13, 19);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//IsPlayerGetXianLingGift
 
@@ -294,7 +292,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 13, 20);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//PlayerGetXianLingGift
 
@@ -308,7 +306,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 34, 20);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//PlayerGetXianLDayStoneCountingGift
 
@@ -322,7 +320,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray(0), 34, 18);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetDayStone
 
@@ -354,7 +352,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 127, 1);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GameFunctionEndGift
 
@@ -376,7 +374,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray(id), 127, 3);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//RandomAward
 
@@ -393,7 +391,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray(id), 127, 2);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetGameFunctionEndGift
 
@@ -414,7 +412,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 2, 6);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetPlayerGiftAllInfo
 
@@ -428,7 +426,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray(id), 2, 29);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//PlayerGetSuperGift
 
@@ -445,7 +443,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 42, 17);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetEndGiftInfo
 
@@ -461,7 +459,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 42, 18);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetEndGift
 
@@ -480,7 +478,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 136, 20);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetEndLiBao
 
@@ -499,7 +497,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 169, 5);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetEndAward
 
@@ -523,7 +521,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 40, 3);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//PeachInfo
 
@@ -545,7 +543,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 40, 5);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//BatchGetPeach
 
@@ -577,7 +575,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 13, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetFarmlandinfoList
 
@@ -594,7 +592,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 13, 12);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//BuyCoinTreeCountInfo
 
@@ -611,7 +609,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 13, 1);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetPlayerRoleinfoList
 
@@ -636,7 +634,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { fieldId, roleId, type, herbs_star_level }, 13, 5);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//PlantHerbs
 
@@ -662,7 +660,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { fieldId, 15 }, 13, 6);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//Harvest
 
@@ -681,7 +679,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { 1, message, string.Empty, string.Empty }, 6, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//ChatWithPlayers
         /// <summary>
@@ -717,7 +715,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 96, 1);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetStatus
 
@@ -746,7 +744,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 96, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetLoginInfo
 
@@ -769,7 +767,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { townId }, 35, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetHeroMissionList
 
@@ -798,7 +796,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { townId, autoNum, heroType }, 35, 2);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//StartPractice
 
@@ -818,7 +816,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 35, 7);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//Quickly
 
@@ -890,7 +888,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 28, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//OpenSuperSport
 
@@ -932,7 +930,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { rank }, 28, 2);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//StartChallenge
 
@@ -957,7 +955,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 52, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//AssistantInfo
 
@@ -975,7 +973,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { sn }, 52, 1);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//AssistantGetAward
 
@@ -994,7 +992,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 217, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetPlayerFishhook
 
@@ -1012,7 +1010,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 217, 1);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//DoFishing
 
@@ -1041,7 +1039,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 21, 1);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetEventAndAnswer
 
@@ -1061,7 +1059,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 21, 4);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetEventAndAnswer
 
@@ -1084,7 +1082,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { eventId, answerId }, 21, 2);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//AnswerTravelEvent
 
@@ -1120,7 +1118,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { 0 }, 57, 24);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetMoralAward
 
@@ -1154,7 +1152,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { _playerId }, 48, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//PetAnimalInfo
 
@@ -1193,7 +1191,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { 0 }, 48, 2);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//FeedPetAnimal
 
@@ -1215,7 +1213,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 48, 3);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//UpPetAnimal
 
@@ -1240,7 +1238,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { 1 }, 105, 1);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//OpenHuntDemon
 
@@ -1277,7 +1275,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { type, 0 }, 105, 2);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//HuntDemon
 
@@ -1307,7 +1305,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 199, 11);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//PlayerForbiddenBookInfo
 
@@ -1340,7 +1338,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { forbiddenType, 19 }, 199, 12);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//ExploreForbiddenBook
 
@@ -1376,7 +1374,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 38, 5);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//RollCakeGetState
 
@@ -1401,7 +1399,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 38, 2);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//RollCakeGetCount
 
@@ -1427,7 +1425,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 38, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//RollCakeRoll
 
@@ -1455,7 +1453,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 38, 3);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//RollCakeReRoll
 
@@ -1475,7 +1473,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 38, 4);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//RollCakeGetAward
 
@@ -1498,7 +1496,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 123, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//OpenSpaceFind
 
@@ -1520,7 +1518,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { 0 }, 123, 1);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//DoSpaceFind
 
@@ -1542,7 +1540,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 123, 2);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetSpaceFind
 
@@ -1581,7 +1579,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 172, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//LabaInfo
 
@@ -1631,7 +1629,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { 0 }, 172, 1);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//LabaDraw
 
@@ -1668,7 +1666,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { 14 }, 9, 5);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetFriendList
 
@@ -1696,7 +1694,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { playerId }, 31, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//PlayerSendFlowerInfo
 
@@ -1718,7 +1716,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { playerId, 1 }, 31, 1);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//SendPlayerFlower
 
@@ -1788,7 +1786,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 22, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetFateNpc
 
@@ -1819,7 +1817,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { fateNpcId }, 22, 9);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//AppointFateNpc
 
@@ -1846,7 +1844,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 242, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//ActiveStatus
 
@@ -1867,7 +1865,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 242, 1);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//SundayFruitInfo
 
@@ -1891,7 +1889,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 242, 2);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//SundayFruitDraw
 
@@ -1914,7 +1912,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 68, 14);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//IsFiveBlessingsOpen
 
@@ -1941,7 +1939,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 68, 10);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//OpenFiveBlessings
 
@@ -1966,7 +1964,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 68, 11);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//StartBless
 
@@ -1990,7 +1988,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 68, 13);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//EndBless
 
@@ -2019,7 +2017,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 104, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//NimbusInfo
 
@@ -2055,7 +2053,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { 0 }, 104, 1);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GatherNimbus
 
@@ -2078,7 +2076,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 214, 5);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//ExploitShopItemList
 
@@ -2100,7 +2098,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { good_id, good_count }, 214, 6);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//BuyExploitShopItem
 
@@ -2128,7 +2126,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 314, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetRobMoneyInfo
 
@@ -2150,7 +2148,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 314, 1);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//RobMoneySearch
 
@@ -2173,7 +2171,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 314, 2);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//RobMoneyRob
 
@@ -2201,7 +2199,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 58, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//NineRegionsOpenPanel
 
@@ -2223,7 +2221,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 58, 29);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetCalabashCount
 
@@ -2260,7 +2258,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { curJie }, 58, 25);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetCalabashInfo
 
@@ -2293,7 +2291,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { curJie }, 58, 26);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//NineRegionsCall
 
@@ -2326,7 +2324,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { curJie, 33 }, 58, 27);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//NineRegionsGathering
 
@@ -2353,7 +2351,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { curJie }, 58, 28);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//NineRegionsCollect
 
@@ -2377,7 +2375,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 10, 22);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//FactionGodInfo
 
@@ -2395,7 +2393,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { 1 }, 10, 23);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//Incense
 
@@ -2411,7 +2409,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 10, 34);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//SealSatanMemberList
 
@@ -2430,7 +2428,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 10, 28);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//JoinSealSatan
 
@@ -2452,7 +2450,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 10, 45);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//FactionRollCakeInfo
 
@@ -2480,7 +2478,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 10, 46);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//RollCake
 
@@ -2499,7 +2497,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 69, 1);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//OpenLuckyWheel
 
@@ -2519,7 +2517,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 69, 2);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//StartLuckyWheel
 

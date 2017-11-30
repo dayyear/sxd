@@ -22,7 +22,7 @@ namespace 神仙道
         private short previousModule;
         private short previousAction;
         protected bool isConnected;
-        protected const int timeout = 600000;
+        protected const int timeout = 60000;
         protected readonly ManualResetEvent done = new ManualResetEvent(false);
         protected readonly ManualResetEvent receiveDone = new ManualResetEvent(false);
 

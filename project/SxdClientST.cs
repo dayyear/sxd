@@ -51,7 +51,7 @@ namespace 神仙道
                 socket.Shutdown(SocketShutdown.Send);
                 // 等待Receive线程结束
                 //receiveThread.Join();
-                receiveDone.WaitOne();
+                receiveDone.WaitOne(timeout);
                 // 关闭socket并重新开
                 socket.Close();
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -76,7 +76,7 @@ namespace 神仙道
             // -----------------------------------------------------------------------------
             done.Reset();
             Send(new JArray { serverName, playerId, nickName, serverTime, passCode }, 94, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
 
             // -----------------------------------------------------------------------------
             // 5. 处理返回数据
@@ -108,7 +108,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { 41 }, 95, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//EnterTown
 
@@ -124,7 +124,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 114, 19);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetRecentRobPlayer
 
@@ -164,7 +164,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 114, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//OpenTakeBible
 
@@ -202,7 +202,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 114, 2);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetTakeBibleInfo
 
@@ -223,7 +223,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 114, 8);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//Refresh
 
@@ -242,7 +242,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 114, 10);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//StartTakeBible
 
@@ -263,7 +263,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 210, 18);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//BatchGetFurnitureEffect
 
@@ -289,7 +289,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 115, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetStSuperSportStatus
 
@@ -311,7 +311,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 115, 1);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetPlayerStSuperSport
 
@@ -332,7 +332,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 115, 2);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//ChallengeList
 
@@ -357,7 +357,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { level }, 115, 9);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetRankAward
 
@@ -391,7 +391,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { index }, 115, 3);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//Challenge
 
@@ -412,7 +412,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 115, 11);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//CanGetScoreAward
 
@@ -436,7 +436,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 115, 12);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//PlayerScoreAwardInfo
 
@@ -458,7 +458,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { index }, 115, 13);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//PlayerGetScoreAward
 
@@ -496,7 +496,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 115, 30);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//StSuperSportGetRaceStep
 
@@ -527,7 +527,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { i }, 115, 32);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//StSuperSportGetRaceList
 
@@ -549,7 +549,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { id }, 115, 37);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//StSuperSportBet
 
@@ -575,7 +575,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 214, 15);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//GetRaceStep
 
@@ -600,7 +600,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 214, 0);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//OpenStArena
 
@@ -631,7 +631,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(new JArray { st_player_id, 0 }, 214, 2);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//StArenaChallenge
 
@@ -652,7 +652,7 @@ namespace 神仙道
         {
             done.Reset();
             Send(null, 214, 1);
-            done.WaitOne();
+            done.WaitOne(timeout);
             return response;
         }//RefreshPlayerList
 
