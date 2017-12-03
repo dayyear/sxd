@@ -1125,6 +1125,41 @@ namespace 神仙道
                 }//while
             }// 九空无界-聚灵
 
+            // 背包
+            {
+                response = clientTown.GetPlayerPackItemList();
+                var _items = response[2].ToList();
+                _items.Sort((x, y) => ((int)x[2]).CompareTo((int)y[2]));
+                foreach (var _item in _items)
+                {
+                    var _id = (int)_item[0];
+                    var _name = Protocols.GetItemName((int)_item[1]);
+                    var _position = (short)_item[2];
+                    var _count = (int)_item[5];
+                    //Logger.Log(string.Format("【背包】{2}[{0}]×{1}", _name, _count, _item[2]));
+                    if (new[] { "包子", "粽子", "茶叶蛋" }.Contains(_name))
+                    {
+                        response = clientTown.LargeUseGridItem(_id);
+                        // ACTION_SUCCESS:int = 20;
+                        if ((byte)response[0] == 20)
+                            Logger.Log(string.Format("【背包】批量吃[{0}]×{1}", _name, _count));
+                        else
+                            Logger.Log(string.Format("【背包】批量吃[{0}]错误", _name), ConsoleColor.Red);
+                    }
+
+                    if (_name.EndsWith("宝箱") || _name.EndsWith("礼包"))
+                    {
+                        response = clientTown.PlayerUseGridItem(_position);
+                        // ACTION_SUCCESS:int = 20;
+                        if ((byte)response[0] == 20)
+                            Logger.Log(string.Format("【背包】打开[{0}]", _name));
+                        else
+                            Logger.Log(string.Format("【背包】打开[{0}]错误", _name), ConsoleColor.Red);
+                    }
+                }
+            }// 背包
+            //Console.ReadLine();
+
             if (functionIds.Contains(13) && !string.IsNullOrWhiteSpace(factionName)) // 13:["Faction","165","帮派"],
             {
                 // 帮派祭神

@@ -139,6 +139,9 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_NineRegions_Base.gathering", "Callback");
             classDotMethodDictionary.Add("Mod_NineRegions_Base.collect", "Callback");
             classDotMethodDictionary.Add("Mod_Faction_Base.join_feast", "Callback");
+            classDotMethodDictionary.Add("Mod_Item_Base.get_player_pack_item_list", "Callback");
+            classDotMethodDictionary.Add("Mod_Item_Base.large_use_grid_item", "Callback");
+            classDotMethodDictionary.Add("Mod_Item_Base.player_use_grid_item", "Callback");
             //ST
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
             classDotMethodDictionary.Add("Mod_StTown_Base.enter_town", "Callback");

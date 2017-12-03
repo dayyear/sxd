@@ -2445,6 +2445,71 @@ namespace 神仙道
         }//NineRegionsCollect
 
         // -------------------------------------------------------------------------------------------
+        // 背包
+        // -------------------------------------------------------------------------------------------
+        // 背包物品列表
+        /// <summary>
+        /// 背包物品列表
+        /// Mod_Item_Base.get_player_pack_item_list(2,41)
+        /// module:2, action:41, 
+        /// request:[], 
+        /// response:[Utils.ShortUtil, Utils.IntUtil, [0.Utils.IntUtil, 1.Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, 5.Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ShortUtil]]
+        /// Example
+        ///     [48,0,[[49283478,380,15,1,5,6,0,0,0,0,0,0,0,0,0],[47907319,1197,14,1,0,5,0,0,0,0,0,0,0,0,0],[49372106,1488,23,1,1,8,0,0,0,0,0,0,0,0,0],[49283543,3782,20,1,0,5,0,0,0,0,0,0,0,0,0],[49295363,1461,11,1,320,10,0,0,0,0,0,0,0,0,0],[49295373,1462,12,1,320,1,0,0,0,0,0,0,0,0,0],[49283399,1419,8,1,320,99,0,0,0,0,0,0,0,0,0],[49323800,260,2,1,93,99,0,0,0,0,0,0,0,0,0],[49323799,261,3,1,64,99,0,0,0,0,0,0,0,0,0],[49372096,386,16,1,36155,1,0,0,0,0,0,0,0,0,0],[49309104,1444,18,1,1,39,0,0,0,0,0,0,0,0,0],[49324407,1531,13,1,320,40,0,0,0,0,0,0,0,0,0],[49372095,403,21,1,78534,1,0,0,0,0,0,0,0,0,0],[48848647,1420,10,1,320,64,0,0,0,0,0,0,0,0,0],[49372105,1463,22,1,320,20,0,0,0,0,0,0,0,0,0],[49324406,1411,17,1,74,39,0,0,0,0,0,0,0,0,0],[49295273,1488,19,1,1,58,0,0,0,0,0,0,0,0,0],[49283398,1378,5,1,320,99,0,0,0,0,0,0,0,0,0],[49283400,1375,4,1,320,99,0,0,0,0,0,0,0,0,0],[48848888,1420,9,1,320,99,0,0,0,0,0,0,0,0,0],[49326956,415,1,1,14456,3,0,0,0,0,0,0,0,0,0],[48829931,1417,6,1,320,18,0,0,0,0,0,0,0,0,0],[48829930,1418,7,1,320,23,0,0,0,0,0,0,0,0,0]]]
+        ///     49283478(0): id, 380(1):一品武力丹, 6(5):数量
+        /// </summary>
+        public JArray GetPlayerPackItemList()
+        {
+            done.Reset();
+            Send(null, 2, 41);
+            done.WaitOne(timeout);
+            return response;
+        }//GetPlayerPackItemList
+
+        // 批量使用物品
+        /// <summary>
+        /// 批量使用物品
+        /// Mod_Item_Base.large_use_grid_item(2,130)
+        /// module:2, action:130, 
+        /// request:[Utils.IntUtil], 
+        /// Example
+        ///     [49372106]
+        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ShortUtil]]
+        /// Line 27 in Mod_Item_Base.as
+        ///     public static const ACTION_SUCCESS:int = 20;
+        /// Example
+        ///     [20,[[0,0,21,0,0,0,0,0,0,0,0,0,0,0,0]]]
+        /// </summary>
+        public JArray LargeUseGridItem(int id)
+        {
+            done.Reset();
+            Send(new JArray { id }, 2, 130);
+            done.WaitOne(timeout);
+            return response;
+        }//LargeUseGridItem
+
+        // 使用物品
+        /// <summary>
+        /// 使用物品
+        /// Mod_Item_Base.player_use_grid_item(2,53)
+        /// module:2, action:53, 
+        /// request:[Utils.ShortUtil], 
+        ///     [32]
+        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ShortUtil]]
+        /// Line 27 in Mod_Item_Base.as
+        ///     public static const ACTION_SUCCESS:int = 20;
+        /// Example
+        ///     [20,[[0,0,32,0,0,0,0,0,0,0,0,0,0,0,0]]]
+        /// </summary>
+        public JArray PlayerUseGridItem(short position)
+        {
+            done.Reset();
+            Send(new JArray { position }, 2, 53);
+            done.WaitOne(timeout);
+            return response;
+        }//PlayerUseGridItem
+
+        // -------------------------------------------------------------------------------------------
         // 帮派
         // -------------------------------------------------------------------------------------------
         // 打开帮派祭神
