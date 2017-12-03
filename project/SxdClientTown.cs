@@ -2610,6 +2610,33 @@ namespace 神仙道
             return response;
         }//StartLuckyWheel
 
+        // 吃仙宴
+        /// <summary>
+        /// 吃仙宴
+        /// Mod_Faction_Base.join_feast(10,53)
+        /// module:10, action:53, 
+        /// request:[], 
+        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.IntUtil]]
+        /// Line 626-631 in FactionData.as
+        ///     var _loc_2:* = 0;
+        ///     this.factionEatInfo.eatResult = param1[_loc_2++];
+        ///     if (this.factionEatInfo.eatResult == Mod_Faction_Base.SUCCESS)
+        ///     {
+        ///         this.factionEatInfo.award_item_list = this.parseFactionEatAwards(param1[_loc_2++]);
+        ///     }
+        /// Line 39 in Mod_Faction_Base.as
+        ///     public static const SUCCESS:int = 32;
+        /// Example
+        ///     [32,[[3418,40],[1739,300]]]
+        /// </summary>
+        public JArray JoinFeast()
+        {
+            done.Reset();
+            Send(null, 10, 53);
+            done.WaitOne(timeout);
+            return response;
+        }//JoinFeast
+
 
 
 

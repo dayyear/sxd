@@ -936,7 +936,7 @@ namespace 神仙道
                     response = clientTown.AppointFateNpc(_fateNpcIdOptimization);
                     // SUCCESS:int = 0;
                     if ((byte)response[0] == 0)
-                        Logger.Log(string.Format("【猎命】猎命[{0}]成功，获得命格[{1}]，遇见[{2}]", Protocols.GetFateNPCName(_fateNpcIdOptimization), response[1], Protocols.GetFateNPCName((byte)response[2])));
+                        Logger.Log(string.Format("【猎命】猎命[{0}]成功，获得命格[{1}]，遇见[{2}]", Protocols.GetFateNPCName(_fateNpcIdOptimization), Protocols.GetFateName((short)response[1]), Protocols.GetFateNPCName((byte)response[2])));
                     else
                     {
                         Logger.Log(string.Format("【猎命】猎命失败，result：{0}", response[0]), ConsoleColor.Red);
@@ -1176,7 +1176,11 @@ namespace 神仙道
                 for (var _i = 0; _i < _rosefinch_number; _i++)
                     clientTown.StartLuckyWheel();
 
-
+                // 吃仙宴
+                response = clientTown.JoinFeast();
+                // SUCCESS:int = 32;
+                if ((byte)response[0] == 32)
+                    Logger.Log(string.Format("【帮派】吃仙宴，获得{0}", string.Join("、", response[1].Select(x => string.Format("[{0}]×{1}", Protocols.GetItemName((int)x[0]), x[1])))));
             } //if (functionIds.Contains(13)) // 13:["Faction","165","帮派"],
 
             if (functionIds.Contains(51)) // 51:["HeroMissionPractice","238","英雄扫荡"],
