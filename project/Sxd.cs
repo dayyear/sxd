@@ -459,7 +459,7 @@ namespace 神仙道
                             if ((byte)response[0] == 13)
                                 Logger.Log(string.Format("【仙界竞技场】荣誉商店买下[内丹]×{0}", _good_count));
                             else
-                                Logger.Log(string.Format("【仙界竞技场】荣誉商店买[内丹]错误，result：{0}", response[0]));
+                                Logger.Log(string.Format("【仙界竞技场】荣誉商店买[内丹]错误，result：{0}", response[0]), ConsoleColor.Red);
                         }
                         else
                             Logger.Log("【仙界竞技场】荣誉商店今日[内丹]已卖完");
@@ -877,6 +877,50 @@ namespace 神仙道
 
             if (functionIds.Contains(24)) // 24:["Fate","180","猎命"],
             {
+                // 一键合成
+                clientTown.MergeAllInBag();
+
+                // 命格空间
+                response = clientTown.GetTempFate();
+                var _tempFates = (JArray)response[0];
+
+                // 一键卖出
+                var _tempFatesBad = _tempFates.Where(x => (short)x[1] <= 9).ToList();
+                if (_tempFatesBad.Any())
+                {
+                    response = clientTown.SaleTempFate(_tempFatesBad.Select(x => (long)x[0]));
+                    // SUCCESS:int = 0;
+                    if ((byte)response[0] == 0)
+                        Logger.Log("【猎命】一键卖出所有厄命");
+                    else
+                        Logger.Log(string.Format("【猎命】一键卖出所有厄命错误，result：{0}", response[0]), ConsoleColor.Red);
+                }
+
+                // 一键拾取
+                var _tempFatesGood = _tempFates.Where(x => (short)x[1] > 9).ToList();
+                if (_tempFatesGood.Any())
+                {
+                    response = clientTown.PickupFate(_tempFatesGood.Select(x => (long)x[0]));
+                    switch ((byte)response[0])
+                    {
+                        // SUCCESS:int = 0;
+                        case 0:
+                            Logger.Log("【猎命】一键拾取所有命格");
+                            break;
+                        // BAG_FULL:int = 1;
+                        case 1:
+                            Logger.Log("【猎命】一键拾取所有命格错误，命格背包已满", ConsoleColor.Red);
+                            break;
+                        default:
+                            Logger.Log(string.Format("【猎命】一键拾取所有命格错误，result：{0}", response[0]), ConsoleColor.Red);
+                            break;
+                    }
+                }
+
+                // 一键合成
+                clientTown.MergeAllInBag();
+
+                // 免费猎命
                 while (true)
                 {
                     response = clientTown.GetFateNpc();
@@ -893,6 +937,11 @@ namespace 神仙道
                     // SUCCESS:int = 0;
                     if ((byte)response[0] == 0)
                         Logger.Log(string.Format("【猎命】猎命[{0}]成功，获得命格[{1}]，遇见[{2}]", Protocols.GetFateNPCName(_fateNpcIdOptimization), response[1], Protocols.GetFateNPCName((byte)response[2])));
+                    else
+                    {
+                        Logger.Log(string.Format("【猎命】猎命失败，result：{0}", response[0]), ConsoleColor.Red);
+                        break;
+                    }
                 }
             } //if (functionIds.Contains(24)) // 24:["Fate","180","猎命"],
 

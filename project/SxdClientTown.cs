@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -1820,6 +1821,94 @@ namespace 神仙道
             done.WaitOne(timeout);
             return response;
         }//AppointFateNpc
+
+        // 猎命-命格空间
+        /// <summary>
+        /// 猎命-命格空间
+        /// Mod_Fate_Base.get_temp_fate(22,1)
+        /// module:22, action:1, 
+        /// request:[], 
+        /// response:[[Utils.LongUtil, Utils.ShortUtil]]
+        /// Line 104-105 in FateController.as
+        ///     _loc_5.tempFateId = param1[_loc_4][0];
+        ///     _loc_5.fateId = param1[_loc_4][1];
+        /// Example
+        ///     [[[860607932,5],[861505872,21],[860948584,9],[860412713,21],[860438938,1],[861530824,9],[860850599,21],[861383470,25],[860922394,21],[861027827,9],[861091942,21],[860466931,2],[860672434,25],[860729962,5],[860589597,8],[861431831,2],[861278808,9],[860994071,5],[860635144,7],[860892744,2]]]
+        /// </summary>
+        public JArray GetTempFate()
+        {
+            done.Reset();
+            Send(null, 22, 1);
+            done.WaitOne(timeout);
+            return response;
+        }//GetTempFate
+
+        // 猎命-一键拾取
+        /// <summary>
+        /// 猎命-一键拾取
+        /// Mod_Fate_Base.pickup_fate(22,2)
+        /// module:22, action:2, 
+        /// request:[[Utils.LongUtil]], 
+        /// Example
+        ///     [[[860412713],[860672434],[860850599],[860922394],[861091942],[861383470],[861505872]]]
+        /// response:[Utils.UByteUtil, [Utils.LongUtil]]
+        /// Line 7 in Mod_Fate_Base.as
+        ///     public static const SUCCESS:int = 0;
+        /// Example
+        ///     [0,[[861505872],[861383470],[861091942],[860922394],[860850599],[860672434],[860412713]]]
+        /// </summary>
+        public JArray PickupFate(IEnumerable<long> tempFateIds)
+        {
+            done.Reset();
+            var data = new JArray { new JArray() };
+            foreach (var id in tempFateIds)
+                ((JArray)data[0]).Add(new JArray(id));
+            Send(data, 22, 2);
+            done.WaitOne(timeout);
+            return response;
+        }//PickupFate
+
+        // 猎命-一键卖出
+        /// <summary>
+        /// 猎命-一键卖出
+        /// Mod_Fate_Base.sale_temp_fate(22,3)
+        /// module:22, action:3, 
+        /// request:[[Utils.LongUtil]], 
+        /// Example
+        ///     [[[860438938],[860466931],[860589597],[860607932],[860635144],[860729962],[860892744],[860948584],[860994071],[861027827],[861278808],[861431831],[861530824]]]
+        /// response:[Utils.UByteUtil]
+        /// Line 7 in Mod_Fate_Base.as
+        ///     public static const SUCCESS:int = 0;
+        /// Example
+        ///     [0]
+        /// </summary>
+        public JArray SaleTempFate(IEnumerable<long> tempFateIds)
+        {
+            done.Reset();
+            var data = new JArray { new JArray() };
+            foreach (var id in tempFateIds)
+                ((JArray)data[0]).Add(new JArray(id));
+            Send(data, 22, 3);
+            done.WaitOne(timeout);
+            return response;
+        }//SaleTempFate
+
+        // 猎命-一键合成
+        /// <summary>
+        /// 猎命-一键合成
+        /// Mod_Fate_Base.merge_all_in_bag(22,17)
+        /// module:22, action:17, 
+        /// request:[], 
+        /// response:[]
+        /// 不会有数据返回
+        /// </summary>
+        public void MergeAllInBag()
+        {
+            done.Reset();
+            Send(null, 22, 17);
+            //done.WaitOne(timeout);
+            //return response;
+        }//MergeAllInBag
 
         // -------------------------------------------------------------------------------------------
         // 周末水果机

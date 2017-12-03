@@ -18,6 +18,7 @@ namespace 神仙道
         static Protocols()
         {
             items = JObject.Parse(File.ReadAllText("protocols/ItemsR165.json"));
+            fates = JObject.Parse(File.ReadAllText("protocols/FatesR165.json"));
         }//Protocols
 
         /// <summary>
@@ -59,6 +60,11 @@ namespace 神仙道
                                 Logger.Log("Unknown item string: " + (string)item, ConsoleColor.Red);
                                 break;
                         } //switch ((string)item)
+                        break;
+                    case JTokenType.Array:
+                        bytes.AddRange(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short)data[i].Count())));
+                        foreach (var _data in (JArray)data[i++])
+                            bytes.AddRange(Encode((JArray)_data, (JArray)item));
                         break;
                     default:
                         Logger.Log("Unknown item type: " + item.Type, ConsoleColor.Red);
@@ -242,12 +248,27 @@ namespace 神仙道
             return fateNPCs[id];
         }
 
+        /// <summary>
+        /// 根据id获取物品名称
+        /// </summary>
         private static readonly JObject items;
 
         public static string GetItemName(int id)
         {
             return (string)items[id.ToString()][0];
         }
+
+        /// <summary>
+        /// 根据id获取命格名称
+        /// </summary>
+        private static readonly JObject fates;
+
+        public static string GetFateName(int id)
+        {
+            return (string)fates[id.ToString()][0];
+        }
+
+
 
     } //class
 } //namespace
