@@ -2556,6 +2556,57 @@ namespace 神仙道
         }//GetMarryBox
 
         // -------------------------------------------------------------------------------------------
+        // 神秘商人
+        // -------------------------------------------------------------------------------------------
+        // 神秘商人-打开
+        /// <summary>
+        /// 神秘商人-打开
+        /// Mod_LuckyStore_Base.get_lucky_store_item_list(87,5)
+        /// module:87, action:5, 
+        /// request:[], 
+        /// response:[[Utils.IntUtil, Utils.IntUtil, Utils.UByteUtil, Utils.UByteUtil], Utils.ShortUtil]
+        /// Line 273 in LuckyShopData.as
+        ///     oObject.list(_loc_4, _loc_2, ["item_id", "lucky_store_id", "buy_flag", "is_fresh"]);
+        /// Line 15-16 in Mod_LuckyStore_Base.as
+        ///     public static const LUCKY_YES:int = 8;
+        ///     public static const LUCKY_NO:int = 9;
+        /// Example
+        ///     [[[3706,157,9,8],[256,0,9,8],[1892,140,9,9],[4035,170,9,9],[1735,55,9,9],[1411,125,9,9],[420,3,9,9],[4543,0,9,9],[1744,114,9,9],[257,0,9,9],[9,0,9,9],[1742,45,9,9]],1161]
+        ///     256: 鬼树枝, 0: lucky_store_id, 9: 未卖
+        /// </summary>
+        public JArray GetLuckyStoreItemList()
+        {
+            done.Reset();
+            Send(null, 87, 5);
+            done.WaitOne(timeout);
+            return response;
+        }//GetLuckyStoreItemList
+
+        // 神秘商人-买
+        /// <summary>
+        /// 神秘商人-买
+        /// Mod_LuckyStore_Base.buy_lucky_store_item(87,6)
+        /// module:87, action:6, 
+        /// request:[Utils.IntUtil, Utils.IntUtil, Utils.IntUtil], 
+        /// Line 209 in SuperLuckyShopView.as
+        ///     _data.call(Mod_LuckyStore_Base.buy_lucky_store_item, buyClickCallback, [intNpcID, this._superLuckyShop.intItemId, this._superLuckyShop.intLuckyStoreId]);
+        /// Example
+        ///     [196,389,4]
+        /// response:[Utils.UByteUtil]
+        /// Ling 17 in Mod_LuckyStore_Base.as
+        ///     public static const LUCKY_SUCCESS:int = 10;
+        /// Example
+        ///     [10]
+        /// </summary>
+        public JArray BuyLuckyStoreItem(int npcId, int itemId, int luckyStoreId)
+        {
+            done.Reset();
+            Send(new JArray { npcId, itemId, luckyStoreId }, 87, 6);
+            done.WaitOne(timeout);
+            return response;
+        }//BuyLuckyStoreItem
+
+        // -------------------------------------------------------------------------------------------
         // 帮派
         // -------------------------------------------------------------------------------------------
         // 打开帮派祭神

@@ -257,6 +257,10 @@ namespace 神仙道
         {
             return (string)items[id.ToString()][0];
         }
+        public static string GetItemComment(int id)
+        {
+            return (string)items[id.ToString()][3];
+        }
 
         /// <summary>
         /// 根据id获取命格名称
@@ -267,8 +271,6 @@ namespace 神仙道
         {
             return (string)fates[id.ToString()][0];
         }
-
-
 
     } //class
 } //namespace

@@ -1148,7 +1148,8 @@ namespace 神仙道
                             Logger.Log(string.Format("【背包】批量吃[{0}]错误", _name), ConsoleColor.Red);
                     }
 
-                    if (_name.EndsWith("宝箱") || _name.EndsWith("礼包"))
+                    if (_name.EndsWith("宝箱") || _name.EndsWith("礼包") ||
+                        _name.Equals("伙伴之灵") || _name.Equals("坐骑之灵"))
                     {
                         for (var _i = 0; _i < _count; _i++)
                         {
@@ -1183,6 +1184,34 @@ namespace 神仙道
                 if ((byte)response[0] == 13)
                     Logger.Log("【结婚】领取夫妻宝箱");
             }// if (functionIds.Contains(129)) // 129:["Marry","297","结婚"],
+
+            if (functionIds.Contains(42)) // 42:["LuckyShop","173","神秘商人"],
+            {
+                response = clientTown.GetLuckyStoreItemList();
+                // 天剑宗，"ShenMiShangRen":[101,1170,360,173]
+                const int _npcId = 101;
+                // buy_flag, LUCKY_NO:int = 9;
+                foreach (var _item in response[0].Where(x => (byte)x[2] == 9))
+                {
+                    var _itemId = (int)_item[0];
+                    var _luckystoreId = (int)_item[1];
+                    var _itemName = Protocols.GetItemName(_itemId);
+                    var _itemComment = Protocols.GetItemComment(_itemId);
+                    var _itemFors = Regex.Match(_itemComment, @"\|\|(.*)\z").Groups[1].Value.Split(new[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
+
+                    if (_itemFors.Any(x => Regex.IsMatch(x.Trim(), @"\A[一二三六七八九]品丹药\z")) ||
+                        _itemFors.Any(x => Regex.IsMatch(x.Trim(), @"\A[四五]品丹药葫芦\z")) ||
+                        _itemName.Equals("女娲石碎片"))
+                    {
+                        response = clientTown.BuyLuckyStoreItem(_npcId, _itemId, _luckystoreId);
+                        // LUCKY_SUCCESS:int = 10;
+                        if ((byte)response[0] == 10)
+                            Logger.Log(string.Format("【神秘商人】购买[{0}]", _itemName));
+                        else
+                            Logger.Log(string.Format("【神秘商人】购买[{0}]错误", _itemName), ConsoleColor.Red);
+                    }
+                }//buy_flag=9
+            }//if (functionIds.Contains(42)) // 42:["LuckyShop","173","神秘商人"],
 
             if (functionIds.Contains(13) && !string.IsNullOrWhiteSpace(factionName)) // 13:["Faction","165","帮派"],
             {

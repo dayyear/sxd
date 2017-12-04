@@ -144,6 +144,8 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_Item_Base.player_use_grid_item", "Callback");
             classDotMethodDictionary.Add("Mod_Item_Base.player_sell_item", "Callback");
             classDotMethodDictionary.Add("Mod_Marry_Base.get_marry_box", "Callback");
+            classDotMethodDictionary.Add("Mod_LuckyStore_Base.get_lucky_store_item_list", "Callback");
+            classDotMethodDictionary.Add("Mod_LuckyStore_Base.buy_lucky_store_item", "Callback");
             //ST
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
             classDotMethodDictionary.Add("Mod_StTown_Base.enter_town", "Callback");
