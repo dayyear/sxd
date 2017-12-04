@@ -1137,6 +1137,7 @@ namespace 神仙道
                     var _position = (short)_item[2];
                     var _count = (int)_item[5];
                     //Logger.Log(string.Format("【背包】{2}[{0}]×{1}", _name, _count, _item[2]));
+
                     if (new[] { "包子", "粽子", "茶叶蛋" }.Contains(_name))
                     {
                         response = clientTown.LargeUseGridItem(_id);
@@ -1162,8 +1163,19 @@ namespace 神仙道
                             }
                         }
                     }
+
+                    if (Regex.IsMatch(_name, @"\A(四品|五品)(武力|绝技|法术)丹制作卷\z"))
+                    {
+                        response = clientTown.PlayerSellItem(_position);
+                        // ACTION_SUCCESS:int = 20;
+                        if ((byte)response[0] == 20)
+                            Logger.Log(string.Format("【背包】出售[{0}]", _name));
+                        else
+                            Logger.Log(string.Format("【背包】出售[{0}]错误", _name), ConsoleColor.Red);
+                    }
                 }
             }// 背包
+
             if (functionIds.Contains(129)) // 129:["Marry","297","结婚"],
             {
                 response = clientTown.GetMarryBox();

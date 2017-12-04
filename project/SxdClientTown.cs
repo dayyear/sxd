@@ -2509,6 +2509,28 @@ namespace 神仙道
             return response;
         }//PlayerUseGridItem
 
+        // 卖物品
+        /// <summary>
+        /// 卖物品
+        /// Mod_Item_Base.player_sell_item(2,73)
+        /// module:2, action:73, 
+        /// request:[Utils.ShortUtil], 
+        /// Example
+        ///     [31]
+        /// response:[Utils.UByteUtil, [Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ShortUtil], [Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]]
+        /// Line 27 in Mod_Item_Base.as
+        ///     public static const ACTION_SUCCESS:int = 20;
+        /// Example
+        ///     [20,[[0,0,31,0,0,0,0,0,0,0,0,0,0,0,0]],[[1,5057,1,320,4,1512374089,0]]]
+        /// </summary>
+        public JArray PlayerSellItem(short position)
+        {
+            done.Reset();
+            Send(new JArray { position }, 2, 73);
+            done.WaitOne(timeout);
+            return response;
+        }//PlayerSellItem
+
         // -------------------------------------------------------------------------------------------
         // 结婚
         // -------------------------------------------------------------------------------------------
