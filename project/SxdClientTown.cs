@@ -2510,6 +2510,30 @@ namespace 神仙道
         }//PlayerUseGridItem
 
         // -------------------------------------------------------------------------------------------
+        // 结婚
+        // -------------------------------------------------------------------------------------------
+        // 夫妻宝箱
+        /// <summary>
+        /// 夫妻宝箱
+        /// Mod_Marry_Base.get_marry_box(206,40)
+        /// module:206, action:40, 
+        /// request:[], 
+        /// response:[Utils.UByteUtil]
+        /// Line 20,40 in Mod_Marry_Base.as
+        ///     public static const SUCCESS:int = 13;
+        ///     public static const NO_ENOUGH_GET_COUNT:int = 33;
+        /// Example
+        ///     [13]
+        /// </summary>
+        public JArray GetMarryBox()
+        {
+            done.Reset();
+            Send(null, 206, 40);
+            done.WaitOne(timeout);
+            return response;
+        }//GetMarryBox
+
+        // -------------------------------------------------------------------------------------------
         // 帮派
         // -------------------------------------------------------------------------------------------
         // 打开帮派祭神

@@ -1149,16 +1149,28 @@ namespace 神仙道
 
                     if (_name.EndsWith("宝箱") || _name.EndsWith("礼包"))
                     {
-                        response = clientTown.PlayerUseGridItem(_position);
-                        // ACTION_SUCCESS:int = 20;
-                        if ((byte)response[0] == 20)
-                            Logger.Log(string.Format("【背包】打开[{0}]", _name));
-                        else
-                            Logger.Log(string.Format("【背包】打开[{0}]错误", _name), ConsoleColor.Red);
+                        for (var _i = 0; _i < _count; _i++)
+                        {
+                            response = clientTown.PlayerUseGridItem(_position);
+                            // ACTION_SUCCESS:int = 20;
+                            if ((byte)response[0] == 20)
+                                Logger.Log(string.Format("【背包】打开[{0}]", _name));
+                            else
+                            {
+                                Logger.Log(string.Format("【背包】打开[{0}]错误", _name), ConsoleColor.Red);
+                                break;
+                            }
+                        }
                     }
                 }
             }// 背包
-            //Console.ReadLine();
+            if (functionIds.Contains(129)) // 129:["Marry","297","结婚"],
+            {
+                response = clientTown.GetMarryBox();
+                // SUCCESS:int = 13;
+                if ((byte)response[0] == 13)
+                    Logger.Log("【结婚】领取夫妻宝箱");
+            }// if (functionIds.Contains(129)) // 129:["Marry","297","结婚"],
 
             if (functionIds.Contains(13) && !string.IsNullOrWhiteSpace(factionName)) // 13:["Faction","165","帮派"],
             {
