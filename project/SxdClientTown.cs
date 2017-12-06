@@ -2531,6 +2531,57 @@ namespace 神仙道
             return response;
         }//PlayerSellItem
 
+        // 卷轴信息
+        /// <summary>
+        /// 卷轴信息
+        /// Mod_Item_Base.get_facture_reel_data(2,21)
+        /// module:2, action:21, 
+        /// request:[Utils.IntUtil], 
+        /// Example
+        ///     [422] // 六品法术丹制作卷
+        ///     [424] // 七品法术丹制作卷
+        /// response:[Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, [Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil], 
+        ///           Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil]
+        /// Line 220 in RefineView.as
+        ///     this.reelIngot = param1[5];
+        /// Example
+        ///     [422,501,1,1,[[249,42,"玄暝界(7)掉落",124,72],[262,4,"虚天殿(6)掉落",148,127],[255,60,"水下宫殿(7)掉落",132,159],[257,53,"幽冥地府(4)掉落",138,257],[254,42,"水下宫殿(4)掉落",129,60],[252,42,"玄暝界(1)掉落",119,477]],
+        ///     0,0,0,0,0]   // 材料充足
+        ///     [424,503,1,1,[[258,15,"跌水崖(7)掉落",546,243],[220,60,"跌水崖(2)掉落",537,198],[219,60,"天境(2)掉落",552,495],[234,30,"东瀛(2)掉落",567,297],[263,15,"天境(6)掉落",560,0]],
+        ///     217,0,0,0,0] // 材料不足，需要217元宝
+        /// </summary>
+        public JArray GetFactureReelData(int itemId)
+        {
+            done.Reset();
+            Send(new JArray { itemId }, 2, 21);
+            done.WaitOne(timeout);
+            return response;
+        }//GetFactureReelData
+
+        // 卷轴合成
+        /// <summary>
+        /// 卷轴合成
+        /// Mod_Item_Base.player_use_grid_reel(2,27)
+        /// module:2, action:27, 
+        /// request:[Utils.IntUtil, Utils.IntUtil, Utils.IntUtil], 
+        /// Line 460 in RefineView.as
+        ///     _data.call(Mod_Item_Base.player_use_grid_reel, this.player_use_grid_reel_back, [this.reelPlayerItemId, param1, _loc_3]);
+        /// Example
+        ///     [49382368,0,0]
+        /// response:[Utils.UByteUtil, Utils.IntUtil, Utils.IntUtil, [Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ShortUtil, Utils.ShortUtil]]
+        /// Line 27 in Mod_Item_Base.as
+        ///     public static const ACTION_SUCCESS:int = 20;
+        /// Example
+        ///     [20,501,1,[[49382384,501,31,1,74,1,0,0,0,0,0,0,0,0,0],[49382384,501,31,1,74,1,0,0,0,0,0,0,0,0,0],[48885435,252,323,1,47,81,0,0,0,0,0,0,0,0,0],[48963891,252,322,1,47,99,0,0,0,0,0,0,0,0,0],[49379258,252,18,1,47,99,0,0,0,0,0,0,0,0,0],[49129723,252,17,1,47,99,0,0,0,0,0,0,0,0,0],[49330458,252,19,1,47,57,0,0,0,0,0,0,0,0,0],[48404425,254,324,1,55,18,0,0,0,0,0,0,0,0,0],[48849914,257,328,1,60,99,0,0,0,0,0,0,0,0,0],[49168212,257,26,1,60,99,0,0,0,0,0,0,0,0,0],[49214159,257,25,1,60,6,0,0,0,0,0,0,0,0,0],[48883494,255,325,1,55,42,0,0,0,0,0,0,0,0,0],[49348943,255,21,1,55,18,0,0,0,0,0,0,0,0,0],[49380662,255,22,1,55,39,0,0,0,0,0,0,0,0,0],[48839807,262,337,1,69,28,0,0,0,0,0,0,0,0,0],[45100969,262,336,1,69,95,0,0,0,0,0,0,0,0,0],[49376597,249,16,1,51,30,0,0,0,0,0,0,0,0,0]]]
+        /// </summary>
+        public JArray PlayerUseGridReel(int id)
+        {
+            done.Reset();
+            Send(new JArray { id, 0, 0 }, 2, 27);
+            done.WaitOne(timeout);
+            return response;
+        }//PlayerUseGridReel
+
         // -------------------------------------------------------------------------------------------
         // 结婚
         // -------------------------------------------------------------------------------------------
