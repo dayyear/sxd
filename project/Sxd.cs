@@ -250,54 +250,57 @@ namespace 神仙道
                 var _fieldsReady = _fields.Where(_field => (byte)_field[10] == 1 && (int)_field[8] == 0).ToList();
                 if (!_fieldsReady.Any())
                     Logger.Log("没有可种植的土地", ConsoleColor.Red);
-                // 土地最大等级
-                var _fieldMaxLevel = _fieldsReady.Max(_field => (int)_field[9]);
-                // 最优土地
-                var _fieldOptimization = _fieldsReady.First(_field => (int)_field[9] == _fieldMaxLevel);
-
-                // 种植伙伴
-                response = clientTown.GetPlayerRoleinfoList();
-                var _partners = (JArray)response[0];
-                //foreach (var _partner in _partners)
-                //    Logger.Log(string.Format("{0}，{1}，等级{2}", _partner[0], _partner[2], _partner[3]));
-                // 伙伴最大等级
-                var _partnerMaxLevel = _partners.Max(_partner => (int)_partner[3]);
-                // 最优伙伴
-                var _partnerOptimization = _partners.First(_partner => (int)_partner[3] == _partnerMaxLevel);
-
-                if (functionIds.Contains(43)) // 43:["CoinTree","250","发财树"],
+                else
                 {
-                    while (true)
-                    {
-                        // 仙露
-                        response = clientTown.BuyCoinTreeCountInfo();
-                        if ((int)response[0] <= 0)
-                        {
-                            Logger.Log("仙露已用完");
-                            break;
-                        }
+                    // 土地最大等级
+                    var _fieldMaxLevel = _fieldsReady.Max(_field => (int)_field[9]);
+                    // 最优土地
+                    var _fieldOptimization = _fieldsReady.First(_field => (int)_field[9] == _fieldMaxLevel);
 
-                        // 3:发财树; 1:普通
-                        // SUCCESS:int = 8;
-                        response = clientTown.PlantHerbs((int)_fieldOptimization[0], (int)_partnerOptimization[0], 3, 1);
-                        if ((byte)response[0] == 8)
+                    // 种植伙伴
+                    response = clientTown.GetPlayerRoleinfoList();
+                    var _partners = (JArray)response[0];
+                    //foreach (var _partner in _partners)
+                    //    Logger.Log(string.Format("{0}，{1}，等级{2}", _partner[0], _partner[2], _partner[3]));
+                    // 伙伴最大等级
+                    var _partnerMaxLevel = _partners.Max(_partner => (int)_partner[3]);
+                    // 最优伙伴
+                    var _partnerOptimization = _partners.First(_partner => (int)_partner[3] == _partnerMaxLevel);
+
+                    if (functionIds.Contains(43)) // 43:["CoinTree","250","发财树"],
+                    {
+                        while (true)
                         {
-                            response = clientTown.Harvest((int)_fieldOptimization[0]);
-                            if ((byte)response[0] == 8)
-                                Logger.Log(string.Format("给[{0}]种植[{1}]，收获[铜钱{2}]，", response[1], response[2], response[5]));
-                            else
+                            // 仙露
+                            response = clientTown.BuyCoinTreeCountInfo();
+                            if ((int)response[0] <= 0)
                             {
-                                Logger.Log("收获发财树失败", ConsoleColor.Red);
+                                Logger.Log("仙露已用完");
                                 break;
                             }
-                        }
-                        else
-                        {
-                            Logger.Log("种植发财树失败", ConsoleColor.Red);
-                            break;
-                        }
-                    } //while (true)
-                } //if (functionIds.Contains(43)) // 43:["CoinTree","250","发财树"],
+
+                            // 3:发财树; 1:普通
+                            // SUCCESS:int = 8;
+                            response = clientTown.PlantHerbs((int)_fieldOptimization[0], (int)_partnerOptimization[0], 3, 1);
+                            if ((byte)response[0] == 8)
+                            {
+                                response = clientTown.Harvest((int)_fieldOptimization[0]);
+                                if ((byte)response[0] == 8)
+                                    Logger.Log(string.Format("给[{0}]种植[{1}]，收获[铜钱{2}]，", response[1], response[2], response[5]));
+                                else
+                                {
+                                    Logger.Log("收获发财树失败", ConsoleColor.Red);
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                Logger.Log("种植发财树失败", ConsoleColor.Red);
+                                break;
+                            }
+                        } //while (true)
+                    } //if (functionIds.Contains(43)) // 43:["CoinTree","250","发财树"],
+                }
             } //if (functionIds.Contains(15)) //15:["Farm","150","药园"],
 
             // 聊天
@@ -1165,7 +1168,8 @@ namespace 神仙道
                         }
                     }
 
-                    if (Regex.IsMatch(_name, @"\A(四品|五品)(武力|绝技|法术)丹制作卷\z"))
+                    if (Regex.IsMatch(_name, @"\A(四品|五品)(武力|绝技|法术)丹制作卷\z") ||
+                        new[] { "霸者宝石" }.Contains(_name))
                     {
                         response = clientTown.PlayerSellItem(_position);
                         // ACTION_SUCCESS:int = 20;
@@ -1201,6 +1205,7 @@ namespace 神仙道
 
                     if (_itemFors.Any(x => Regex.IsMatch(x.Trim(), @"\A[一二三六七八九]品丹药\z")) ||
                         _itemFors.Any(x => Regex.IsMatch(x.Trim(), @"\A[四五]品丹药葫芦\z")) ||
+                        Regex.IsMatch(_itemName, @"\A[一二三六七八九]品(武力|绝技|法术)丹制作卷\z") ||
                         _itemName.Equals("女娲石碎片"))
                     {
                         response = clientTown.BuyLuckyStoreItem(_npcId, _itemId, _luckystoreId);
