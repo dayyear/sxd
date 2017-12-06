@@ -656,6 +656,60 @@ namespace 神仙道
             return response;
         }//RefreshPlayerList
 
+        // -------------------------------------------------------------------------------------------
+        // 仙界商店
+        // -------------------------------------------------------------------------------------------
+        // 仙界商店-打开
+        /// <summary>
+        /// 仙界商店-打开
+        /// Mod_StDaoyuanShop_Base.daoyuan_shop_item_list(132,0)
+        /// module:132, action:0, 
+        /// request:[], 
+        /// response:[[Utils.ByteUtil, Utils.ShortUtil, Utils.ShortUtil], Utils.ByteUtil]
+        /// Line 42 in StDaoYuanShopData.as
+        ///     oObject.list(_loc_4, _loc_7, ["item_id", "item_num", "item_discount"]);
+        /// Example
+        ///     [[[21,3,100],[7,40,100],[4,20,100],[10,1,100],[3,1,100],[16,50,100],[5,20,100],[8,0,100],[17,300,100],[22,20,100],[23,20,100],[2,100,100],[9,0,100],[19,10,100],[15,10,100],[6,200,100],[20,100,100]],0]
+        ///     21: 普通进阶丹, 15: 真元
+        ///     3: 数量,        10: 数量
+        /// </summary>
+        public JArray DaoyuanShopItemList()
+        {
+            done.Reset();
+            Send(null, 132, 0);
+            done.WaitOne(timeout);
+            return response;
+        }//DaoyuanShopItemList
+
+        // 仙界商店-买
+        /// <summary>
+        /// 仙界商店-买
+        /// Mod_StDaoyuanShop_Base.buy_daoyuan_shop_item(132,1)
+        /// module:132, action:1, 
+        /// request:[Utils.ByteUtil, Utils.ShortUtil], 
+        /// Line 128 in
+        ///     _data.call(Mod_StDaoyuanShop_Base.buy_daoyuan_shop_item, this.buy_item_callback, [item_id, num], true, 1);
+        /// Example
+        ///     [21,3]  // 普通进阶丹×3
+        ///     [15,10] // 真元×10
+        /// response:[Utils.UByteUtil, Utils.ShortUtil]
+        /// Line 22,23 in StDaoYuanShopData.as
+        ///     this.result = param1[0];
+        ///     this.reduce_num = param1[1];
+        /// Line 7,9,10 in Mod_StDaoyuanShop_Base.as
+        ///     public static const SUCCESS:int = 0;
+        ///     public static const NOT_ENOUGH_DAOYUAN:int = 2; 
+        ///     public static const NOT_ENOUGH_INGOT:int = 3;
+        /// Example
+        ///     [0,0]
+        /// </summary>
+        public JArray BuyDaoyuanShopItem(byte itemId, short num)
+        {
+            done.Reset();
+            Send(new JArray { itemId, num }, 132, 1);
+            done.WaitOne(timeout);
+            return response;
+        }//BuyDaoyuanShopItem
 
         private void Callback(JArray data)
         {

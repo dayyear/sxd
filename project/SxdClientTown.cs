@@ -2583,6 +2583,35 @@ namespace 神仙道
         }//PlayerUseGridReel
 
         // -------------------------------------------------------------------------------------------
+        // 群仙乱舞
+        // -------------------------------------------------------------------------------------------
+        // 
+        /// <summary>
+        /// 
+        /// Mod_Dance_Base.start_dance(76,1)
+        /// </summary>
+        /*public JArray StartDance()
+        {
+            done.Reset();
+            Send(null, 76, 1);
+            done.WaitOne(timeout);
+            return response;
+        }//StartDance*/
+
+        // 
+        /// <summary>
+        /// 
+        /// Mod_Dance_Base.receive_award(76,2)
+        /// </summary>
+        /*public JArray ReceiveAward()
+        {
+            done.Reset();
+            Send(null, 76, 1);
+            done.WaitOne(timeout);
+            return response;
+        }//ReceiveAward*/
+
+        // -------------------------------------------------------------------------------------------
         // 结婚
         // -------------------------------------------------------------------------------------------
         // 夫妻宝箱

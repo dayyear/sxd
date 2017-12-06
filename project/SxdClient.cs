@@ -148,6 +148,8 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_LuckyStore_Base.buy_lucky_store_item", "Callback");
             classDotMethodDictionary.Add("Mod_Item_Base.get_facture_reel_data", "Callback");
             classDotMethodDictionary.Add("Mod_Item_Base.player_use_grid_reel", "Callback");
+            //classDotMethodDictionary.Add("Mod_Dance_Base.start_dance", "Callback");
+            //classDotMethodDictionary.Add("Mod_Dance_Base.receive_award", "Callback");
             //ST
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
             classDotMethodDictionary.Add("Mod_StTown_Base.enter_town", "Callback");
@@ -171,6 +173,8 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_StSuperSport_Base.get_race_step", "Callback");
             classDotMethodDictionary.Add("Mod_StSuperSport_Base.get_race_list", "Callback");
             classDotMethodDictionary.Add("Mod_StSuperSport_Base.bet", "Callback");
+            classDotMethodDictionary.Add("Mod_StDaoyuanShop_Base.daoyuan_shop_item_list", "Callback");
+            classDotMethodDictionary.Add("Mod_StDaoyuanShop_Base.buy_daoyuan_shop_item", "Callback");
         }
 
         private void ProcessPackage(byte[] package, bool isReceive = true, bool isLogAllProtocols = false)

@@ -335,6 +335,7 @@ namespace 神仙道
                     else
                         Logger.Log("【仙界】进入仙界错误", ConsoleColor.Red);
 
+                    #region 跨服取经
                     if (functionIds.Contains(90)) // 90:["ServerTakeBible","247","跨服取经"],
                     {
                         // 仇人
@@ -375,6 +376,7 @@ namespace 神仙道
                             break;
                         } //while(true)
                     } //if (functionIds.Contains(90)) // 90:["ServerTakeBible","247","跨服取经"],
+                    #endregion
 
                     #region 家园
                     if (functionIds.Contains(131)) // 131:["MarryHome","242","家园"],
@@ -677,6 +679,40 @@ namespace 神仙道
 
                     } //if (functionIds.Contains(93)) // 93:["st_super_sport","206","仙界竞技场"],，实际上是神魔竞技
                     #endregion
+
+                    #region 仙界商店
+                    if (functionIds.Contains(102)) // 102:["StDaoYuanShop","207","仙界商店"],
+                    {
+                        response = clientST.DaoyuanShopItemList();
+                        var _itemList = response[0].ToList();
+
+                        var _itemDictionary = new Dictionary<byte, string> { { 21, "普通进阶丹" }, { 15, "真元" } };
+                        foreach (var _item in _itemDictionary)
+                        {
+                            var _itemId = _item.Key;
+                            var _itemName = _item.Value;
+                            var _num = (short)_itemList.First(x => (byte)x[0] == _itemId)[1];
+                            if (_num > 0)
+                            {
+                                response = clientST.BuyDaoyuanShopItem(_itemId, _num);
+                                // SUCCESS:int = 0;
+                                if ((byte)response[0] == 0)
+                                    Logger.Log(string.Format("【仙界商店】买下[{1}]×{0}", _num, _itemName));
+                                // NOT_ENOUGH_DAOYUAN:int = 2; 
+                                else if ((byte)response[0] == 2)
+                                    Logger.Log(string.Format("【仙界商店】买[{0}]错误，[道缘]不足", _itemName), ConsoleColor.Red);
+                                // NOT_ENOUGH_INGOT:int = 3;
+                                else if ((byte)response[0] == 3)
+                                    Logger.Log(string.Format("【仙界商店】买[{0}]错误，[元宝]不足", _itemName), ConsoleColor.Red);
+                                else
+                                    Logger.Log(string.Format("【仙界商店】买[{1}]错误，result：{0}", response[0], _itemName), ConsoleColor.Red);
+                            }
+                            else
+                                Logger.Log(string.Format("【仙界商店】今日[{0}]已卖完", _itemName));
+                        }
+                    } //if (functionIds.Contains(102)) // 102:["StDaoYuanShop","207","仙界商店"],
+                    #endregion
+
                 }//if ((int)response[0] == 0)
             } //if (functionIds.Contains(91)) // 91:["SuperTown","205","仙界"],
 
@@ -1230,6 +1266,20 @@ namespace 神仙道
                     }
                 }// foreach (var _item in _items)
             }// 背包
+
+            // 群仙乱舞
+            /*{
+                response = clientTown.StartDance();
+                if ((byte)response[0] == 0)
+                {
+                    response = clientTown.ReceiveAward();
+                    if ((byte)response[0] == 0)
+                        Logger.Log("【群仙乱舞】领取礼包");
+                    else
+                        Logger.Log(string.Format("【群仙乱舞】领取礼包错误，result：{0}", response[0]), ConsoleColor.Red);
+                }
+            }
+            Console.ReadLine();*/
 
             if (functionIds.Contains(129)) // 129:["Marry","297","结婚"],
             {
