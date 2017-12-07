@@ -691,6 +691,8 @@ namespace 神仙道
                         {
                             var _itemId = _item.Key;
                             var _itemName = _item.Value;
+                            if (_itemList.All(x => (byte)x[0] != _itemId))
+                                continue;
                             var _num = (short)_itemList.First(x => (byte)x[0] == _itemId)[1];
                             if (_num > 0)
                             {
@@ -1181,7 +1183,7 @@ namespace 神仙道
                     if (_itemFors.Any(x => Regex.IsMatch(x.Trim(), @"\A[一二三六七八九]品丹药\z")) ||
                         _itemFors.Any(x => Regex.IsMatch(x.Trim(), @"\A[四五]品丹药葫芦\z")) ||
                         Regex.IsMatch(_itemName, @"\A[一二三六七八九]品(武力|绝技|法术)丹制作卷\z") ||
-                        _itemName.Equals("女娲石碎片"))
+                        new[] { "女娲石碎片", "涣神砂", "阴阳镜" }.Contains(_itemName))
                     {
                         response = clientTown.BuyLuckyStoreItem(_npcId, _itemId, _luckystoreId);
                         // LUCKY_SUCCESS:int = 10;
