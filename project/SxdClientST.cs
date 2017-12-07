@@ -103,6 +103,11 @@ namespace 神仙道
         ///     public static const SUCCESS:int = 2;
         /// Example
         ///     [2]
+        /// 
+        /// Mod_StTown_Base.notify_enter_town(95,1)
+        /// module:95, action:1, 
+        /// request:[], 
+        /// response:[Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.ShortUtil, Utils.ByteUtil, Utils.IntUtil, Utils.IntUtil, Utils.StringUtil, Utils.UByteUtil, Utils.UByteUtil, Utils.ShortUtil, Utils.IntUtil, Utils.StringUtil, Utils.IntUtil, Utils.ShortUtil, [Utils.UByteUtil, Utils.ByteUtil, Utils.ByteUtil, Utils.ShortUtil]]
         /// Line 49 in StTownData.as
         ///     oObject.list(param1, _loc_2, ["player_id", "role_id", "nickname", "position_x", "position_y", "equip_item_id", "stage_name", "server_name", "is_world_war_top", "is_star", "transport", "avatar", "st_union_name", "immortal_flag", "saint_flag", "mount_rune_type_id", "children_role_id", "children_nickname", "children_suit_id", "orange_equipment_fllow_id", "follow_pet_list"]);
         /// Example
@@ -117,9 +122,12 @@ namespace 神仙道
         }//EnterTown
         private void NotifyEnterTownCallback(JArray data)
         {
+            // 防止别的玩家进入仙界城镇导致程序不同步
+            if ((int)data[0] != _playerId)
+                return;
             response = data;
             done.Set();
-        }//Callback
+        }//NotifyEnterTownCallback
 
         // 仇人
         /// <summary>
