@@ -150,9 +150,11 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_Item_Base.player_use_grid_reel", "Callback");
             //classDotMethodDictionary.Add("Mod_Dance_Base.start_dance", "Callback");
             //classDotMethodDictionary.Add("Mod_Dance_Base.receive_award", "Callback");
+
             //ST
+            classDotMethodDictionary.Add("Mod_StTown_Base.notify_enter_town", "NotifyEnterTownCallback");
+
             classDotMethodDictionary.Add("Mod_StLogin_Base.login", "Callback");
-            classDotMethodDictionary.Add("Mod_StTown_Base.enter_town", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.open_take_bible", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.get_take_bible_info", "Callback");
             classDotMethodDictionary.Add("Mod_StTakeBible_Base.get_recent_rob_player", "Callback");
@@ -175,6 +177,9 @@ namespace 神仙道
             classDotMethodDictionary.Add("Mod_StSuperSport_Base.bet", "Callback");
             classDotMethodDictionary.Add("Mod_StDaoyuanShop_Base.daoyuan_shop_item_list", "Callback");
             classDotMethodDictionary.Add("Mod_StDaoyuanShop_Base.buy_daoyuan_shop_item", "Callback");
+            classDotMethodDictionary.Add("Mod_StUnion_Base.get_player_st_union_info", "Callback");
+            classDotMethodDictionary.Add("Mod_StUnionActivity_Base.get_st_union_god_info", "Callback");
+            classDotMethodDictionary.Add("Mod_StUnionActivity_Base.st_union_god_incense", "Callback");
         }
 
         private void ProcessPackage(byte[] package, bool isReceive = true, bool isLogAllProtocols = false)

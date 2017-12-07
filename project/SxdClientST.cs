@@ -103,6 +103,10 @@ namespace 神仙道
         ///     public static const SUCCESS:int = 2;
         /// Example
         ///     [2]
+        /// Line 49 in StTownData.as
+        ///     oObject.list(param1, _loc_2, ["player_id", "role_id", "nickname", "position_x", "position_y", "equip_item_id", "stage_name", "server_name", "is_world_war_top", "is_star", "transport", "avatar", "st_union_name", "immortal_flag", "saint_flag", "mount_rune_type_id", "children_role_id", "children_nickname", "children_suit_id", "orange_equipment_fllow_id", "follow_pet_list"]);
+        /// Example
+        ///     [203965,107,"董乘六.s1",276,436,1335,"心动","s04",0,0,0,0,"度月如年",1,1,0,0,"",0,0,[[0,1,0,0],[1,1,1,0],[2,0,0,0],[3,0,0,0],[4,0,0,0],[5,1,0,0],[6,0,0,0],[7,0,0,0],[8,0,0,0],[9,0,0,0],[10,0,0,0],[11,0,0,0],[12,0,0,0],[13,0,0,0],[14,0,0,0],[15,0,0,0],[16,0,0,0],[17,0,0,0],[18,0,0,0],[19,0,0,0],[24,0,0,0],[25,0,0,0],[26,0,0,0],[20,0,0,0],[21,0,0,0],[22,0,0,0],[23,0,0,0],[27,0,0,0],[28,0,0,0],[29,0,0,0],[30,0,0,0],[31,1,0,0],[32,0,0,0],[33,0,0,0],[34,0,0,0],[35,0,0,0],[36,0,0,0],[37,0,0,0],[38,0,0,0],[39,0,0,0]]]
         /// </summary>
         public JArray EnterTown()
         {
@@ -111,6 +115,11 @@ namespace 神仙道
             done.WaitOne(timeout);
             return response;
         }//EnterTown
+        private void NotifyEnterTownCallback(JArray data)
+        {
+            response = data;
+            done.Set();
+        }//Callback
 
         // 仇人
         /// <summary>
@@ -710,6 +719,54 @@ namespace 神仙道
             done.WaitOne(timeout);
             return response;
         }//BuyDaoyuanShopItem
+
+        // -------------------------------------------------------------------------------------------
+        // 仙盟
+        // -------------------------------------------------------------------------------------------
+        // 仙盟上香-打开
+        /// <summary>
+        /// 仙盟上香-打开
+        /// Mod_StUnionActivity_Base.get_st_union_god_info(179,10)
+        /// module:179, action:10, 
+        /// request:[], 
+        /// response:[Utils.ByteUtil, Utils.IntUtil, Utils.ByteUtil, Utils.ByteUtil, [Utils.IntUtil, Utils.StringUtil, Utils.StringUtil, Utils.StringUtil, Utils.IntUtil, Utils.IntUtil, Utils.IntUtil]]
+        /// Line 142 in StUnionActivityController.as
+        ///     oObject.list(_loc_1, _loc_2, ["god_level", "god_exp", "incense_count", "total_count"]);
+        /// Example
+        ///     [6,19570,0,1,[[3090,"镇淋兮.s1","37wan","37wan_s0273",1,10,1512562215],[7857,"无处不在.s1","7k7k","yx567_s0125",1,10,1512557861],[160,"沧海小月.s8","37wan","37wan_s0273",1,10,1512529457],[165,"欧阳婷.s7","37wan","37wan_s0273",1,10,1512519991],[165,"欧阳婷.s7","37wan","37wan_s0273",1,10,1512576931],[3323,"天涯.浪子.s1","37wan","37wan_s0273",1,10,1512575973],[322,"人皇.s3","37wan","37wan_s0273",1,10,1512614072],[322,"人皇.s3","37wan","37wan_s0273",1,10,1512490554]]]
+        ///     [6,19580,1,1,[[3090,"镇淋兮.s1","37wan","37wan_s0273",1,10,1512562215],[7857,"无处不在.s1","7k7k","yx567_s0125",1,10,1512557861],[160,"沧海小月.s8","37wan","37wan_s0273",1,10,1512529457],[165,"欧阳婷.s7","37wan","37wan_s0273",1,10,1512519991],[165,"欧阳婷.s7","37wan","37wan_s0273",1,10,1512576931],[3323,"天涯.浪子.s1","37wan","37wan_s0273",1,10,1512575973],[322,"人皇.s3","37wan","37wan_s0273",1,10,1512614072],[24373,"度日如年.s1","心动","s04",1,10,1512623060]]]
+        /// </summary>
+        public JArray GetStUnionGodInfo()
+        {
+            done.Reset();
+            Send(null, 179, 10);
+            done.WaitOne(timeout);
+            return response;
+        }//GetStUnionGodInfo
+
+        // 仙盟上香-白檀香
+        /// <summary>
+        /// 仙盟上香-白檀香
+        /// Mod_StUnionActivity_Base.st_union_god_incense(179,11)
+        /// module:179, action:11, 
+        /// request:[Utils.IntUtil], 
+        /// response:[Utils.UByteUtil, Utils.ShortUtil, Utils.ShortUtil, Utils.IntUtil]
+        /// Line 80-81 in StUnionActivityData.as
+        ///     this.result = param1[0];
+        ///     this.ticketNum = param1[3];
+        /// Line 9,27 in Mod_StUnionActivity_Base.as
+        ///     public static const SUCCESS:int = 2;
+        ///     public static const POWER_FAME_FUN_NOT_OPEN:int = 20;
+        /// Example
+        ///     [2,32,32,0]
+        /// </summary>
+        public JArray StUnionGodIncense()
+        {
+            done.Reset();
+            Send(new JArray { 1 }, 179, 11);
+            done.WaitOne(timeout);
+            return response;
+        }//StUnionGodIncense
 
         private void Callback(JArray data)
         {

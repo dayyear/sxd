@@ -329,8 +329,10 @@ namespace 神仙道
                     var playerIdST = clientST.Login(serverHostST, portST, serverNameST, playerId, nickName, serverTimeST, passCodeST);
                     Logger.Log(string.Format("【仙界】登录成功, 仙界玩家[ID{0}]", playerIdST), ConsoleColor.Green);
 
-                    // SUCCESS:int = 2;
-                    if ((byte)clientST.EnterTown()[0] == 2)
+                    // 进入仙界城镇
+                    response = clientST.EnterTown();
+                    var stUnionName = (string)response[12];
+                    if ((string)response[2] == nickName)
                         Logger.Log("【仙界】进入仙界");
                     else
                         Logger.Log("【仙界】进入仙界错误", ConsoleColor.Red);
@@ -715,6 +717,36 @@ namespace 神仙道
                     } //if (functionIds.Contains(102)) // 102:["StDaoYuanShop","207","仙界商店"],
                     #endregion
 
+                    #region 仙盟
+                    if (functionIds.Contains(119) && !string.IsNullOrWhiteSpace(stUnionName)) // 119:["st_union","381","仙盟"],
+                    {
+                        while (true)
+                        {
+                            response = clientST.GetStUnionGodInfo();
+                            var _incense_count = (int)response[2];
+                            var _total_count = (int)response[3];
+
+                            if (_incense_count >= _total_count)
+                                break;
+
+                            response = clientST.StUnionGodIncense();
+                            // SUCCESS:int = 2;
+                            if ((byte)response[0] == 2)
+                                Logger.Log("【仙盟】给仙盟神像上[白檀香]");
+                            // POWER_FAME_FUN_NOT_OPEN:int = 20;
+                            else if ((byte)response[0] == 20)
+                            {
+                                Logger.Log("【仙盟】上香错误，威望功能未开启", ConsoleColor.Red);
+                                break;
+                            }
+                            else
+                            {
+                                Logger.Log(string.Format("【仙盟】上香错误，result：{0}", response[0]), ConsoleColor.Red);
+                                break;
+                            }
+                        } // while (true)
+                    }// if (functionIds.Contains(119) && !string.IsNullOrWhiteSpace(stUnionName)) // 119:["st_union","381","仙盟"],
+                    #endregion
                 }//if ((int)response[0] == 0)
             } //if (functionIds.Contains(91)) // 91:["SuperTown","205","仙界"],
 
@@ -1308,7 +1340,10 @@ namespace 神仙道
                     if ((byte)response[0] == 32)
                         Logger.Log("【帮派】给帮派神像上[白檀香]");
                     else
+                    {
                         Logger.Log("【帮派】上香错误", ConsoleColor.Red);
+                        break;
+                    }
                 }//while
 
                 // 七星封魔
@@ -1332,7 +1367,10 @@ namespace 神仙道
                     if ((byte)response[0] == 32)
                         Logger.Log(string.Format("【帮派】吉星高照，获得[积分{0}]，今日[积分{1}]", response[2], response[3]));
                     else
+                    {
                         Logger.Log("【帮派】吉星高照错误", ConsoleColor.Red);
+                        break;
+                    }
                 }//while
 
                 // 帮派转盘
