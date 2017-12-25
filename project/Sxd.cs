@@ -1279,7 +1279,7 @@ namespace 神仙道
                             Logger.Log(string.Format("【背包】出售[{0}]错误，result：{1}", _name, response[0]), ConsoleColor.Red);
                     }
 
-                    if (Regex.IsMatch(_name, @"\A[一二三六七八九]品(武力|绝技|法术)丹制作卷\z") ||
+                    /*if (Regex.IsMatch(_name, @"\A[一二三六七八九]品(武力|绝技|法术)丹制作卷\z") ||
                         Regex.IsMatch(_name, @"\A[四五]品(武力|绝技|法术)葫芦\z"))
                     {
                         response = clientTown.GetFactureReelData(_itemId);
@@ -1297,7 +1297,7 @@ namespace 神仙道
                         }
                         else
                             Logger.Log(string.Format("【背包】合成[{0}]失败，材料不足", _name), ConsoleColor.Red);
-                    }
+                    }*/
                 }// foreach (var _item in _items)
             }// 背包
 
