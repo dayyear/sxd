@@ -1,5 +1,23 @@
 ﻿[
     {
+        "url": "http://www.xd.com/games/play?app=sxd&server=s2",
+        "name": "余一二.s2",
+        "username": "dayyear1",
+        "password": "orange"
+    },
+    {
+        "url": "http://www.xd.com/games/play?app=sxd&server=s3",
+        "name": "俞一三.s3",
+        "username": "dayyear1",
+        "password": "orange"
+    },
+    {
+        "url": "http://www.xd.com/games/play?app=sxd&server=s4",
+        "name": "屈一四.s4",
+        "username": "dayyear1",
+        "password": "orange"
+    },
+    {
         "url": "http://www.xd.com/games/play?app=sxd&server=s1",
         "name": "庄恭春.s1",
         "username": "dayyear1",
@@ -52,27 +70,9 @@
         "password": "orange"
     },
     {
-        "url": "http://www.xd.com/games/play?app=sxd&server=s2",
-        "name": "余一二.s2",
-        "username": "dayyear1",
-        "password": "orange"
-    },
-    {
         "url": "http://www.xd.com/games/play?app=sxd&server=s152",
         "name": "平平啦.s152",
         "username": "平平啦",
-        "password": "orange"
-    },
-    {
-        "url": "http://www.xd.com/games/play?app=sxd&server=s3",
-        "name": "俞一三.s3",
-        "username": "dayyear1",
-        "password": "orange"
-    },
-    {
-        "url": "http://www.xd.com/games/play?app=sxd&server=s4",
-        "name": "屈一四.s4",
-        "username": "dayyear1",
         "password": "orange"
     }
 ]
