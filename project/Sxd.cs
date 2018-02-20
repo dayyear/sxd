@@ -338,7 +338,7 @@ namespace 神仙道
                         Logger.Log("【仙界】进入仙界错误", ConsoleColor.Red);
 
                     #region 跨服取经
-                    if (functionIds.Contains(90)) // 90:["ServerTakeBible","247","跨服取经"],
+                    if (functionIds.Contains(90) && !functionIds.Contains(164)) // 90:["ServerTakeBible","247","跨服取经"], 164:圣器
                     {
                         // 仇人
                         //response = clientST.GetRecentRobPlayer();
@@ -474,7 +474,7 @@ namespace 神仙道
                     #endregion
 
                     #region 神魔竞技
-                    if (functionIds.Contains(93)) // 93:["st_super_sport","206","仙界竞技场"]，实际上是神魔竞技
+                    if (functionIds.Contains(93) && !functionIds.Contains(164)) // 93:["st_super_sport","206","仙界竞技场"]，实际上是神魔竞技, 164:圣器
                     {
                         // 状态
                         response = clientST.GetStSuperSportStatus();
