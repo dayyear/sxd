@@ -1213,7 +1213,7 @@ namespace 神仙道
                     var _itemFors = Regex.Match(_itemComment, @"\|\|(.*)\z").Groups[1].Value.Split(new[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
 
                     if (//_itemFors.Any(x => Regex.IsMatch(x.Trim(), @"\A[一二三六七八九]品丹药\z")) ||
-                        _itemFors.Any(x => Regex.IsMatch(x.Trim(), @"\A[四五]品丹药葫芦\z")) ||
+                        //_itemFors.Any(x => Regex.IsMatch(x.Trim(), @"\A[四五]品丹药葫芦\z")) ||
                         //Regex.IsMatch(_itemName, @"\A[一二三六七八九]品(武力|绝技|法术)丹制作卷\z") ||
                         new[] { "女娲石碎片" }.Contains(_itemName))
                     {
