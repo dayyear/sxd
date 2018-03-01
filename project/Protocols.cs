@@ -147,7 +147,7 @@ namespace 神仙道
         /// </summary>
         public static Tuple<string, string, JArray, JArray> GetPattern(short module, short action)
         {
-            var protocols = XElement.Load("protocols/protocolsR164.xml");
+            var protocols = XElement.Load("protocols/protocolsR171.xml");
             var actions = (from _action in protocols.Elements("module").Elements("action")
                            let _module = _action.Parent
                            where _module.Attribute("id").Value == module.ToString() && _action.Attribute("id").Value == action.ToString()
