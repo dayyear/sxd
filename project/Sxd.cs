@@ -15,7 +15,7 @@ namespace 神仙道
         {
             var protocols = new XElement("protocols");
 
-            foreach (var file in Directory.GetFiles(@"H:\神仙道\基础数据准备\R171\Main\Action\com\protocols", "Mod_*_Base.as"))
+            foreach (var file in Directory.GetFiles(@"H:\神仙道\基础数据准备\R172\Main\Action\com\protocols", "Mod_*_Base.as"))
             {
                 var content = File.ReadAllText(file);
                 var matches = Regex.Matches(content, @"public static const (.*?):Object = {module:(\d*?), action:(\d*?), request:(.*?), response:(.*?)};");
@@ -40,7 +40,7 @@ namespace 神仙道
                 } //action
             } //module
 
-            protocols.Save("protocols/protocolsR171.xml");
+            protocols.Save("protocols/protocolsR172.xml");
         } //CollectProtocols
 
         private static void GenerateCookies()
