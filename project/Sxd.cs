@@ -62,6 +62,7 @@ namespace 神仙道
                     var web = new SxdWeb();
                     web.LoginService(username, password, string.Format("cookies/{0}.", user["name"]));
                 }
+                Thread.Sleep(1000);
             }
             Directory.GetFiles("./", "0*.jpg").ToList().ForEach(File.Delete);
         } //GenerateCookies
